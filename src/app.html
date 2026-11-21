@@ -666,7 +666,7 @@ function renderForm(id){
   </form>`;
   renumber();
   if (!id) $('#fName').focus();
-  if (r.photoFile) useAsPhoto(r.photoFile);
+  if (r.photoFile) useAsPhoto(r.photoFile, true);
 }
 async function onPhoto(input){
   const file = input.files?.[0]; input.value = '';
@@ -686,9 +686,10 @@ async function cropAndSet(src){
   $('#rmPhoto').classList.remove('hidden'); $('#cropPhoto').classList.remove('hidden');
 }
 // Foto übernehmen und mittig auf 4:3 zuschneiden (Ausschnitt lässt sich danach ändern)
-async function useAsPhoto(file){
+async function useAsPhoto(file, askCrop){
   try {
     const src = await loadSource(file); if (!F) return;
+    if (askCrop) { F.keepCredit = false; await cropAndSet(src); if (F && F.photoBlob) return; }
     const w = src.width, h = src.height, cw = Math.min(w, h * 4 / 3), ch = cw * 3 / 4;
     const ow = Math.round(Math.min(1600, cw)), out = document.createElement('canvas'); out.width = ow; out.height = Math.round(ow * 3 / 4);
     out.getContext('2d').drawImage(src, (w - cw) / 2, (h - ch) / 2, cw, ch, 0, 0, out.width, out.height);
@@ -700,12 +701,29 @@ async function useAsPhoto(file){
     $('#rmPhoto').classList.remove('hidden'); $('#cropPhoto').classList.remove('hidden');
   } catch {}
 }
+async function loadRemote(url){
+  const fresh = url + (url.includes('?') ? '&' : '?') + 'crop=' + Date.now(); // am Zwischenspeicher vorbei
+  try {
+    const res = await fetch(fresh, { mode: 'cors', cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return await loadSource(await res.blob());
+  } catch {
+    const img = await new Promise((res, rej) => { const i = new Image(); i.crossOrigin = 'anonymous'; i.onload = () => res(i); i.onerror = rej; i.src = fresh; });
+    const k = Math.min(1, 2400 / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    c.toDataURL(); // wirft, falls das Bild nicht verwendet werden darf
+    return c;
+  }
+}
 async function recrop(){
   let src = F.src;
   if (!src) {
     const url = photoSrc(F.r); if (!url) return;
-    try { const res = await fetch(url, { mode: 'cors' }); src = await loadSource(await res.blob()); F.keepCredit = true; }
-    catch { toast('Das gespeicherte Foto lässt sich nicht laden – wähle es bitte neu aus.'); return; }
+    const btn = $('#cropPhoto'); if (btn) { btn.disabled = true; btn.textContent = 'Lädt …'; }
+    try { src = await loadRemote(url); F.src = src; F.keepCredit = true; }
+    catch { toast('Das gespeicherte Foto lässt sich gerade nicht laden. Prüfe die Verbindung oder wähle das Foto neu aus.'); return; }
+    finally { if (btn) { btn.disabled = false; btn.textContent = 'Ausschnitt ändern'; } }
   }
   await cropAndSet(src);
 }
