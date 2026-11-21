@@ -80,6 +80,7 @@ button{cursor:pointer}
 @media(min-width:820px){.hero{margin-top:20px;border-radius:22px}}
 .hero img{width:100%;height:100%;object-fit:cover}
 .hero svg{width:120px;opacity:.5}
+.credit{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.5);color:#fff;font-size:11px;padding:3px 8px;border-radius:8px}
 .back{position:absolute;left:max(5vw,16px);top:calc(14px + env(safe-area-inset-top));background:rgba(0,0,0,.55);color:#fff;border:0}
 .d-head{padding-top:22px}
 .d-head h2{font-size:clamp(32px,6vw,48px);font-weight:800}
@@ -219,6 +220,35 @@ const DEF_MEAL = ['Frühstück','Vorspeisen','Mittagessen','Abendessen','Snack',
 const DEF_DIET = ['vegan','vegetarisch','Fleisch','Fisch','Suppen'];
 let MEAL = DEF_MEAL.slice(), DIET = DEF_DIET.slice(), ALLCATS = [...MEAL, ...DIET];
 const CFG_ID = '_config';
+// Frei nutzbare Fotos (Unsplash-Lizenz) für die Beispielrezepte
+const SAMPLE_PHOTOS = {
+  'sample-01': ['1490371475955-4cb3bfc72f71', 'Alisha Hieb'],
+  'sample-02': ['1757972367454-b79cbe99a253', 'Nafsika G.'],
+  'sample-03': ['1786918467065-e58e2d8f03d4', 'Culinarissimo'],
+  'sample-05': ['1620791144170-8a443bf37a33', 'Max Griss'],
+  'sample-06': ['1785396347369-b5e70e3f3af3', 'BONNNI C'],
+  'sample-07': ['1675209705883-7aec595f5aa8', 'Camara Negra'],
+  'sample-08': ['1708782344490-9026aaa5eec7', 'Rimsha Noor'],
+  'sample-09': ['1476718406336-bb5a9690ee2a', 'Cala'],
+  'sample-10': ['1763867641141-50e00520f189', 'Neon Wang'],
+  'sample-11': ['1683725519288-eab9fa352335', 'Riddhi K'],
+  'sample-12': ['1766232333746-b0a2697d6d0d', 'mediha ekici'],
+  'sample-13': ['1562007908-17c67e878c88', 'Diliara Garifullina'],
+  'sample-14': ['1767065887793-f68f736ea9d6', 'Diego Arenas de Rodrigo'],
+  'sample-15': ['1560684352-8497838a2229', 'Do mee'],
+  'sample-16': ['1781941622552-ee49f32acdd3', 'jackson kondili']
+};
+const unsplashUrl = id => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=1200&h=900&q=75`;
+const patchedSamples = new Set();
+async function addSamplePhotos(){
+  if (!S.canWrite || !S.db) return;
+  for (const r of S.recipes) {
+    const p = SAMPLE_PHOTOS[r.id];
+    if (!p || !r.sample || r.photoUrl || r.photoId || patchedSamples.has(r.id)) continue;
+    patchedSamples.add(r.id);
+    try { await S.db.collection('recipes').doc(r.id).update({ photoUrl: unsplashUrl(p[0]), photoCredit: p[1] }); } catch {}
+  }
+}
 function setCats(cfg){
   const ok = a => Array.isArray(a) ? a.map(String).filter(Boolean) : null;
   MEAL = ok(cfg?.meal) || DEF_MEAL.slice(); DIET = ok(cfg?.diet) || DEF_DIET.slice(); ALLCATS = [...MEAL, ...DIET];
@@ -573,7 +603,7 @@ function renderDetail(id){
   const base = r.servings || 1, p = S.portions[id] || base, f = p / base;
   resolveNames([r.createdBy, r.updatedBy]).then(() => { const b = $('#by'); if (b) b.textContent = byLine(r); });
   app.innerHTML = `
-  <div class="hero">${photoHTML(r)}<a class="btn back" href="#start">← Übersicht</a></div>
+  <div class="hero">${photoHTML(r)}<a class="btn back" href="#start">← Übersicht</a>${r.photoCredit && photoSrc(r) ? `<span class="credit">Foto: ${esc(r.photoCredit)} / Unsplash</span>` : ''}</div>
   <div class="wrap">
     <div class="d-head"><h2>${esc(r.name)}</h2>${r.desc ? `<p>${esc(r.desc)}</p>` : ''}${factsHTML(r)}<div class="tags" style="margin-top:12px">${r.sample ? '<span class="tag sample">Beispiel</span>' : ''}${tagsHTML(r.cats)}</div><div class="by" id="by">${esc(byLine(r))}</div>
     ${S.me && S.canWrite ? `<button type="button" class="btn fav" data-act="fav" data-id="${esc(id)}" aria-pressed="${isFav(r)}" style="margin-top:14px">${isFav(r) ? HEART_FULL + ' Favorit' : HEART + ' Als Favorit merken'}</button>` : ''}</div>
@@ -611,6 +641,7 @@ function renderForm(id){
   const cats = r.cats || [];
   app.innerHTML = `<form class="form wrap" id="form" novalidate>
     <h2>${id ? 'Rezept bearbeiten' : 'Neues Rezept'}</h2>
+    ${r.suggested ? '<p class="note" style="margin:-6px 0 18px;background:var(--basil-soft);color:var(--ink)"><b>Vorschlag von Claude</b> anhand eures Fotos – das ist eine typische Version des Gerichts, nicht euer Originalrezept. Zutaten, Mengen und Schritte bitte prüfen und anpassen.</p>' : ''}
     <div class="field"><span>Foto</span>
       <div class="photo-box"><div class="ph" id="pv">${photoHTML(r, 'Vorschau')}</div>
       <div class="photo-btns ${S.assets ? '' : 'hidden'}">
@@ -635,28 +666,45 @@ function renderForm(id){
   </form>`;
   renumber();
   if (!id) $('#fName').focus();
+  if (r.photoFile) useAsPhoto(r.photoFile);
 }
 async function onPhoto(input){
   const file = input.files?.[0]; input.value = '';
   if (!file) return;
   let src;
   try { src = await loadSource(file); } catch { toast('Dieses Bild kann der Browser nicht lesen. Versuch ein JPG oder PNG.'); return; }
+  F.keepCredit = false;
   await cropAndSet(src);
 }
 async function cropAndSet(src){
   const blob = await openCrop(src);
   if (!blob || !F) return;
-  F.src = src; F.photoBlob = blob; F.photoRemoved = false;
+  F.src = src; F.photoBlob = blob; F.photoRemoved = false; if (F.keepCredit !== true) F.keepCredit = false;
   if (F.previewUrl) URL.revokeObjectURL(F.previewUrl);
   F.previewUrl = URL.createObjectURL(blob);
   $('#pv').innerHTML = `<img src="${F.previewUrl}" alt="Vorschau">`;
   $('#rmPhoto').classList.remove('hidden'); $('#cropPhoto').classList.remove('hidden');
 }
+// Foto übernehmen und mittig auf 4:3 zuschneiden (Ausschnitt lässt sich danach ändern)
+async function useAsPhoto(file){
+  try {
+    const src = await loadSource(file); if (!F) return;
+    const w = src.width, h = src.height, cw = Math.min(w, h * 4 / 3), ch = cw * 3 / 4;
+    const ow = Math.round(Math.min(1600, cw)), out = document.createElement('canvas'); out.width = ow; out.height = Math.round(ow * 3 / 4);
+    out.getContext('2d').drawImage(src, (w - cw) / 2, (h - ch) / 2, cw, ch, 0, 0, out.width, out.height);
+    const blob = await new Promise(res => out.toBlob(res, 'image/jpeg', 0.85)); if (!F || !blob) return;
+    F.src = src; F.photoBlob = blob; F.photoRemoved = false; F.keepCredit = false;
+    if (F.previewUrl) URL.revokeObjectURL(F.previewUrl);
+    F.previewUrl = URL.createObjectURL(blob);
+    $('#pv').innerHTML = `<img src="${F.previewUrl}" alt="Vorschau">`;
+    $('#rmPhoto').classList.remove('hidden'); $('#cropPhoto').classList.remove('hidden');
+  } catch {}
+}
 async function recrop(){
   let src = F.src;
   if (!src) {
     const url = photoSrc(F.r); if (!url) return;
-    try { const res = await fetch(url, { mode: 'cors' }); src = await loadSource(await res.blob()); }
+    try { const res = await fetch(url, { mode: 'cors' }); src = await loadSource(await res.blob()); F.keepCredit = true; }
     catch { toast('Das gespeicherte Foto lässt sich nicht laden – wähle es bitte neu aus.'); return; }
   }
   await cropAndSet(src);
@@ -691,7 +739,8 @@ async function save(){
     }
     const now = Date.now();
     const ref = F.id ? S.db.collection('recipes').doc(F.id) : S.db.collection('recipes').doc();
-    const body = { ...d, photoId, photoUrl, favBy: cur?.favBy || [], sample: false, createdAt: cur?.createdAt || now, createdBy: cur?.createdBy || S.me || null, updatedAt: now, updatedBy: S.me || null };
+    const credit = F.photoRemoved || (F.photoBlob && !F.keepCredit) ? null : (cur?.photoCredit || F.r.photoCredit || null);
+    const body = { ...d, photoId, photoUrl, photoCredit: credit, favBy: cur?.favBy || [], sample: false, createdAt: cur?.createdAt || now, createdBy: cur?.createdBy || S.me || null, updatedAt: now, updatedBy: S.me || null };
     await ref.set(body);
     if (F.oldPhotoId && F.oldPhotoId !== photoId) { try { await S.assets.delete(F.oldPhotoId); } catch {} }
     toast('Gespeichert');
@@ -747,9 +796,9 @@ async function openImport(){
   if (!S.sample) { toast('Import ist hier gerade nicht verfügbar.'); return; }
   let caps = null; try { caps = await S.sample.limits(); } catch {}
   const img = !!caps?.images;
-  sheet(`<h2>Rezept importieren</h2><p>Füge den Rezepttext ein (z. B. von einer Webseite kopiert)${img ? ' oder wähle ein Foto bzw. einen Screenshot des Rezepts' : ''}. Claude erkennt Zutaten und Schritte, du prüfst danach alles im Formular.</p>
+  sheet(`<h2>Rezept importieren</h2><p>Füge den Rezepttext ein (z. B. von einer Webseite kopiert)${img ? ' oder wähle ein Foto – von einer Rezeptseite oder einfach vom fertigen Gericht' : ''}. Claude erkennt Zutaten und Schritte, du prüfst danach alles im Formular.</p>
     <label class="field"><span>Rezepttext${typeof S.sample.importUrl === 'function' ? ' oder Link' : ''}</span><textarea id="impText" style="min-height:160px" placeholder="Zutaten, Mengen, Zubereitung …"></textarea></label>
-    ${img ? `<div class="field"><span>Oder Foto/Screenshot des Rezepts</span><label class="btn" style="position:relative;width:max-content">Bild wählen<input id="impImg" type="file" accept="${esc(caps.images.mediaTypes.join(','))}" style="position:absolute;inset:0;opacity:0"></label><small id="impImgName" style="color:var(--muted)"></small></div>` : ''}
+    ${img ? `<div class="field"><span>Oder Foto: Rezeptseite, Screenshot oder fertiges Gericht</span><label class="btn" style="position:relative;width:max-content">Bild wählen<input id="impImg" type="file" accept="${esc(caps.images.mediaTypes.join(','))}" style="position:absolute;inset:0;opacity:0"></label><small id="impImgName" style="color:var(--muted)"></small></div>` : ''}
     <p id="impStatus" class="by" aria-live="polite"></p>
     <div class="btns"><button class="btn" data-a="cancel">Abbrechen</button><button class="btn primary" data-a="go">Rezept erkennen</button></div>`, ov => {
     let ctl = null;
@@ -762,26 +811,28 @@ async function openImport(){
       if (!text && !file) { $('#impStatus', ov).textContent = 'Bitte Text einfügen oder ein Bild wählen.'; return; }
       const isUrl = !file && /^https?:\/\/\S+$/i.test(text);
       if (isUrl && typeof S.sample.importUrl !== 'function') { $('#impStatus', ov).textContent = 'Import per Link geht nur in der eigenständigen Spoonful-App. Kopiere hier bitte den Rezepttext von der Seite.'; return; }
-      const go = e.target; go.disabled = true; $('#impStatus', ov).innerHTML = '<span class="spin"></span>&nbsp; Claude liest das Rezept … das kann bis zu einer Minute dauern.';
+      const go = e.target; go.disabled = true; $('#impStatus', ov).innerHTML = `<span class="spin"></span>&nbsp; Claude ${file ? 'schaut sich das Foto an' : 'liest das Rezept'} … das kann bis zu einer Minute dauern.`;
       ctl = new AbortController();
-      const prompt = `Extrahiere ein Kochrezept aus dem Material unten${file ? ' (Text und/oder beigefügtes Bild)' : ''}. Antworte NUR mit einem JSON-Objekt dieser Form:
-{"name": string, "description": string (1–2 Sätze, Deutsch), "servings": number, "time": number|null (Gesamtzeit in Minuten), "level": "leicht"|"mittel"|"anspruchsvoll"|null,"ingredients": [{"qty": number|null, "unit": string, "name": string}], "steps": [string], "categories": [string]}
-Regeln: Alles auf Deutsch. qty als Zahl (z. B. 0.5 für ½), ohne Mengenangabe qty null und unit "". unit kurz: g, kg, ml, l, EL, TL, Stück, Prise, Zehe, Bund, Dose, Packung, Tasse. Einheiten wie "cup"/"oz" in metrische umrechnen. steps als einzelne Arbeitsschritte ohne Nummerierung. categories nur aus dieser Liste wählen: ${ALLCATS.join(', ')}. servings 2, falls nicht erkennbar. Ist kein Rezept erkennbar, antworte {"error": "kein Rezept"}.
+      const prompt = `Extrahiere ein Kochrezept aus dem Material unten${file ? ' (Text und/oder beigefügtes Bild)' : ''}.${file ? ' Zeigt das Bild KEINEN Rezepttext, sondern ein fertiges Gericht, dann erkenne das Gericht und schlage ein typisches, gut nachkochbares Rezept dafür vor (realistische Zutaten und Mengen) und setze "suggested": true. Liest du das Rezept dagegen aus Text oder Bildtext ab, setze "suggested": false.' : ''} Antworte NUR mit einem JSON-Objekt dieser Form:
+{"name": string, "suggested": boolean, "description": string (1–2 Sätze, Deutsch), "servings": number, "time": number|null (Gesamtzeit in Minuten), "level": "leicht"|"mittel"|"anspruchsvoll"|null,"ingredients": [{"qty": number|null, "unit": string, "name": string}], "steps": [string], "categories": [string]}
+Regeln: Alles auf Deutsch. qty als Zahl (z. B. 0.5 für ½), ohne Mengenangabe qty null und unit "". unit kurz: g, kg, ml, l, EL, TL, Stück, Prise, Zehe, Bund, Dose, Packung, Tasse. Einheiten wie "cup"/"oz" in metrische umrechnen. steps als einzelne Arbeitsschritte ohne Nummerierung. categories nur aus dieser Liste wählen: ${ALLCATS.join(', ')}. servings 2, falls nicht erkennbar. Ist weder ein Rezept noch ein Gericht erkennbar, antworte {"error": "kein Rezept"}.
 
 Material:
 ${text || '(siehe Bild)'}`;
       try {
         const j = isUrl ? await S.sample.importUrl(text, prompt) : await S.sample.json(prompt, { signal: ctl.signal, ...(file ? { images: [file] } : {}) });
-        if (!j || j.error || !j.name) { $('#impStatus', ov).textContent = 'Darin konnte kein Rezept erkannt werden.'; go.disabled = false; return; }
+        if (!j || j.error || !j.name) { $('#impStatus', ov).textContent = file ? 'Auf dem Foto war weder ein Rezept noch ein Gericht zu erkennen.' : 'Darin konnte kein Rezept erkannt werden.'; go.disabled = false; return; }
+        const suggested = !!file && j.suggested === true;
         S.draft = {
           name: String(j.name).slice(0,120), desc: String(j.description||'').slice(0,600),
           servings: Math.max(1, Math.min(99, Math.round(+j.servings) || 2)),
           time: +j.time > 0 ? Math.round(+j.time) : null, level: LEVELS.includes(j.level) ? j.level : null,
           ingredients: (Array.isArray(j.ingredients) ? j.ingredients : []).map(i => ({ qty: i?.qty == null || i.qty === '' ? null : (typeof i.qty === 'number' ? i.qty : parseQty(i.qty)), unit: String(i?.unit||''), name: String(i?.name||'') })).filter(i => i.name),
           steps: (Array.isArray(j.steps) ? j.steps : []).map(String).filter(Boolean),
-          cats: (Array.isArray(j.categories) ? j.categories : []).filter(c => ALLCATS.includes(c))
+          cats: (Array.isArray(j.categories) ? j.categories : []).filter(c => ALLCATS.includes(c)),
+          suggested, photoFile: suggested ? file : null
         };
-        closeSheet(); toast('Erkannt – bitte prüfen und ein Foto ergänzen');
+        closeSheet(); toast(suggested ? 'Rezeptvorschlag erstellt – bitte prüfen' : 'Erkannt – bitte prüfen und ein Foto ergänzen');
         if (location.hash === '#neu') renderForm(null); else location.hash = 'neu';
       } catch (err) {
         const c = err?.code;
@@ -901,6 +952,7 @@ route();
     if (!snap.metadata.fromCache) { clearTimeout(timer); S.slow = false; }
     resolveNames(S.recipes.flatMap(r => [r.createdBy, r.updatedBy]));
     rerenderLive();
+    if (!snap.metadata.fromCache) addSamplePhotos();
   }, err => { clearTimeout(timer); S.loaded = true; S.slow = true; rerenderLive(); toast(err?.code === 'revoked' ? 'Zugriff wurde beendet.' : 'Verbindung zu den Rezepten verloren – bitte Seite neu öffnen.'); });
 })();
 }
