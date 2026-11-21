@@ -136,14 +136,14 @@ button{cursor:pointer}
 @media(prefers-reduced-motion:reduce){.spin{animation:none}.card{transition:none}}
 .hidden{display:none!important}
 /* Tab Bar */
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:8;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--card);border-top:1px solid var(--line);padding:6px max(2vw,8px) calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 18px rgba(0,0,0,.05)}
-.tabbar a,.tabbar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;border:0;background:none;color:var(--muted);font-size:12px;font-weight:600;text-decoration:none;padding:0}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:8;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));background:var(--card);border-top:1px solid var(--line);padding:6px max(2vw,8px) calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 18px rgba(0,0,0,.05)}
+.tabbar a,.tabbar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;border:0;background:none;color:var(--muted);font-size:11px;font-weight:600;text-decoration:none;padding:0}
 .tabbar svg{width:24px;height:24px}
 .tabbar [aria-current=page]{color:var(--tomato)}
 .tabbar [aria-current=page] svg path{fill:currentColor;fill-opacity:.16}
 .tabbar .add .plus{width:44px;height:44px;border-radius:50%;background:var(--tomato);display:grid;place-items:center;margin-top:-18px;box-shadow:0 6px 16px rgba(46,106,57,.35)}
 .tabbar .add .plus svg{width:22px;height:22px}
-@media(min-width:900px){.tabbar{left:50%;right:auto;transform:translateX(-50%);width:520px;bottom:14px;border:1px solid var(--line);border-radius:22px;padding-bottom:6px}}
+@media(min-width:900px){.tabbar{left:50%;right:auto;transform:translateX(-50%);width:600px;bottom:14px;border:1px solid var(--line);border-radius:22px;padding-bottom:6px}}
 /* Kategorie-Reihen */
 .cat{margin-top:26px}
 .cat-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
@@ -167,6 +167,21 @@ button{cursor:pointer}
 .cm-row input{min-height:46px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);padding:0 12px;font-size:16px;width:100%}
 .cm-row button{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:transparent;color:var(--muted);font-size:18px}
 .cm-row button:disabled{opacity:.35}
+/* Inspiration */
+.insp-box{position:relative;margin-top:8px}
+.insp-box textarea{width:100%;min-height:104px;border-radius:16px;border:1.5px solid var(--line);background:var(--soft);padding:14px 60px 14px 16px;font-size:17px;resize:vertical}
+.mic{position:absolute;right:10px;top:10px;width:44px;height:44px;border-radius:50%;border:0;background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12);display:grid;place-items:center}
+.mic svg{width:22px;height:22px}
+.mic.on{background:var(--heart);color:#fff}
+@media(prefers-reduced-motion:no-preference){.mic.on{animation:pulse 1.2s ease-in-out infinite}@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(211,58,32,.18)}}}
+.ideas-q{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}
+.idea-card{display:flex;flex-direction:column;width:100%;text-align:left;padding:0;font:inherit;color:inherit;cursor:pointer}
+.idea-card p{margin:6px 0 0;font-size:14px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.saved-badge{position:absolute;top:8px;left:8px;background:var(--tomato);color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px}
+.idea-photo{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block;background:var(--soft)}
+.idea-sheet h3{font-size:20px;margin:14px 0 8px}
+.idea-sheet ul,.idea-sheet ol{padding-left:20px;margin:0}
+.idea-sheet li{padding:3px 0}
 /* Kategorie-Kacheln */
 .secs-h{font-family:Figtree,sans-serif;font-size:14px;color:var(--muted);font-weight:600;margin:22px 0 10px}
 .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:12px}
@@ -209,6 +224,7 @@ button{cursor:pointer}
  <a href="#start" data-tab="start"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>Start</span></a>
  <a href="#suche" data-tab="suche"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Suche</span></a>
  <button type="button" id="tabAdd" class="add" aria-label="Rezept hinzufügen"><span class="plus"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg></span><span>Neu</span></button>
+ <a href="#inspiration" data-tab="inspiration"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg><span>Inspiration</span></a>
  <a href="#favoriten" data-tab="favoriten"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>Favoriten</span></a>
 </nav>
 <datalist id="units"><option value="g"><option value="kg"><option value="ml"><option value="l"><option value="EL"><option value="TL"><option value="Stück"><option value="Prise"><option value="Zehe"><option value="Bund"><option value="Dose"><option value="Packung"><option value="Tasse"><option value="Becher"><option value="Msp."><option value="Scheibe"></datalist>
@@ -238,6 +254,7 @@ const SAMPLE_PHOTOS = {
   'sample-15': ['1560684352-8497838a2229', 'Do mee'],
   'sample-16': ['1781941622552-ee49f32acdd3', 'jackson kondili']
 };
+const creditText = c => String(c).includes('/') ? String(c) : `${c} / Unsplash`;
 const unsplashUrl = id => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=1200&h=900&q=75`;
 const patchedSamples = new Set();
 async function addSamplePhotos(){
@@ -555,6 +572,112 @@ function openAdd(){
   });
 }
 
+// ---------- Inspiration ----------
+const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+const MIC = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+const INSPO_EXAMPLES = ['Gesund und schnell', 'Irgendwas mit Ofenkartoffeln', 'Vegetarisch für Gäste', 'Warm und gemütlich', 'Resteverwertung aus dem Kühlschrank'];
+S.inspo = { wish: '', ideas: [], loading: false, error: '', saved: {} };
+let rec = null, inspoCtl = null;
+function renderInspo(){
+  setTab('inspiration');
+  const I = S.inspo, ok = typeof S.sample?.inspire === 'function';
+  app.innerHTML = `<div class="wrap"><div class="page-h"><h2>Inspiration</h2></div>
+    <p class="by" style="margin:0 0 6px">Sag oder schreib, worauf ihr Lust habt – Claude schlägt passende Rezepte mit Foto vor. Gespeichert wird nur, was ihr auswählt.</p>
+    ${ok ? '' : '<p class="note">Inspiration gibt es nur in eurer Spoonful-App mit eingerichteter Import-Funktion.</p>'}
+    <form id="inspoForm" novalidate>
+      <div class="insp-box"><textarea id="wish" maxlength="400" placeholder="z. B. „Ich hätte Lust auf etwas Gesundes, Schnelles“" aria-label="Worauf habt ihr Lust?">${esc(I.wish)}</textarea>
+      ${SpeechRec ? `<button type="button" class="mic ${rec ? 'on' : ''}" id="micBtn" aria-pressed="${!!rec}" aria-label="${rec ? 'Spracheingabe beenden' : 'Spracheingabe starten'}">${MIC}</button>` : ''}</div>
+      ${SpeechRec ? '' : '<p class="by" style="margin:6px 0 0">Tipp: Zum Sprechen das Mikrofon deiner Handy-Tastatur nutzen.</p>'}
+      <div class="ideas-q">${INSPO_EXAMPLES.map(x => `<button type="button" class="chip" data-wish="${esc(x)}">${esc(x)}</button>`).join('')}</div>
+      <div class="actions" style="margin:14px 0 6px"><button class="btn primary" type="submit" ${ok && !I.loading ? '' : 'disabled'}>${I.loading ? '<span class="spin"></span>&nbsp;Claude überlegt …' : 'Vorschläge holen'}</button>${I.loading ? '<button type="button" class="btn" data-act="inspo-stop">Abbrechen</button>' : ''}</div>
+    </form>
+    ${I.loading ? '<p class="by">Das dauert meist 20–40 Sekunden, weil zu jedem Vorschlag noch ein passendes Foto gesucht wird.</p>' : ''}
+    ${I.error ? `<p class="note" style="color:var(--danger)">${esc(I.error)}</p>` : ''}
+    ${I.ideas.length ? `<div class="meta-line"><span>${I.ideas.length} Vorschläge für „${esc(I.lastWish || '')}“</span><button class="linkish" data-act="inspo-more" ${I.loading ? 'disabled' : ''}>Andere Vorschläge</button></div>
+      <div class="grid">${I.ideas.map(ideaCard).join('')}</div>` : ''}
+  </div>`;
+}
+function ideaCard(r, i){
+  const saved = S.inspo.saved[i];
+  return `<div class="cardw"><button type="button" class="card idea-card" data-idea="${i}"><div class="ph">${r.photoUrl ? `<img src="${esc(r.photoUrl)}" alt="${esc(r.name)}" loading="lazy">` : PLATE}</div><div class="card-b"><h3>${esc(r.name)}</h3>${factsHTML(r)}<p>${esc(r.desc)}</p></div></button>${saved ? '<span class="saved-badge">Gespeichert</span>' : ''}</div>`;
+}
+function inspoPrompt(wish, avoid){
+  const names = S.recipes.map(r => r.name).slice(0, 80).join('; ');
+  return `Du bist ein Koch-Assistent für ein Paar in Deutschland. Ihr Wunsch: "${wish}".
+Schlage 4 abwechslungsreiche, realistische und gut nachkochbare Rezepte vor, die gut zu diesem Wunsch passen. Nicht vorschlagen (schon im Kochbuch${avoid.length ? ' oder eben schon vorgeschlagen' : ''}): ${[names, ...avoid].filter(Boolean).join('; ') || '–'}.
+Antworte NUR mit JSON in dieser Form:
+{"recipes":[{"name":string,"description":string (1–2 Sätze: was es ist und warum es zum Wunsch passt),"servings":2,"time":number (Gesamtzeit in Minuten),"level":"leicht"|"mittel"|"anspruchsvoll","ingredients":[{"qty":number|null,"unit":string,"name":string}],"steps":[string],"categories":[string],"photoQuery":string}]}
+Regeln: Alles auf Deutsch außer photoQuery. Mengen für 2 Portionen, metrische Einheiten (g, kg, ml, l, EL, TL, Stück, Prise, Zehe, Bund, Dose, Packung). Ohne Mengenangabe qty null und unit "". Schritte kurz, ohne Nummerierung. categories nur aus: ${ALLCATS.join(', ')}. photoQuery: 2–4 englische Wörter, die das fertige Gericht für eine Fotosuche beschreiben (z. B. "baked potato wedges").`;
+}
+async function getIdeas(more){
+  const I = S.inspo, wish = (more ? I.lastWish : I.wish).trim();
+  if (!wish) { I.error = 'Schreib oder sag kurz, worauf ihr Lust habt.'; renderInspo(); $('#wish')?.focus(); return; }
+  if (rec) { try { rec.stop(); } catch {} }
+  I.loading = true; I.error = ''; renderInspo();
+  inspoCtl = new AbortController(); const ctl = inspoCtl;
+  try {
+    const avoid = more ? I.ideas.map(r => r.name) : [];
+    const list = await S.sample.inspire(inspoPrompt(wish, avoid));
+    if (ctl.signal.aborted) return;
+    const ideas = (Array.isArray(list) ? list : []).filter(r => r && r.name).slice(0, 6).map(j => ({
+      name: String(j.name).slice(0, 120), desc: String(j.description || '').slice(0, 600),
+      servings: Math.max(1, Math.min(99, Math.round(+j.servings) || 2)),
+      time: +j.time > 0 ? Math.round(+j.time) : null, level: LEVELS.includes(j.level) ? j.level : null,
+      ingredients: (Array.isArray(j.ingredients) ? j.ingredients : []).map(i => ({ qty: i?.qty == null || i.qty === '' ? null : (typeof i.qty === 'number' ? i.qty : parseQty(i.qty)), unit: String(i?.unit || ''), name: String(i?.name || '') })).filter(i => i.name),
+      steps: (Array.isArray(j.steps) ? j.steps : []).map(String).filter(Boolean),
+      cats: (Array.isArray(j.categories) ? j.categories : []).filter(c => ALLCATS.includes(c)),
+      photoUrl: j.photo?.url || null, photoCredit: j.photo?.credit || null
+    }));
+    if (!ideas.length) throw { code: 'empty' };
+    I.ideas = ideas; I.saved = {}; I.lastWish = wish;
+  } catch (e) {
+    if (ctl.signal.aborted) return;
+    const c = e?.code;
+    I.error = c === 'sampling_disabled' ? 'Für Vorschläge fehlt der Claude-API-Schlüssel in Supabase.' : c === 'empty' || c === 'invalid_json' ? 'Claude hat keine brauchbaren Vorschläge geliefert – bitte nochmal versuchen.' : /inspire|unbekannt|Kein Inhalt/i.test(e?.message || '') ? 'Die Import-Funktion bei Supabase ist noch nicht auf dem neuesten Stand (siehe Anleitung).' : 'Das hat nicht geklappt – bitte gleich nochmal versuchen.';
+  }
+  I.loading = false; if (location.hash === '#inspiration') { renderInspo(); if (I.ideas.length && !I.error) $('.meta-line')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+}
+function ideaBody(r){
+  return { name: r.name, desc: r.desc, servings: r.servings, time: r.time, level: r.level, ingredients: r.ingredients, steps: r.steps, cats: r.cats };
+}
+function openIdea(i){
+  const r = S.inspo.ideas[i]; if (!r) return;
+  const saved = S.inspo.saved[i];
+  sheet(`<div class="idea-sheet">${r.photoUrl ? `<img class="idea-photo" src="${esc(r.photoUrl)}" alt="${esc(r.name)}">${r.photoCredit ? `<p class="by" style="margin:4px 0 0">Foto: ${esc(creditText(r.photoCredit))}</p>` : ''}` : ''}
+    <h2 style="margin-top:12px">${esc(r.name)}</h2><p>${esc(r.desc)}</p>${factsHTML(r)}<div class="tags" style="margin-top:8px">${tagsHTML(r.cats)}</div>
+    <h3>Zutaten für ${r.servings} ${r.servings === 1 ? 'Portion' : 'Portionen'}</h3><ul>${r.ingredients.map(x => { const q = showQty(x.qty, x.unit); return `<li>${esc([q.text, q.unit, x.name].filter(Boolean).join(' '))}</li>`; }).join('')}</ul>
+    <h3>Zubereitung</h3><ol>${r.steps.map(x => `<li>${esc(x)}</li>`).join('')}</ol>
+    <p class="by" style="margin-top:12px">Vorschlag von Claude – noch nicht in eurem Kochbuch.</p></div>
+    <div class="btns"><button class="btn" data-i="close">Schließen</button>${S.canWrite ? `<button class="btn" data-i="edit">Anpassen &amp; speichern</button><button class="btn primary" data-i="save" ${saved ? 'disabled' : ''}>${saved ? 'Gespeichert' : 'Speichern'}</button>` : ''}</div>`, ov => {
+    ov.addEventListener('click', async e => {
+      const a = e.target.closest('[data-i]')?.dataset.i; if (!a) return;
+      if (a === 'close') { closeSheet(); return; }
+      if (a === 'edit') { closeSheet(); S.draft = { ...ideaBody(r), photoUrl: r.photoUrl, photoCredit: r.photoCredit, suggested: true }; location.hash = 'neu'; return; }
+      if (a === 'save') {
+        const b = e.target.closest('[data-i]'); b.disabled = true; b.innerHTML = '<span class="spin"></span>&nbsp;Speichern …';
+        try {
+          const now = Date.now(), ref = S.db.collection('recipes').doc();
+          await ref.set({ ...ideaBody(r), photoId: null, photoUrl: r.photoUrl, photoCredit: r.photoCredit, favBy: [], sample: false, createdAt: now, createdBy: S.me || null, updatedAt: now, updatedBy: S.me || null });
+          S.inspo.saved[i] = ref.id; closeSheet(); toast('Im Kochbuch gespeichert'); renderInspo();
+        } catch { b.disabled = false; b.textContent = 'Speichern'; toast('Speichern hat nicht geklappt.'); }
+      }
+    });
+  });
+}
+function toggleMic(){
+  if (rec) { try { rec.stop(); } catch {} return; }
+  const ta = $('#wish'); if (!ta || !SpeechRec) return;
+  const base = ta.value.trim();
+  try {
+    rec = new SpeechRec(); rec.lang = 'de-DE'; rec.interimResults = true; rec.continuous = false;
+    rec.onresult = e => { let t = ''; for (const r of e.results) t += r[0].transcript; S.inspo.wish = (base ? base + ' ' : '') + t; const w = $('#wish'); if (w) w.value = S.inspo.wish; };
+    rec.onerror = e => toast(e.error === 'not-allowed' || e.error === 'service-not-allowed' ? 'Mikrofon wurde nicht erlaubt – bitte in den Einstellungen freigeben.' : e.error === 'no-speech' ? 'Nichts gehört – bitte nochmal.' : 'Spracheingabe hat nicht geklappt.');
+    rec.onend = () => { rec = null; const m = $('#micBtn'); if (m) { m.classList.remove('on'); m.setAttribute('aria-pressed', 'false'); m.setAttribute('aria-label', 'Spracheingabe starten'); } };
+    rec.start();
+    const m = $('#micBtn'); m.classList.add('on'); m.setAttribute('aria-pressed', 'true'); m.setAttribute('aria-label', 'Spracheingabe beenden');
+  } catch { rec = null; toast('Spracheingabe ist hier nicht verfügbar.'); }
+}
+
 // ---------- Kategorien verwalten ----------
 let CM = null;
 function renderCats(){
@@ -603,7 +726,7 @@ function renderDetail(id){
   const base = r.servings || 1, p = S.portions[id] || base, f = p / base;
   resolveNames([r.createdBy, r.updatedBy]).then(() => { const b = $('#by'); if (b) b.textContent = byLine(r); });
   app.innerHTML = `
-  <div class="hero">${photoHTML(r)}<a class="btn back" href="#start">← Übersicht</a>${r.photoCredit && photoSrc(r) ? `<span class="credit">Foto: ${esc(r.photoCredit)} / Unsplash</span>` : ''}</div>
+  <div class="hero">${photoHTML(r)}<a class="btn back" href="#start">← Übersicht</a>${r.photoCredit && photoSrc(r) ? `<span class="credit">Foto: ${esc(creditText(r.photoCredit))}</span>` : ''}</div>
   <div class="wrap">
     <div class="d-head"><h2>${esc(r.name)}</h2>${r.desc ? `<p>${esc(r.desc)}</p>` : ''}${factsHTML(r)}<div class="tags" style="margin-top:12px">${r.sample ? '<span class="tag sample">Beispiel</span>' : ''}${tagsHTML(r.cats)}</div><div class="by" id="by">${esc(byLine(r))}</div>
     ${S.me && S.canWrite ? `<button type="button" class="btn fav" data-act="fav" data-id="${esc(id)}" aria-pressed="${isFav(r)}" style="margin-top:14px">${isFav(r) ? HEART_FULL + ' Favorit' : HEART + ' Als Favorit merken'}</button>` : ''}</div>
@@ -871,6 +994,7 @@ function route(){
   else if (h === 'neu') renderForm(null);
   else if (h === 'suche') renderSearch();
   else if (h === 'favoriten') renderFavs();
+  else if (h === 'inspiration') renderInspo();
   else if (h === 'kategorien') renderCats();
   else if (h.startsWith('k-')) renderCat(h.slice(2));
   else renderStart();
@@ -879,7 +1003,7 @@ function route(){
 }
 function rerenderLive(){
   const h = location.hash.slice(1);
-  if (h.startsWith('e-') || h === 'neu' || h === 'kategorien') return; // Formulare nicht überschreiben
+  if (h.startsWith('e-') || h === 'neu' || h === 'kategorien' || h === 'inspiration') return; // Formulare nicht überschreiben
   if (h.startsWith('r-')) {
     const id = h.slice(2);
     if (!S.byId[id] && S.loaded) { toast('Dieses Rezept wurde gelöscht.'); location.hash = 'start'; return; }
@@ -890,12 +1014,16 @@ function rerenderLive(){
 // ---------- Events ----------
 app.addEventListener('input', e => {
   if (e.target.id === 'q') { S.q = e.target.value; renderSearch(); }
+  if (e.target.id === 'wish') S.inspo.wish = e.target.value;
   const cm = e.target.closest('[data-cm]'); if (cm && CM) CM[cm.dataset.cm][+cm.dataset.i].name = cm.value;
 });
 app.addEventListener('change', e => { if (e.target.matches('[data-photo]')) onPhoto(e.target); });
-app.addEventListener('submit', e => { e.preventDefault(); if (e.target.id === 'cmform') saveCats(); else save(); });
+app.addEventListener('submit', e => { e.preventDefault(); if (e.target.id === 'cmform') saveCats(); else if (e.target.id === 'inspoForm') getIdeas(false); else save(); });
 app.addEventListener('click', e => {
   const t = e.target;
+  const idea = t.closest('[data-idea]'); if (idea) { openIdea(+idea.dataset.idea); return; }
+  const wishChip = t.closest('[data-wish]'); if (wishChip) { S.inspo.wish = wishChip.dataset.wish; const w = $('#wish'); if (w) w.value = S.inspo.wish; return; }
+  if (t.closest('#micBtn')) { toggleMic(); return; }
   const rail = t.closest('[data-rail]');
   if (rail) { const r = rail.parentElement.querySelector('.rail'); r.scrollBy({ left: +rail.dataset.rail * r.clientWidth * 0.85, behavior: 'smooth' }); return; }
   const cmMove = t.closest('[data-cmmove]');
@@ -932,6 +1060,8 @@ app.addEventListener('click', e => {
   if (act === 'delete') { del(t.closest('[data-act]').dataset.id); return; }
   if (act === 'fav') { toggleFav(t.closest('[data-act]').dataset.id); return; }
   if (act === 'export') { openExport(); return; }
+  if (act === 'inspo-more') { getIdeas(true); return; }
+  if (act === 'inspo-stop') { inspoCtl?.abort(); S.inspo.loading = false; renderInspo(); return; }
   const add = t.closest('[data-add]')?.dataset.add;
   if (add === 'ing') { $('#ings').insertAdjacentHTML('beforeend', ingRow()); $('#ings .ing:last-child .iq').focus(); return; }
   if (add === 'step') { $('#steps').insertAdjacentHTML('beforeend', stepRow()); renumber(); $('#steps .step:last-child textarea').focus(); return; }
