@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Spoonful</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Figtree:wght@400;500;600;700&family=Outfit:wght@700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: warm, appetitlich, aufgeräumt – ein Küchenhelfer, kein Magazin.
+   IDEA: eine Rezeptkartei – Karten mit Foto, Reiter für Kategorien.
+   PICTURE: das Kartenraster selbst; Detail mit großem Tellerfoto.
+   COLOUR and TYPE: Tomatenrot als Kopfband, Basilikum für Ernährung, Safran als Akzent; Fraunces + Figtree.
+   LAYOUT: Kopfband, Filterreiter, Raster; Detail zweispaltig ab 820px, darunter gestapelt. */
+:root{color-scheme:light dark;
+ --bg:light-dark(#ffffff,#16110e);--ink:light-dark(#1f1915,#f5efe8);--muted:light-dark(#6d635b,#b5aaa0);
+ --line:light-dark(#ebe4dc,#2f2722);--card:light-dark(#ffffff,#201914);--soft:light-dark(#f7f3ef,#241c17);
+ --tomato:light-dark(#2e6a39,#2c6536);--tomato-ink:#fff;--basil:light-dark(#2e6a39,#86c792);--basil-soft:light-dark(#e6f1e7,#1d2c20);--heart:light-dark(#d33a20,#ff7a66);
+ --saffron:#f3b300;--danger:light-dark(#b3261e,#ff8a80)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Figtree,system-ui,sans-serif;overflow-x:clip;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;line-height:1.08;text-wrap:balance;margin:0}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--saffron);outline-offset:2px}
+.top{background:var(--tomato);color:var(--tomato-ink);padding:calc(18px + env(safe-area-inset-top)) 0 18px}
+.top-in{max-width:1180px;margin:auto;padding:0 max(5vw,16px);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;margin-right:auto}
+.brand h1{font-family:Outfit,Figtree,sans-serif;font-size:clamp(34px,6vw,46px);font-weight:700;letter-spacing:-.04em;display:flex;align-items:baseline;line-height:1}
+.brand h1 svg{height:.74em;width:.62em;flex:none;margin:0 .05em -.2em .02em}
+.quick .chip[aria-pressed=true]{background:var(--saffron);border-color:var(--saffron);color:#1f1915}
+.chip svg,.fav svg{width:16px;height:16px;vertical-align:-3px}
+.facts{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;font-size:13px;color:var(--muted)}
+.facts b{font-weight:600;color:var(--ink)}
+.card{position:relative}
+.card .heart{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;color:var(--heart)}
+.card .heart svg{width:16px;height:16px}
+.fav[aria-pressed=true]{color:var(--heart);border-color:var(--heart)}
+.fav[aria-pressed=true] svg path{fill:currentColor}
+.field select{min-height:48px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);padding:0 12px;font-size:16px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tag.sample{background:var(--saffron);color:#1f1915}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);font-weight:600;font-size:15px;text-decoration:none;color:var(--ink)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.ghost-light{background:transparent;border-color:rgba(255,255,255,.6);color:#fff}
+.btn.danger{color:var(--danger);border-color:currentColor;background:transparent}
+.btn:disabled{opacity:.5;cursor:default}
+.wrap{max-width:1180px;margin:auto;padding:0 max(5vw,16px)}
+.search{margin-top:20px;display:flex;gap:10px}
+.search input{flex:1;min-height:48px;border-radius:14px;border:1.5px solid var(--line);background:var(--soft);padding:0 16px;font-size:16px}
+.filters{margin-top:14px;display:grid;gap:8px}
+.chiprow{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chiprow::-webkit-scrollbar{display:none}
+.chiprow .lbl{flex:none;align-self:center;font-size:13px;color:var(--muted);width:76px}
+.chip{flex:none;min-height:38px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);background:transparent;font-size:14px;font-weight:500}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip.diet[aria-pressed=true]{background:var(--basil);border-color:var(--basil);color:light-dark(#fff,#0f1a11)}
+.meta-line{display:flex;justify-content:space-between;align-items:center;margin:18px 0 10px;color:var(--muted);font-size:14px;gap:10px}
+.linkish{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:14px;min-height:44px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:16px}
+@media(max-width:600px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
+.card{display:flex;flex-direction:column;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:transform .15s}
+.card:hover{transform:translateY(-2px)}
+.ph{aspect-ratio:4/3;background:var(--soft);display:grid;place-items:center;overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph svg{width:44%;opacity:.55}
+.card-b{padding:10px 12px 14px}
+.card h3{font-size:17px;font-weight:600;font-family:Figtree,sans-serif;line-height:1.25}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.tag{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.tag.diet{background:var(--basil-soft);color:var(--basil)}
+.empty{border:2px dashed var(--line);border-radius:22px;padding:40px 24px;text-align:center;margin-top:12px}
+.empty h2{font-size:28px;margin-bottom:8px}
+.empty p{color:var(--muted);margin:0 auto 18px;max-width:46ch}
+.fab{position:fixed;right:max(5vw,16px);bottom:calc(20px + env(safe-area-inset-bottom));min-height:56px;padding:0 24px;border-radius:999px;border:0;background:var(--tomato);color:#fff;font-weight:700;font-size:16px;box-shadow:0 8px 24px rgba(0,0,0,.22);z-index:5}
+.note{background:var(--soft);border-radius:14px;padding:12px 16px;font-size:14px;color:var(--muted);margin-top:16px}
+/* Detail */
+.hero{position:relative;background:var(--soft);aspect-ratio:4/3;width:min(100%,calc(64vh * 4 / 3));margin:0 auto;overflow:hidden;display:grid;place-items:center}
+@media(min-width:820px){.hero{margin-top:20px;border-radius:22px}}
+.hero img{width:100%;height:100%;object-fit:cover}
+.hero svg{width:120px;opacity:.5}
+.back{position:absolute;left:max(5vw,16px);top:calc(14px + env(safe-area-inset-top));background:rgba(0,0,0,.55);color:#fff;border:0}
+.d-head{padding-top:22px}
+.d-head h2{font-size:clamp(32px,6vw,48px);font-weight:800}
+.d-head p{color:var(--muted);max-width:65ch;margin:10px 0 0;font-size:17px}
+.by{font-size:13px;color:var(--muted);margin-top:10px}
+.cols{display:grid;gap:28px;margin-top:28px}
+@media(min-width:820px){.cols{grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px}}
+.panel h3{font-size:24px;margin-bottom:14px}
+.stepper{display:flex;align-items:center;gap:0;border:1.5px solid var(--line);border-radius:999px;width:max-content;margin-bottom:16px;background:var(--soft)}
+.stepper button{width:48px;height:48px;border:0;background:transparent;font-size:24px;font-weight:600;border-radius:999px}
+.stepper output{min-width:118px;text-align:center;font-weight:700;font-size:17px}
+.ings{list-style:none;margin:0;padding:0}
+.ings li{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ings .q{font-weight:700;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.ings .q.changed{color:var(--tomato)}
+.steps{margin:0;padding:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:17px}
+.steps li::before{content:counter(s);font-family:Fraunces,serif;font-weight:800;font-size:26px;color:var(--tomato);line-height:1}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:32px 0}
+/* Form */
+.form{max-width:760px;margin:auto;padding-top:22px}
+.form h2{font-size:clamp(28px,5vw,40px);margin-bottom:18px}
+.field{display:grid;gap:6px;margin-bottom:18px}
+.field>span{font-weight:600;font-size:15px}
+.field input,.field textarea,.row input{min-height:48px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);padding:10px 14px;font-size:16px;width:100%}
+.field textarea{min-height:84px;resize:vertical}
+.photo-box{border:2px dashed var(--line);border-radius:18px;overflow:hidden}
+.photo-box .ph{aspect-ratio:4/3;max-width:480px}
+.photo-btns{display:flex;gap:8px;flex-wrap:wrap;padding:12px}
+.photo-btns label{position:relative}
+.photo-btns input{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer}
+.catgrid{display:grid;gap:10px}
+.catgrid .chiprow{flex-wrap:wrap;overflow:visible}
+.row{display:grid;grid-template-columns:5.5em 6.5em minmax(0,1fr) 44px;gap:8px;margin-bottom:8px;align-items:center}
+.row.step{grid-template-columns:28px minmax(0,1fr) 44px;align-items:start}
+.row.step textarea{min-height:64px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);padding:10px 14px;font-size:16px;width:100%;resize:vertical}
+.row .num{font-family:Fraunces,serif;font-weight:800;color:var(--tomato);font-size:20px;padding-top:10px;text-align:center}
+.x{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:transparent;font-size:20px;color:var(--muted)}
+@media(max-width:520px){.row{grid-template-columns:4.6em 5.4em minmax(0,1fr) 40px;gap:6px}.x{width:40px}.row input{padding:10px 8px}}
+.sticky-save{position:sticky;bottom:0;background:var(--bg);padding:14px 0 calc(14px + env(safe-area-inset-bottom));display:flex;gap:10px;border-top:1px solid var(--line);margin-top:10px;z-index:4}
+.sticky-save .btn.primary{flex:1}
+/* Overlay */
+.ov{position:fixed;inset:0;background:rgba(10,6,4,.55);display:grid;place-items:end center;z-index:20;padding:16px}
+@media(min-width:640px){.ov{place-items:center}}
+.sheet{background:var(--bg);border-radius:22px;padding:22px;width:min(560px,100%);max-height:88vh;overflow:auto}
+.sheet h2{font-size:26px;margin-bottom:8px}
+.sheet p{color:var(--muted);margin:0 0 14px}
+.sheet .btns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:600;z-index:30;max-width:90vw}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:r .8s linear infinite}
+@keyframes r{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spin{animation:none}.card{transition:none}}
+.hidden{display:none!important}
+/* Kategorie-Kacheln */
+.secs-h{font-family:Figtree,sans-serif;font-size:14px;color:var(--muted);font-weight:600;margin:22px 0 10px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:12px}
+@media(max-width:600px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}}
+.sec.open{grid-column:1/-1}
+.tile{position:relative;display:block;width:100%;aspect-ratio:4/3;border:0;border-radius:18px;overflow:hidden;padding:0;text-align:left;color:#fff;background:var(--tc,#2e6a39)}
+.sec.open .tile{aspect-ratio:auto;height:96px}
+.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tile .scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.62),rgba(0,0,0,.05) 65%)}
+.tile .plate{position:absolute;right:-14px;top:-14px;width:96px;opacity:.18;color:#fff}
+.tile .tl{position:absolute;left:14px;right:44px;bottom:12px}
+.tile b{display:block;font-family:Fraunces,Georgia,serif;font-size:22px;font-weight:800;line-height:1.1}
+.tile small{font-size:13px;opacity:.9}
+.tile .chev{position:absolute;right:12px;bottom:14px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.22);display:grid;place-items:center;transition:transform .2s}
+.sec.open .tile .chev{transform:rotate(180deg)}
+.tile:disabled{opacity:.45;cursor:default}
+.sec-body{padding:12px 0 8px}
+/* Filter-Leiste */
+.fbtn{position:relative;flex:none}
+.fbtn .n{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:11px;background:var(--saffron);color:#1f1915;font-size:12px;font-weight:700;padding:0 6px}
+.active-f{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.active-f .chip{background:var(--ink);color:var(--bg);border-color:var(--ink);min-height:34px;font-size:13px}
+/* Bildausschnitt */
+.crop{position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;border-radius:14px;background:#111;touch-action:none;cursor:grab;user-select:none}
+.crop img{position:absolute;left:0;top:0;transform-origin:0 0;max-width:none;pointer-events:none}
+.crop .grid3{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to right,transparent 33.2%,rgba(255,255,255,.45) 33.3%,transparent 33.5%,transparent 66.5%,rgba(255,255,255,.45) 66.6%,transparent 66.8%),linear-gradient(to bottom,transparent 33.2%,rgba(255,255,255,.45) 33.3%,transparent 33.5%,transparent 66.5%,rgba(255,255,255,.45) 66.6%,transparent 66.8%)}
+.zoom{display:flex;align-items:center;gap:10px;margin-top:14px}
+.zoom input{flex:1;accent-color:var(--tomato);height:44px}
+@media(max-width:600px){.top .btn{min-height:40px;padding:0 12px;font-size:14px}.top-in{gap:8px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+ <a class="brand" href="#start" aria-label="Spoonful – Startseite">
+  <h1>sp<svg viewBox="0 30 60 70" aria-hidden="true"><ellipse cx="29" cy="57" rx="22" ry="24" fill="#fff"/><ellipse cx="24" cy="50" rx="7" ry="9" fill="#2e6a39" fill-opacity=".18"/><path d="M40,76 L56,99" stroke="#fff" stroke-width="9" stroke-linecap="round"/></svg>onful</h1>
+ </a>
+ <button class="btn ghost-light hidden" id="importBtn" type="button">Importieren</button>
+</div></header>
+<main id="app" aria-live="polite"></main>
+<button class="fab hidden" id="fab" type="button">+ Neues Rezept</button>
+<datalist id="units"><option value="g"><option value="kg"><option value="ml"><option value="l"><option value="EL"><option value="TL"><option value="Stück"><option value="Prise"><option value="Zehe"><option value="Bund"><option value="Dose"><option value="Packung"><option value="Tasse"><option value="Becher"><option value="Msp."><option value="Scheibe"></datalist>
+<div id="layer"></div>
+<script>
+{
+// ---------- Konstanten ----------
+const MEAL = ['Frühstück','Vorspeisen','Mittagessen','Abendessen','Snack','Dessert','Backen'];
+const DIET = ['vegan','vegetarisch','Fleisch','Fisch','Suppen'];
+const ALLCATS = [...MEAL, ...DIET];
+const HALF_UNITS = ['','stück','stk','stk.','zehe','zehen','bund','dose','dosen','packung','pck','pck.','scheibe','scheiben','ei','eier','blatt','zweig','zweige','handvoll','becher','glas','gläser','prise','prisen'];
+const QUARTER_UNITS = ['el','tl','tasse','tassen','msp','msp.'];
+const LEVELS = ['leicht','mittel','anspruchsvoll'];
+const QUICK = [['fav','Favoriten'],['fast','bis 30 Min'],['easy','leicht']];
+const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
+const HEART_FULL = HEART.replace('fill="none"', 'fill="currentColor"');
+const PLATE ='<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="32" cy="32" r="16" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10v14M2 10v10a4 4 0 0 0 8 0V10M58 10c-4 2-5 8-5 14h5v30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>';
+
+// ---------- Zustand ----------
+const S = { db:null, user:null, assets:null, sample:null, me:null, canWrite:true,
+  recipes:[], byId:{}, loaded:false, slow:false, names:{},
+  q:'', meal:[], diet:[], quick:[], draft:null, portions:{}, open:new Set(), shut:new Set() };
+try { S.open = new Set(JSON.parse(localStorage.getItem('rw-open')||'[]')); } catch {}
+try { const f = JSON.parse(localStorage.getItem('rw-filter')||'{}'); S.meal=f.meal||[]; S.diet=f.diet||[]; S.quick=f.quick||[]; } catch {}
+
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const app = $('#app'), layer = $('#layer');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+// ---------- Mengen ----------
+function parseQty(str){
+  if (str == null) return null;
+  let s = String(str).trim().replace(/½/g,' 1/2').replace(/¼/g,' 1/4').replace(/¾/g,' 3/4').replace(/⅓/g,' 1/3').replace(/⅔/g,' 2/3').replace(',', '.').trim();
+  if (!s) return null;
+  const m = s.match(/^(\d+(?:\.\d+)?)?\s*(?:(\d+)\s*\/\s*(\d+))?$/);
+  if (!m || (!m[1] && !m[2])) { const n = parseFloat(s); return isFinite(n) ? n : null; }
+  let v = m[1] ? parseFloat(m[1]) : 0;
+  if (m[2] && +m[3]) v += (+m[2]) / (+m[3]);
+  return v;
+}
+function frac(v){
+  const w = Math.floor(v + 1e-9), r = Math.round((v - w) * 4) / 4;
+  const sym = {0.25:'¼',0.5:'½',0.75:'¾'}[r] || '';
+  if (r === 1) return String(w + 1);
+  return w ? (sym ? w + ' ' + sym : String(w)) : (sym || '0');
+}
+function fmtQty(q, unit){
+  if (q == null || !isFinite(q)) return '';
+  const u = String(unit||'').trim().toLowerCase();
+  if (QUARTER_UNITS.includes(u)) { let v = Math.round(q*4)/4; if (v === 0) v = 0.25; return frac(v); }
+  if (HALF_UNITS.includes(u)) { let v = Math.round(q*2)/2; if (v === 0) v = q < 0.25 ? 0.25 : 0.5; return frac(v); }
+  let v;
+  if (q < 10) v = Math.round(q*10)/10; else if (q < 100) v = Math.round(q); else if (q < 1000) v = Math.round(q/5)*5; else v = Math.round(q/10)*10;
+  return v.toLocaleString('de-DE');
+}
+// F-18: große/kleine Mengen in passende Einheit umrechnen
+function normUnit(q, unit){
+  if (q == null || !isFinite(q)) return { q, unit };
+  const u = String(unit||'').trim(), l = u.toLowerCase();
+  if (l === 'g' && q >= 1000) return { q: q/1000, unit: 'kg' };
+  if (l === 'kg' && q < 1) return { q: q*1000, unit: 'g' };
+  if (l === 'ml' && q >= 1000) return { q: q/1000, unit: 'l' };
+  if (l === 'l' && q < 1) return { q: q*1000, unit: 'ml' };
+  if (l === 'cl') return normUnit(q*10, 'ml');
+  return { q, unit: u };
+}
+function showQty(q, unit){ const n = normUnit(q, unit); return { text: fmtQty(n.q, n.unit), unit: n.unit }; }
+function inputQty(q){ return q == null ? '' : String(Math.round(q*1000)/1000).replace('.', ','); }
+
+// ---------- Helfer ----------
+function toast(msg){ const t = document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.append(t); setTimeout(()=>t.remove(), 3200); }
+function photoSrc(r){ return r.photoUrl || (r.photoId ? '/_blob/' + r.photoId : ''); }
+function photoHTML(r, alt){ const s = photoSrc(r); return s ? `<img src="${esc(s)}" alt="${esc(alt||r.name)}" loading="lazy">` : PLATE; }
+function tagsHTML(cats){ return (cats||[]).map(c => `<span class="tag ${DIET.includes(c)?'diet':''}">${esc(c)}</span>`).join(''); }
+function saveFilter(){ try{ localStorage.setItem('rw-filter', JSON.stringify({meal:S.meal, diet:S.diet, quick:S.quick})); }catch{} }
+const isFav = r => !!S.me && (r.favBy||[]).includes(S.me);
+function factsHTML(r){
+  const f = [];
+  if (r.time) f.push(`<span><b>${esc(r.time)}</b> Min</span>`);
+  if (r.level) f.push(`<span>${esc(r.level)}</span>`);
+  return f.length ? `<div class="facts">${f.join('<span aria-hidden="true">·</span>')}</div>` : '';
+}
+async function toggleFav(id){
+  const r = S.byId[id]; if (!r || !S.me) return;
+  const favBy = isFav(r) ? (r.favBy||[]).filter(x => x !== S.me) : [...(r.favBy||[]), S.me];
+  try { await S.db.collection('recipes').doc(id).update({ favBy }); }
+  catch { toast('Favorit konnte nicht gespeichert werden.'); }
+}
+async function resolveNames(ids){
+  ids = [...new Set(ids.filter(Boolean))].filter(id => !(id in S.names));
+  if (!ids.length || !S.user?.profiles) return;
+  try { const ps = await S.user.profiles(ids); for (const id of ids) S.names[id] = ps?.[id]?.name || ''; } catch {}
+}
+const nameOf = id => id && id === S.me ? 'dir' : (S.names[id] || 'jemand anderem');
+function fmtDate(ts){ try { return new Date(ts).toLocaleDateString('de-DE',{day:'numeric',month:'short',year:'numeric'}); } catch { return ''; } }
+
+function sheet(html, onMount){
+  layer.innerHTML = `<div class="ov" role="dialog" aria-modal="true"><div class="sheet">${html}</div></div>`;
+  const ov = $('.ov', layer);
+  ov.addEventListener('click', e => { if (e.target === ov) closeSheet(); });
+  onMount?.(ov);
+  $('input,textarea,button', ov)?.focus();
+}
+function closeSheet(){ layer.innerHTML = ''; }
+function confirmBox(title, text, okLabel, danger){
+  return new Promise(res => {
+    sheet(`<h2>${esc(title)}</h2><p>${esc(text)}</p><div class="btns"><button class="btn" data-a="no">Abbrechen</button><button class="btn ${danger?'danger':'primary'}" data-a="ok">${esc(okLabel)}</button></div>`, ov => {
+      ov.addEventListener('click', e => { const a = e.target.closest('[data-a]')?.dataset.a; if (a) { closeSheet(); res(a === 'ok'); } });
+    });
+  });
+}
+
+// ---------- Bild verkleinern ----------
+async function compress(file){
+  let src;
+  try { src = await createImageBitmap(file, {imageOrientation:'from-image'}); }
+  catch { src = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); }); }
+  const w = src.width, h = src.height, k = Math.min(1, 1600 / Math.max(w, h));
+  const c = document.createElement('canvas'); c.width = Math.round(w*k); c.height = Math.round(h*k);
+  c.getContext('2d').drawImage(src, 0, 0, c.width, c.height);
+  return await new Promise((res, rej) => c.toBlob(b => b ? res(b) : rej(new Error('toBlob')), 'image/jpeg', 0.82));
+}
+
+// ---------- Bildausschnitt wählen (4:3) ----------
+async function loadSource(fileOrBlob){
+  let src;
+  try { src = await createImageBitmap(fileOrBlob, { imageOrientation: 'from-image' }); }
+  catch { src = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(fileOrBlob); }); }
+  const k = Math.min(1, 2400 / Math.max(src.width, src.height));
+  const c = document.createElement('canvas'); c.width = Math.round(src.width * k); c.height = Math.round(src.height * k);
+  c.getContext('2d').drawImage(src, 0, 0, c.width, c.height);
+  return c;
+}
+function openCrop(canvas){
+  return new Promise(resolve => {
+    const url = canvas.toDataURL('image/jpeg', 0.9);
+    sheet(`<h2>Bildausschnitt wählen</h2><p>Verschiebe das Foto mit dem Finger oder der Maus und zoome, bis das Essen gut im Rahmen sitzt. So erscheint es in der Übersicht und im Rezept.</p>
+      <div class="crop" id="cropBox"><img id="cropImg" src="${url}" alt="Foto zum Zuschneiden"><span class="grid3"></span></div>
+      <label class="zoom"><span>Zoom</span><input type="range" id="cropZoom" min="1" max="4" step="0.01" value="1" aria-label="Zoom"></label>
+      <div class="btns"><button class="btn" data-c="cancel">Abbrechen</button><button class="btn primary" data-c="ok">Übernehmen</button></div>`, ov => {
+      const box = $('#cropBox', ov), img = $('#cropImg', ov), zoomEl = $('#cropZoom', ov);
+      const iw = canvas.width, ih = canvas.height;
+      let W = 0, H = 0, s0 = 1, z = 1, x = 0, y = 0;
+      const clamp = () => { const s = s0 * z; x = Math.min(0, Math.max(W - iw * s, x)); y = Math.min(0, Math.max(H - ih * s, y)); };
+      const draw = () => { clamp(); img.style.transform = `translate(${x}px,${y}px) scale(${s0 * z})`; img.style.width = iw + 'px'; img.style.height = ih + 'px'; };
+      const measure = () => {
+        const oldS = s0 * z, cx = W ? (W / 2 - x) / oldS : iw / 2, cy = H ? (H / 2 - y) / oldS : ih / 2;
+        W = box.clientWidth; H = box.clientHeight; s0 = Math.max(W / iw, H / ih);
+        x = W / 2 - cx * s0 * z; y = H / 2 - cy * s0 * z; draw();
+      };
+      const zoomTo = (nz, px = W / 2, py = H / 2) => { nz = Math.min(4, Math.max(1, nz)); const s = s0 * z, ns = s0 * nz; x = px - (px - x) * ns / s; y = py - (py - y) * ns / s; z = nz; zoomEl.value = z; draw(); };
+      const ro = new ResizeObserver(measure); ro.observe(box);
+      const pts = new Map(); let pinch = null;
+      box.addEventListener('pointerdown', e => { box.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), z }; } box.style.cursor = 'grabbing'; });
+      box.addEventListener('pointermove', e => {
+        const prev = pts.get(e.pointerId); if (!prev) return;
+        const cur = { x: e.clientX, y: e.clientY }; pts.set(e.pointerId, cur);
+        if (pts.size === 2 && pinch) {
+          const [a, b] = [...pts.values()], r = box.getBoundingClientRect();
+          zoomTo(pinch.z * Math.hypot(a.x - b.x, a.y - b.y) / pinch.d, (a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top);
+        } else if (pts.size === 1) { x += cur.x - prev.x; y += cur.y - prev.y; draw(); }
+      });
+      const up = e => { pts.delete(e.pointerId); if (pts.size < 2) pinch = null; box.style.cursor = 'grab'; };
+      box.addEventListener('pointerup', up); box.addEventListener('pointercancel', up);
+      box.addEventListener('wheel', e => { e.preventDefault(); const r = box.getBoundingClientRect(); zoomTo(z * (e.deltaY < 0 ? 1.08 : 1 / 1.08), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+      zoomEl.addEventListener('input', () => zoomTo(+zoomEl.value));
+      const finish = async ok => {
+        ro.disconnect();
+        if (!ok) { closeSheet(); resolve(null); return; }
+        const s = s0 * z, sx = -x / s, sy = -y / s, sw = W / s, sh = H / s;
+        const ow = Math.round(Math.min(1600, sw)), oh = Math.round(ow * 3 / 4);
+        const out = document.createElement('canvas'); out.width = ow; out.height = oh;
+        out.getContext('2d').drawImage(canvas, sx, sy, sw, sh, 0, 0, ow, oh);
+        out.toBlob(b => { closeSheet(); resolve(b); }, 'image/jpeg', 0.85);
+      };
+      ov.addEventListener('click', e => { const c = e.target.closest('[data-c]')?.dataset.c; if (c) finish(c === 'ok'); else if (e.target === ov) finish(false); });
+    });
+  });
+}
+
+// ---------- Ansichten ----------
+function filtered(){
+  const q = S.q.trim().toLowerCase();
+  return S.recipes.filter(r => {
+    const cats = r.cats || [];
+    if (S.meal.length && !S.meal.some(c => cats.includes(c))) return false;
+    if (S.diet.length && !S.diet.some(c => cats.includes(c))) return false;
+    if (S.quick.includes('fav') && !isFav(r)) return false;
+    if (S.quick.includes('fast') && !(r.time && r.time <= 30)) return false;
+    if (S.quick.includes('easy') && r.level !== 'leicht') return false;
+    if (q) {
+      const hay = [r.name, r.desc, ...(r.ingredients||[]).map(i => i.name)].join(' ').toLowerCase();
+      if (!q.split(/\s+/).every(w => hay.includes(w))) return false;
+    }
+    return true;
+  });
+}
+function chipRow(label, list, sel, cls){
+  return `<div class="chiprow" role="group" aria-label="${label}"><span class="lbl">${label}</span>${list.map(c => `<button type="button" class="chip ${cls}" data-chip="${cls}" data-v="${esc(c)}" aria-pressed="${sel.includes(c)}">${esc(c)}</button>`).join('')}</div>`;
+}
+function quickRow(){
+  return `<div class="chiprow quick" role="group" aria-label="Schnellfilter"><span class="lbl">Schnell</span>${QUICK.filter(([k]) => k !== 'fav' || S.me).map(([k, l]) => `<button type="button" class="chip" data-chip="quick" data-v="${k}" aria-pressed="${S.quick.includes(k)}">${k === 'fav' ? HEART + ' ' : ''}${l}</button>`).join('')}</div>`;
+}
+const FILTER_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M3 5h18M6 12h12M10 19h4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>';
+const CHEV = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const TILE_COLORS = ['#2e6a39','#c9611c','#7a4b2a','#3f5f8a','#8a3b52','#5b6b2e','#a8742a','#2f7a6b','#4f6228','#3b6e8f','#9a4a2a','#5a4a7a'];
+const nFilters = () => S.meal.length + S.diet.length + S.quick.length;
+function activeChips(){
+  const q = Object.fromEntries(QUICK);
+  return [...S.meal.map(v => ['meal', v, v]), ...S.diet.map(v => ['diet', v, v]), ...S.quick.map(v => ['quick', v, q[v]])]
+    .map(([k, v, l]) => `<button type="button" class="chip" data-rmf="${k}" data-v="${esc(v)}" aria-label="Filter ${esc(l)} entfernen">${esc(l)} ×</button>`).join('');
+}
+function cardHTML(r){
+  return `<a class="card" href="#r-${esc(r.id)}"><div class="ph">${photoHTML(r)}</div>${isFav(r) ? `<span class="heart" title="Dein Favorit">${HEART_FULL}</span>` : ''}<div class="card-b"><h3>${esc(r.name)}</h3>${factsHTML(r)}<div class="tags">${r.sample ? '<span class="tag sample">Beispiel</span>' : ''}${tagsHTML(r.cats)}</div></div></a>`;
+}
+function isOpen(c, searching){ return searching ? !S.shut.has(c) : S.open.has(c); }
+function sectionsHTML(list, searching){
+  const groups = [['Mahlzeit', MEAL], ['Ernährung', DIET]];
+  const loose = list.filter(r => !(r.cats || []).some(c => ALLCATS.includes(c)));
+  if (loose.length) groups.push(['Weitere', ['Ohne Kategorie']]);
+  let k = 0;
+  return groups.map(([label, cats]) => {
+    const secs = cats.map(c => {
+      const items = c === 'Ohne Kategorie' ? loose : list.filter(r => (r.cats || []).includes(c));
+      const color = TILE_COLORS[k++ % TILE_COLORS.length];
+      if (searching && !items.length) return '';
+      const cover = items.find(r => photoSrc(r));
+      const open = items.length && isOpen(c, searching);
+      return `<div class="sec ${open ? 'open' : ''}">
+        <button type="button" class="tile" style="--tc:${color}" data-sec="${esc(c)}" aria-expanded="${!!open}" ${items.length ? '' : 'disabled'}>
+          ${cover ? `<img src="${esc(photoSrc(cover))}" alt="" loading="lazy">` : `<span class="plate">${PLATE}</span>`}<span class="scrim"></span>
+          <span class="tl"><b>${esc(c)}</b><small>${items.length} ${items.length === 1 ? 'Rezept' : 'Rezepte'}</small></span>
+          ${items.length ? `<span class="chev">${CHEV}</span>` : ''}
+        </button>
+        ${open ? `<div class="sec-body"><div class="grid">${items.map(cardHTML).join('')}</div></div>` : ''}
+      </div>`;
+    }).join('');
+    return secs.trim() ? `<h2 class="secs-h">${label}</h2><div class="tiles">${secs}</div>` : '';
+  }).join('');
+}
+function openFilters(){
+  const body = () => `<h2>Filter</h2><p>Mehrere Filter innerhalb einer Zeile verbinden sich mit „oder“, zwischen den Zeilen mit „und“.</p>
+    <div class="filters">${chipRow('Mahlzeit', MEAL, S.meal, 'meal')}${chipRow('Ernährung', DIET, S.diet, 'diet')}${quickRow()}</div>
+    <p class="by" style="margin-top:14px">${filtered().length} passende Rezepte</p>
+    <div class="btns"><button class="btn" data-f="reset">Zurücksetzen</button><button class="btn primary" data-f="done">Fertig</button></div>`;
+  sheet(body(), ov => {
+    const sheetEl = $('.sheet', ov);
+    sheetEl.querySelectorAll('.chiprow').forEach(r => { r.style.flexWrap = 'wrap'; r.style.overflow = 'visible'; });
+    ov.addEventListener('click', e => {
+      const chip = e.target.closest('[data-chip]');
+      if (chip) { const key = chip.dataset.chip, v = chip.dataset.v, on = !S[key].includes(v); S[key] = on ? [...S[key], v] : S[key].filter(x => x !== v); }
+      const f = e.target.closest('[data-f]')?.dataset.f;
+      if (f === 'reset') { S.meal = []; S.diet = []; S.quick = []; }
+      if (chip || f === 'reset') { S.shut.clear(); saveFilter(); renderHome(); sheetEl.innerHTML = body(); sheetEl.querySelectorAll('.chiprow').forEach(r => { r.style.flexWrap = 'wrap'; r.style.overflow = 'visible'; }); }
+      if (f === 'done') closeSheet();
+    });
+  });
+}
+function renderHome(){
+  $('#fab').classList.toggle('hidden', !S.canWrite);
+  if (!S.loaded) {
+    app.innerHTML = `<div class="wrap"><p class="note">${S.slow ? 'Die Rezepte lassen sich gerade nicht laden. Prüfe die Verbindung – die Seite versucht es weiter.' : '<span class="spin"></span>&nbsp; Rezepte werden geladen …'}</p></div>`;
+    return;
+  }
+  const list = filtered();
+  const active = S.meal.length + S.diet.length + S.quick.length + (S.q ? 1 : 0);
+  let body;
+  if (!S.recipes.length) {
+    body = `<div class="empty"><h2>Noch leer hier</h2><p>Leg euer erstes Rezept an – am besten direkt mit einem Foto vom Teller. Oder importiere ein Rezept aus kopiertem Text oder einem Foto einer Kochbuchseite.</p>${S.canWrite ? '<div class="actions" style="justify-content:center;margin:0"><button class="btn primary" data-go="neu">Rezept anlegen</button><button class="btn" data-act="import">Importieren</button></div>' : ''}</div>`;
+  } else if (!list.length) {
+    body = `<div class="empty"><h2>Nichts gefunden</h2><p>Kein Rezept passt zu Suche und Filtern.</p><button class="btn" data-act="reset">Filter zurücksetzen</button></div>`;
+  } else {
+    body = sectionsHTML(list, active > 0);
+  }
+  const focused = document.activeElement?.id === 'q';
+  app.innerHTML = `<div class="wrap">
+    <div class="search"><input id="q" type="search" placeholder="Rezept oder Zutat suchen" value="${esc(S.q)}" aria-label="Suche" autocomplete="off"><button type="button" class="btn fbtn" data-act="filters" aria-haspopup="dialog">${FILTER_ICON} Filter${nFilters() ? ` <span class="n">${nFilters()}</span>` : ''}</button></div>
+    ${nFilters() ? `<div class="active-f" aria-label="Aktive Filter">${activeChips()}</div>` : ''}
+    <div class="meta-line"><span>${active ? `${list.length} von ${S.recipes.length} Rezepten` : `${S.recipes.length} Rezepte`}${S.slow ? ' · evtl. nicht aktuell' : ''}</span>${active ? '<button class="linkish" data-act="reset">Alles zurücksetzen</button>' : ''}</div>
+    ${body}
+    ${S.canWrite ? '' : '<p class="note">Du kannst die Rezepte ansehen, aber nicht bearbeiten. Zum Mitschreiben braucht es eine Einladung als Editor.</p>'}
+    ${S.recipes.length ? '<p style="text-align:center;margin-top:28px"><button class="linkish" data-act="export">Alle Rezepte als Sicherung kopieren (JSON)</button></p>' : ''}
+  </div>`;
+  if (focused) { const i = $('#q'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
+}
+function renderDetail(id){
+  $('#fab').classList.add('hidden');
+  const r = S.byId[id];
+  if (!r) { app.innerHTML = `<div class="wrap"><div class="empty"><h2>${S.loaded ? 'Rezept nicht gefunden' : 'Wird geladen …'}</h2>${S.loaded ? '<p>Vielleicht wurde es gerade gelöscht.</p><a class="btn" href="#start">Zur Übersicht</a>' : ''}</div></div>`; return; }
+  const base = r.servings || 1, p = S.portions[id] || base, f = p / base;
+  resolveNames([r.createdBy, r.updatedBy]).then(() => { const b = $('#by'); if (b) b.textContent = byLine(r); });
+  app.innerHTML = `
+  <div class="hero">${photoHTML(r)}<a class="btn back" href="#start">← Übersicht</a></div>
+  <div class="wrap">
+    <div class="d-head"><h2>${esc(r.name)}</h2>${r.desc ? `<p>${esc(r.desc)}</p>` : ''}${factsHTML(r)}<div class="tags" style="margin-top:12px">${r.sample ? '<span class="tag sample">Beispiel</span>' : ''}${tagsHTML(r.cats)}</div><div class="by" id="by">${esc(byLine(r))}</div>
+    ${S.me && S.canWrite ? `<button type="button" class="btn fav" data-act="fav" data-id="${esc(id)}" aria-pressed="${isFav(r)}" style="margin-top:14px">${isFav(r) ? HEART_FULL + ' Favorit' : HEART + ' Als Favorit merken'}</button>` : ''}</div>
+    <div class="cols">
+      <section class="panel"><h3>Zutaten</h3>
+        <div class="stepper" role="group" aria-label="Portionen"><button type="button" data-por="-1" aria-label="Weniger Portionen">−</button><output aria-live="polite">${p} ${p === 1 ? 'Portion' : 'Portionen'}</output><button type="button" data-por="1" aria-label="Mehr Portionen">+</button></div>
+        ${p !== base ? `<p class="by" style="margin:-6px 0 10px">Umgerechnet von ${base} ${base===1?'Portion':'Portionen'} · <button class="linkish" style="min-height:0" data-por="0">zurücksetzen</button></p>` : ''}
+        <ul class="ings">${(r.ingredients||[]).map(i => { const s = showQty(i.qty == null ? null : i.qty * f, i.unit); return `<li><span class="q ${p!==base && i.qty!=null ? 'changed':''}">${esc(s.text)} ${esc(s.unit||'')}</span><span>${esc(i.name)}</span></li>`; }).join('') || '<li><span></span><span class="by">Keine Zutaten eingetragen</span></li>'}</ul>
+      </section>
+      <section class="panel"><h3>Zubereitung</h3>${(r.steps||[]).length ? `<ol class="steps">${r.steps.map(s => `<li><span>${esc(s)}</span></li>`).join('')}</ol>` : '<p class="by">Keine Schritte eingetragen</p>'}</section>
+    </div>
+    ${S.canWrite ? `<div class="actions"><a class="btn primary" href="#e-${esc(id)}">Bearbeiten</a><button class="btn danger" data-act="delete" data-id="${esc(id)}">Löschen</button></div>` : ''}
+  </div>`;
+}
+function byLine(r){
+  let s = r.createdBy ? `Angelegt von ${nameOf(r.createdBy)}` : '';
+  if (r.updatedAt && r.updatedBy && (r.updatedAt !== r.createdAt)) s += `${s ? ' · ' : ''}zuletzt geändert von ${nameOf(r.updatedBy)} am ${fmtDate(r.updatedAt)}`;
+  return s;
+}
+
+// ---------- Formular ----------
+let F = null; // aktuelles Formular: {id, base, photoBlob, photoRemoved, previewUrl}
+function ingRow(i = {}){ return `<div class="row ing"><input class="iq" inputmode="decimal" placeholder="Menge" aria-label="Menge" value="${esc(inputQty(i.qty))}"><input class="iu" list="units" placeholder="Einheit" aria-label="Einheit" value="${esc(i.unit||'')}"><input class="in" placeholder="Zutat" aria-label="Zutat" value="${esc(i.name||'')}"><button type="button" class="x" data-rm aria-label="Zutat entfernen">×</button></div>`; }
+function stepRow(s = ''){ return `<div class="row step"><span class="num"></span><textarea class="st" placeholder="Was ist zu tun?" aria-label="Schritt">${esc(s)}</textarea><button type="button" class="x" data-rm aria-label="Schritt entfernen">×</button></div>`; }
+function renumber(){ $$('.row.step .num').forEach((n, k) => n.textContent = k + 1); }
+function renderForm(id){
+  $('#fab').classList.add('hidden');
+  if (!S.canWrite) { app.innerHTML = '<div class="wrap"><p class="note">Du hast hier nur Lesezugriff.</p></div>'; return; }
+  let r;
+  if (id) { r = S.byId[id]; if (!r) { renderDetail(id); return; } r = structuredClone(r); }
+  else { r = S.draft || {}; S.draft = null; }
+  F = { id: id || null, base: id ? r.updatedAt : null, photoBlob: null, photoRemoved: false, previewUrl: null, oldPhotoId: r.photoId || null, r };
+  const ings = (r.ingredients && r.ingredients.length ? r.ingredients : [{},{},{}]);
+  const steps = (r.steps && r.steps.length ? r.steps : ['']);
+  const cats = r.cats || [];
+  app.innerHTML = `<form class="form wrap" id="form" novalidate>
+    <h2>${id ? 'Rezept bearbeiten' : 'Neues Rezept'}</h2>
+    <div class="field"><span>Foto</span>
+      <div class="photo-box"><div class="ph" id="pv">${photoHTML(r, 'Vorschau')}</div>
+      <div class="photo-btns ${S.assets ? '' : 'hidden'}">
+        <label class="btn primary">Foto aufnehmen<input type="file" accept="image/*" capture="environment" data-photo></label>
+        <label class="btn">Aus Galerie wählen<input type="file" accept="image/*" data-photo></label>
+        <button type="button" class="btn ${photoSrc(r) ? '' : 'hidden'}" id="cropPhoto">Ausschnitt ändern</button>
+        <button type="button" class="btn ${photoSrc(r) ? '' : 'hidden'}" id="rmPhoto">Foto entfernen</button>
+      </div>
+      ${S.assets ? '' : '<p class="note" style="margin:12px">Fotos hochladen ist für dich gerade nicht freigeschaltet.</p>'}</div>
+    </div>
+    <label class="field"><span>Name</span><input id="fName" required maxlength="120" value="${esc(r.name||'')}" placeholder="z. B. Shakshuka"></label>
+    <label class="field"><span>Kurzbeschreibung</span><textarea id="fDesc" maxlength="600" placeholder="Worum geht's, was macht es besonders?">${esc(r.desc||'')}</textarea></label>
+    <div class="two">
+      <label class="field"><span>Portionen (Grundrezept)</span><input id="fServ" type="number" inputmode="numeric" min="1" max="99" value="${esc(r.servings||2)}"></label>
+      <label class="field"><span>Zubereitungszeit (Min)</span><input id="fTime" type="number" inputmode="numeric" min="1" max="1440" value="${esc(r.time||'')}" placeholder="z. B. 30"></label>
+    </div>
+    <label class="field" style="max-width:260px"><span>Schwierigkeit</span><select id="fLevel"><option value="">– keine Angabe –</option>${LEVELS.map(l => `<option ${r.level === l ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    <div class="field"><span>Kategorien</span><div class="catgrid">${chipRow('Mahlzeit', MEAL, cats, 'meal')}${chipRow('Ernährung', DIET, cats, 'diet')}</div></div>
+    <div class="field"><span>Zutaten</span><div id="ings">${ings.map(ingRow).join('')}</div><button type="button" class="btn" data-add="ing" style="width:max-content">+ Zutat</button><small style="color:var(--muted)">Menge leer lassen für „nach Geschmack“ – wird dann nicht umgerechnet. Brüche wie 1/2 gehen auch.</small></div>
+    <div class="field"><span>Zubereitung</span><div id="steps">${steps.map(stepRow).join('')}</div><button type="button" class="btn" data-add="step" style="width:max-content">+ Schritt</button></div>
+    <div class="sticky-save"><a class="btn" href="${id ? '#r-' + esc(id) : '#start'}">Abbrechen</a><button class="btn primary" type="submit" id="saveBtn">Speichern</button></div>
+  </form>`;
+  renumber();
+  if (!id) $('#fName').focus();
+}
+async function onPhoto(input){
+  const file = input.files?.[0]; input.value = '';
+  if (!file) return;
+  let src;
+  try { src = await loadSource(file); } catch { toast('Dieses Bild kann der Browser nicht lesen. Versuch ein JPG oder PNG.'); return; }
+  await cropAndSet(src);
+}
+async function cropAndSet(src){
+  const blob = await openCrop(src);
+  if (!blob || !F) return;
+  F.src = src; F.photoBlob = blob; F.photoRemoved = false;
+  if (F.previewUrl) URL.revokeObjectURL(F.previewUrl);
+  F.previewUrl = URL.createObjectURL(blob);
+  $('#pv').innerHTML = `<img src="${F.previewUrl}" alt="Vorschau">`;
+  $('#rmPhoto').classList.remove('hidden'); $('#cropPhoto').classList.remove('hidden');
+}
+async function recrop(){
+  let src = F.src;
+  if (!src) {
+    const url = photoSrc(F.r); if (!url) return;
+    try { const res = await fetch(url, { mode: 'cors' }); src = await loadSource(await res.blob()); }
+    catch { toast('Das gespeicherte Foto lässt sich nicht laden – wähle es bitte neu aus.'); return; }
+  }
+  await cropAndSet(src);
+}
+function collectForm(){
+  const ingredients = $$('#ings .ing').map(row => ({ qty: parseQty($('.iq', row).value), unit: $('.iu', row).value.trim(), name: $('.in', row).value.trim() })).filter(i => i.name);
+  const steps = $$('#steps .st').map(t => t.value.trim()).filter(Boolean);
+  const cats = $$('#form [data-chip][aria-pressed=true]').map(b => b.dataset.v);
+  const time = parseInt($('#fTime').value, 10);
+  return { name: $('#fName').value.trim(), desc: $('#fDesc').value.trim(), servings: Math.max(1, Math.min(99, parseInt($('#fServ').value, 10) || 2)),
+    time: time > 0 ? Math.min(time, 1440) : null, level: LEVELS.includes($('#fLevel').value) ? $('#fLevel').value : null, ingredients, steps, cats };
+}
+let saving = false;
+async function save(){
+  if (saving) return;
+  const d = collectForm();
+  if (!d.name) { toast('Bitte gib dem Rezept einen Namen.'); $('#fName').focus(); return; }
+  const cur = F.id ? S.byId[F.id] : null;
+  if (F.id && !cur) { if (!await confirmBox('Rezept wurde gelöscht', 'Dieses Rezept wurde inzwischen auf einem anderen Gerät gelöscht. Als neues Rezept speichern?', 'Neu speichern')) return; F.id = null; }
+  else if (cur && cur.updatedAt !== F.base) {
+    await resolveNames([cur.updatedBy]);
+    if (!await confirmBox('Inzwischen geändert', `Dieses Rezept wurde gerade von ${nameOf(cur.updatedBy)} geändert. Wenn du speicherst, ersetzt deine Version diese Änderung.`, 'Trotzdem speichern')) return;
+  }
+  saving = true; const btn = $('#saveBtn'); btn.disabled = true; btn.innerHTML = '<span class="spin"></span>&nbsp;Speichern …';
+  try {
+    let photoId = F.oldPhotoId, photoUrl = cur?.photoUrl || F.r.photoUrl || null;
+    if (F.photoRemoved) { photoId = null; photoUrl = null; }
+    if (F.photoBlob) {
+      btn.innerHTML = '<span class="spin"></span>&nbsp;Foto wird hochgeladen …';
+      const a = await S.assets.upload(F.photoBlob);
+      photoId = a.id; photoUrl = a.url || null;
+    }
+    const now = Date.now();
+    const ref = F.id ? S.db.collection('recipes').doc(F.id) : S.db.collection('recipes').doc();
+    const body = { ...d, photoId, photoUrl, favBy: cur?.favBy || [], sample: false, createdAt: cur?.createdAt || now, createdBy: cur?.createdBy || S.me || null, updatedAt: now, updatedBy: S.me || null };
+    await ref.set(body);
+    if (F.oldPhotoId && F.oldPhotoId !== photoId) { try { await S.assets.delete(F.oldPhotoId); } catch {} }
+    toast('Gespeichert');
+    F = null; location.hash = 'r-' + ref.id;
+  } catch (e) {
+    toast(e?.code === 'quota_exceeded' ? 'Speicher voll – bitte alte Rezepte oder Fotos löschen.' : e?.code === 'invalid_argument' ? 'Speichern nicht erlaubt – du hast nur Lesezugriff.' : 'Speichern hat nicht geklappt. Bitte nochmal versuchen.');
+    btn.disabled = false; btn.textContent = 'Speichern';
+  } finally { saving = false; }
+}
+async function del(id){
+  const r = S.byId[id]; if (!r) return;
+  if (!await confirmBox('Rezept löschen?', `„${r.name}“ wird für euch beide gelöscht. Das lässt sich nicht rückgängig machen.`, 'Löschen', true)) return;
+  try {
+    await S.db.collection('recipes').doc(id).delete();
+    if (r.photoId && S.assets) { try { await S.assets.delete(r.photoId); } catch {} }
+    toast('Gelöscht'); location.hash = 'start';
+  } catch { toast('Löschen hat nicht geklappt.'); }
+}
+
+// ---------- Import ----------
+async function openImport(){
+  if (!S.sample) { toast('Import ist hier gerade nicht verfügbar.'); return; }
+  let caps = null; try { caps = await S.sample.limits(); } catch {}
+  const img = !!caps?.images;
+  sheet(`<h2>Rezept importieren</h2><p>Füge den Rezepttext ein (z. B. von einer Webseite kopiert)${img ? ' oder wähle ein Foto bzw. einen Screenshot des Rezepts' : ''}. Claude erkennt Zutaten und Schritte, du prüfst danach alles im Formular.</p>
+    <label class="field"><span>Rezepttext${typeof S.sample.importUrl === 'function' ? ' oder Link' : ''}</span><textarea id="impText" style="min-height:160px" placeholder="Zutaten, Mengen, Zubereitung …"></textarea></label>
+    ${img ? `<div class="field"><span>Oder Foto/Screenshot des Rezepts</span><label class="btn" style="position:relative;width:max-content">Bild wählen<input id="impImg" type="file" accept="${esc(caps.images.mediaTypes.join(','))}" style="position:absolute;inset:0;opacity:0"></label><small id="impImgName" style="color:var(--muted)"></small></div>` : ''}
+    <p id="impStatus" class="by" aria-live="polite"></p>
+    <div class="btns"><button class="btn" data-a="cancel">Abbrechen</button><button class="btn primary" data-a="go">Rezept erkennen</button></div>`, ov => {
+    let ctl = null;
+    $('#impImg', ov)?.addEventListener('change', e => { $('#impImgName', ov).textContent = e.target.files[0]?.name || ''; });
+    ov.addEventListener('click', async e => {
+      const a = e.target.closest('[data-a]')?.dataset.a; if (!a) return;
+      if (a === 'cancel') { ctl?.abort(); closeSheet(); return; }
+      const text = $('#impText', ov).value.trim().slice(0, 20000);
+      const file = $('#impImg', ov)?.files?.[0];
+      if (!text && !file) { $('#impStatus', ov).textContent = 'Bitte Text einfügen oder ein Bild wählen.'; return; }
+      const isUrl = !file && /^https?:\/\/\S+$/i.test(text);
+      if (isUrl && typeof S.sample.importUrl !== 'function') { $('#impStatus', ov).textContent = 'Import per Link geht nur in der eigenständigen Spoonful-App. Kopiere hier bitte den Rezepttext von der Seite.'; return; }
+      const go = e.target; go.disabled = true; $('#impStatus', ov).innerHTML = '<span class="spin"></span>&nbsp; Claude liest das Rezept … das kann bis zu einer Minute dauern.';
+      ctl = new AbortController();
+      const prompt = `Extrahiere ein Kochrezept aus dem Material unten${file ? ' (Text und/oder beigefügtes Bild)' : ''}. Antworte NUR mit einem JSON-Objekt dieser Form:
+{"name": string, "description": string (1–2 Sätze, Deutsch), "servings": number, "time": number|null (Gesamtzeit in Minuten), "level": "leicht"|"mittel"|"anspruchsvoll"|null,"ingredients": [{"qty": number|null, "unit": string, "name": string}], "steps": [string], "categories": [string]}
+Regeln: Alles auf Deutsch. qty als Zahl (z. B. 0.5 für ½), ohne Mengenangabe qty null und unit "". unit kurz: g, kg, ml, l, EL, TL, Stück, Prise, Zehe, Bund, Dose, Packung, Tasse. Einheiten wie "cup"/"oz" in metrische umrechnen. steps als einzelne Arbeitsschritte ohne Nummerierung. categories nur aus dieser Liste wählen: ${ALLCATS.join(', ')}. servings 2, falls nicht erkennbar. Ist kein Rezept erkennbar, antworte {"error": "kein Rezept"}.
+
+Material:
+${text || '(siehe Bild)'}`;
+      try {
+        const j = isUrl ? await S.sample.importUrl(text, prompt) : await S.sample.json(prompt, { signal: ctl.signal, ...(file ? { images: [file] } : {}) });
+        if (!j || j.error || !j.name) { $('#impStatus', ov).textContent = 'Darin konnte kein Rezept erkannt werden.'; go.disabled = false; return; }
+        S.draft = {
+          name: String(j.name).slice(0,120), desc: String(j.description||'').slice(0,600),
+          servings: Math.max(1, Math.min(99, Math.round(+j.servings) || 2)),
+          time: +j.time > 0 ? Math.round(+j.time) : null, level: LEVELS.includes(j.level) ? j.level : null,
+          ingredients: (Array.isArray(j.ingredients) ? j.ingredients : []).map(i => ({ qty: i?.qty == null || i.qty === '' ? null : (typeof i.qty === 'number' ? i.qty : parseQty(i.qty)), unit: String(i?.unit||''), name: String(i?.name||'') })).filter(i => i.name),
+          steps: (Array.isArray(j.steps) ? j.steps : []).map(String).filter(Boolean),
+          cats: (Array.isArray(j.categories) ? j.categories : []).filter(c => ALLCATS.includes(c))
+        };
+        closeSheet(); toast('Erkannt – bitte prüfen und ein Foto ergänzen');
+        if (location.hash === '#neu') renderForm(null); else location.hash = 'neu';
+      } catch (err) {
+        const c = err?.code;
+        const msg = c === 'cancelled' ? '' : c === 'not_granted' || c === 'sampling_disabled' ? 'Import ist hier nicht freigeschaltet.' : c === 'rate_limited' ? 'Gerade zu viele Anfragen – bitte gleich nochmal.' : c === 'image_rejected' ? 'Dieses Bild geht nicht – versuch ein anderes.' : c === 'invalid_json' ? 'Das Ergebnis war unvollständig – bitte nochmal versuchen.' : 'Das hat nicht geklappt – bitte nochmal versuchen.';
+        $('#impStatus', ov) && ($('#impStatus', ov).textContent = msg); go.disabled = false;
+      }
+    });
+  });
+}
+
+// ---------- Routing ----------
+function route(){
+  const h = location.hash.slice(1);
+  if (F && !h.startsWith('e-') && h !== 'neu') { if (F.previewUrl) URL.revokeObjectURL(F.previewUrl); F = null; }
+  if (h.startsWith('r-')) renderDetail(h.slice(2));
+  else if (h.startsWith('e-')) renderForm(h.slice(2));
+  else if (h === 'neu') renderForm(null);
+  else renderHome();
+  if (!h.startsWith('e-') && h !== 'neu' && !h.startsWith('r-')) {} else window.scrollTo(0, 0);
+}
+function rerenderLive(){
+  const h = location.hash.slice(1);
+  if (h.startsWith('e-') || h === 'neu') return; // Formular nicht überschreiben
+  if (h.startsWith('r-')) {
+    const id = h.slice(2);
+    if (!S.byId[id] && S.loaded) { toast('Dieses Rezept wurde gelöscht.'); location.hash = 'start'; return; }
+    const y = window.scrollY; renderDetail(id); window.scrollTo(0, y);
+  } else renderHome();
+}
+
+// ---------- Events ----------
+app.addEventListener('input', e => {
+  if (e.target.id === 'q') { S.q = e.target.value; S.shut.clear(); renderHome(); }
+});
+app.addEventListener('change', e => { if (e.target.matches('[data-photo]')) onPhoto(e.target); });
+app.addEventListener('submit', e => { e.preventDefault(); save(); });
+app.addEventListener('click', e => {
+  const t = e.target;
+  const sec = t.closest('[data-sec]');
+  if (sec) {
+    const c = sec.dataset.sec, searching = !!(S.q.trim() || nFilters());
+    if (searching) { S.shut.has(c) ? S.shut.delete(c) : S.shut.add(c); }
+    else { S.open.has(c) ? S.open.delete(c) : S.open.add(c); try { localStorage.setItem('rw-open', JSON.stringify([...S.open])); } catch {} }
+    renderHome();
+    if (isOpen(c, searching)) requestAnimationFrame(() => document.querySelector(`[data-sec="${CSS.escape(c)}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
+    return;
+  }
+  const rmf = t.closest('[data-rmf]');
+  if (rmf) { const k = rmf.dataset.rmf; S[k] = S[k].filter(x => x !== rmf.dataset.v); S.shut.clear(); saveFilter(); renderHome(); return; }
+  const chip = t.closest('[data-chip]');
+  if (chip) {
+    const on = chip.getAttribute('aria-pressed') !== 'true';
+    chip.setAttribute('aria-pressed', on);
+    if (!chip.closest('#form')) {
+      const key = chip.dataset.chip, v = chip.dataset.v;
+      S[key] = on ? [...S[key], v] : S[key].filter(x => x !== v);
+      saveFilter(); renderHome();
+    }
+    return;
+  }
+  const por = t.closest('[data-por]');
+  if (por) {
+    const id = location.hash.slice(3), r = S.byId[id]; if (!r) return;
+    const base = r.servings || 1, d = +por.dataset.por;
+    S.portions[id] = d === 0 ? base : Math.max(1, Math.min(99, (S.portions[id] || base) + d));
+    const y = window.scrollY; renderDetail(id); window.scrollTo(0, y); return;
+  }
+  const go = t.closest('[data-go]'); if (go) { location.hash = go.dataset.go; return; }
+  const act = t.closest('[data-act]')?.dataset.act;
+  if (act === 'reset') { S.q = ''; S.meal = []; S.diet = []; S.quick = []; S.shut.clear(); saveFilter(); renderHome(); return; }
+  if (act === 'filters') { openFilters(); return; }
+  if (act === 'import') { openImport(); return; }
+  if (act === 'delete') { del(t.closest('[data-act]').dataset.id); return; }
+  if (act === 'fav') { toggleFav(t.closest('[data-act]').dataset.id); return; }
+  if (act === 'export') {
+    const data = JSON.stringify({ app: 'spoonful', v: 1, recipes: S.recipes.map(({ id, ...r }) => ({ id, ...r })) });
+    navigator.clipboard?.writeText(data).then(() => toast(`${S.recipes.length} Rezepte kopiert`), () => toast('Kopieren wurde vom Browser blockiert.'));
+    return;
+  }
+  const add = t.closest('[data-add]')?.dataset.add;
+  if (add === 'ing') { $('#ings').insertAdjacentHTML('beforeend', ingRow()); $('#ings .ing:last-child .iq').focus(); return; }
+  if (add === 'step') { $('#steps').insertAdjacentHTML('beforeend', stepRow()); renumber(); $('#steps .step:last-child textarea').focus(); return; }
+  if (t.closest('[data-rm]')) { const row = t.closest('.row'); const box = row.parentElement; if (box.children.length > 1) row.remove(); else $$('input,textarea', row).forEach(i => i.value = ''); renumber(); return; }
+  if (t.id === 'rmPhoto') { F.photoBlob = null; F.src = null; F.photoRemoved = true; $('#pv').innerHTML = PLATE; t.classList.add('hidden'); $('#cropPhoto').classList.add('hidden'); }
+  if (t.id === 'cropPhoto') { recrop(); }
+});
+app.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.matches('.ing input')) { e.preventDefault(); const row = e.target.closest('.ing'); if (!row.nextElementSibling) { $('#ings').insertAdjacentHTML('beforeend', ingRow()); } row.nextElementSibling.querySelector('.iq').focus(); }
+});
+$('#fab').addEventListener('click', () => location.hash = 'neu');
+$('#importBtn').addEventListener('click', openImport);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && layer.innerHTML) closeSheet(); });
+window.addEventListener('hashchange', route);
+
+// ---------- Start ----------
+route();
+(async () => {
+  const c = window.claude;
+  if (!c?.use) { S.slow = true; renderHome(); return; }
+  const [db, user, assets, sample] = await Promise.all(['db','user','assets','sample'].map(n => c.use(n).catch(() => null)));
+  S.db = db; S.user = user; S.assets = assets; S.sample = sample;
+  if (user) {
+    try { S.me = await user.id(); } catch {}
+    try { const w = await user.can?.('data.write'); if (w === false) S.canWrite = false; } catch {}
+  }
+  if (!db) { S.canWrite = false; S.slow = true; app.innerHTML = '<div class="wrap"><p class="note">Die Rezeptdatenbank ist hier nicht erreichbar. Öffne Spoonful angemeldet über claude.ai.</p></div>'; return; }
+  $('#importBtn').classList.toggle('hidden', !(S.canWrite && sample));
+  const timer = setTimeout(() => { S.slow = true; rerenderLive(); }, 10000);
+  db.collection('recipes').onSnapshot(snap => {
+    S.recipes = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.createdAt||0) - (a.createdAt||0));
+    S.byId = Object.fromEntries(S.recipes.map(r => [r.id, r]));
+    S.loaded = true;
+    if (!snap.metadata.fromCache) { clearTimeout(timer); S.slow = false; }
+    resolveNames(S.recipes.flatMap(r => [r.createdBy, r.updatedBy]));
+    rerenderLive();
+  }, err => { clearTimeout(timer); S.loaded = true; S.slow = true; rerenderLive(); toast(err?.code === 'revoked' ? 'Zugriff wurde beendet.' : 'Verbindung zu den Rezepten verloren – bitte Seite neu öffnen.'); });
+})();
+}
+</script>
+</body>
+</html>
