@@ -164,7 +164,7 @@ button{cursor:pointer}
 .zoom input{flex:1;accent-color:var(--tomato);height:44px}
 @media(max-width:600px){.top .btn{min-height:40px;padding:0 12px;font-size:14px}.top-in{gap:8px}}
 </style>
-<meta name="app-version" content="20261121204336">
+<meta name="app-version" content="20261121210008">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#2E6A39">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -465,7 +465,7 @@ function renderHome(){
     <div class="meta-line"><span>${active ? `${list.length} von ${S.recipes.length} Rezepten` : `${S.recipes.length} Rezepte`}${S.slow ? ' · evtl. nicht aktuell' : ''}</span>${active ? '<button class="linkish" data-act="reset">Alles zurücksetzen</button>' : ''}</div>
     ${body}
     ${S.canWrite ? '' : '<p class="note">Du kannst die Rezepte ansehen, aber nicht bearbeiten. Zum Mitschreiben braucht es eine Einladung als Editor.</p>'}
-    ${S.recipes.length ? '<p style="text-align:center;margin-top:28px"><button class="linkish" data-act="export">Alle Rezepte als Sicherung kopieren (JSON)</button></p>' : ''}
+    ${S.recipes.length ? '<p style="text-align:center;margin-top:28px"><button class="linkish" data-act="export">Sicherung aller Rezepte</button></p>' : ''}
   </div>`;
   if (focused) { const i = $('#q'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
 }
@@ -614,6 +614,37 @@ async function del(id){
   } catch { toast('Löschen hat nicht geklappt.'); }
 }
 
+// ---------- Sicherung ----------
+function openExport(){
+  const data = JSON.stringify({ app: 'spoonful', v: 1, recipes: S.recipes.map(({ id, ...r }) => ({ id, ...r })) });
+  const canDownload = !!window.SPOONFUL_CONFIG; // eigene App: Datei-Download möglich; claude.ai-Testversion: nicht
+  sheet(`<h2>Sicherung deiner Rezepte</h2>
+    <p>${S.recipes.length} Rezepte (ohne Fotos). ${canDownload ? 'Speichere sie als Datei oder kopiere den Text.' : 'Tippe auf „Kopieren“ und füge den Text in eurer Spoonful-App unter Kochbuch → Rezepte aus der Testversion übernehmen ein. Klappt das Kopieren nicht, markiere den Text im Feld selbst (lange drücken → Alles auswählen → Kopieren).'}</p>
+    <textarea id="expText" readonly style="width:100%;min-height:160px;border-radius:12px;border:1.5px solid var(--line);background:var(--soft);padding:10px;font:13px/1.4 ui-monospace,monospace">${esc(data)}</textarea>
+    <p class="by" id="expStatus" aria-live="polite"></p>
+    <div class="btns">${canDownload ? '<button class="btn" data-e="file">Als Datei speichern</button>' : ''}<button class="btn" data-e="close">Schließen</button><button class="btn primary" data-e="copy">Kopieren</button></div>`, ov => {
+    const ta = $('#expText', ov), st = m => ($('#expStatus', ov).textContent = m);
+    ta.addEventListener('focus', () => ta.select());
+    ov.addEventListener('click', async e => {
+      const a = e.target.closest('[data-e]')?.dataset.e; if (!a) return;
+      if (a === 'close') closeSheet();
+      if (a === 'copy') {
+        ta.focus(); ta.select();
+        let ok = false;
+        try { await navigator.clipboard.writeText(data); ok = true; } catch {}
+        if (!ok) { try { ok = document.execCommand('copy'); } catch {} }
+        st(ok ? `${S.recipes.length} Rezepte kopiert – jetzt in der Spoonful-App einfügen.` : 'Automatisches Kopieren ist hier blockiert. Der Text ist markiert – bitte selbst kopieren (Strg + C bzw. lange drücken → Kopieren).');
+      }
+      if (a === 'file') {
+        const url = URL.createObjectURL(new Blob([data], { type: 'application/json' }));
+        const link = document.createElement('a'); link.href = url; link.download = `spoonful-sicherung-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+        st('Datei wird gespeichert.');
+      }
+    });
+  });
+}
+
 // ---------- Import ----------
 async function openImport(){
   if (!S.sample) { toast('Import ist hier gerade nicht verfügbar.'); return; }
@@ -728,11 +759,7 @@ app.addEventListener('click', e => {
   if (act === 'import') { openImport(); return; }
   if (act === 'delete') { del(t.closest('[data-act]').dataset.id); return; }
   if (act === 'fav') { toggleFav(t.closest('[data-act]').dataset.id); return; }
-  if (act === 'export') {
-    const data = JSON.stringify({ app: 'spoonful', v: 1, recipes: S.recipes.map(({ id, ...r }) => ({ id, ...r })) });
-    navigator.clipboard?.writeText(data).then(() => toast(`${S.recipes.length} Rezepte kopiert`), () => toast('Kopieren wurde vom Browser blockiert.'));
-    return;
-  }
+  if (act === 'export') { openExport(); return; }
   const add = t.closest('[data-add]')?.dataset.add;
   if (add === 'ing') { $('#ings').insertAdjacentHTML('beforeend', ingRow()); $('#ings .ing:last-child .iq').focus(); return; }
   if (add === 'step') { $('#steps').insertAdjacentHTML('beforeend', stepRow()); renumber(); $('#steps .step:last-child textarea').focus(); return; }

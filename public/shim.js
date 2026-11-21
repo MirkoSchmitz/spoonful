@@ -244,7 +244,8 @@
       <label class="field" style="margin-top:18px"><span>Dein Name</span><input id="sf-me" maxlength="40" value="${esc(me?.display_name || '')}"></label>
       <div class="btns" style="justify-content:flex-start;margin-top:0"><button class="btn" data-m="name">Namen speichern</button></div>
       <details style="margin-top:18px"><summary style="cursor:pointer;font-weight:600">Rezepte aus der Testversion übernehmen</summary>
-        <p>In der Testversion auf claude.ai ganz unten „Alle Rezepte als Sicherung kopieren“ antippen und den Inhalt hier einfügen. Fotos werden nicht mit übernommen.</p>
+        <p>In der Testversion auf claude.ai ganz unten „Sicherung aller Rezepte“ öffnen, „Kopieren“ tippen und den Text hier einfügen – oder eine gespeicherte Sicherungsdatei wählen. Fotos werden nicht mit übernommen.</p>
+        <label class="btn" style="position:relative;width:max-content;margin-bottom:8px">Sicherungsdatei wählen<input type="file" accept=".json,application/json" id="sf-file" style="position:absolute;inset:0;opacity:0"></label>
         <textarea id="sf-json" style="width:100%;min-height:120px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);padding:10px;font-size:14px"></textarea>
         <div class="btns" style="justify-content:flex-start"><button class="btn" data-m="import">Übernehmen</button></div>
       </details>
@@ -252,6 +253,7 @@
       <div class="btns"><button class="btn danger" data-m="logout">Abmelden</button><button class="btn" data-m="close">Schließen</button></div>
     </div></div>`;
     const ov = layer.firstElementChild, st = m => (ov.querySelector('.sf-status').textContent = m);
+    ov.querySelector('#sf-file').addEventListener('change', async e => { const f = e.target.files?.[0]; if (f) { ov.querySelector('#sf-json').value = await f.text(); st('Datei geladen – jetzt „Übernehmen“ tippen.'); } });
     ov.addEventListener('click', async e => {
       if (e.target === ov) { layer.innerHTML = ''; return; }
       const m = e.target.closest('[data-m]')?.dataset.m; if (!m) return;
