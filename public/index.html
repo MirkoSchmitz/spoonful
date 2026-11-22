@@ -130,7 +130,7 @@ button{cursor:pointer}
 .sheet p{color:var(--muted);margin:0 0 14px}
 .sheet .btns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
 .tabs{display:flex;gap:6px;margin-bottom:12px}
-.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:600;z-index:30;max-width:90vw}
+.toast{position:fixed;will-change:transform,opacity;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:600;z-index:30;max-width:90vw}
 .spin{display:inline-block;width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:r .8s linear infinite}
 @keyframes r{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.spin{animation:none}.card{transition:none}}
@@ -182,6 +182,58 @@ button{cursor:pointer}
 .idea-sheet h3{font-size:20px;margin:14px 0 8px}
 .idea-sheet ul,.idea-sheet ol{padding-left:20px;margin:0}
 .idea-sheet li{padding:3px 0}
+/* Rezept des Tages / Startseite ohne Kopfleiste */
+body.home .top{display:none}
+.daily{position:relative;display:block;color:#fff;text-decoration:none;height:min(62vh,520px);min-height:340px;overflow:hidden;background:#2e6a39}
+@media(min-width:820px){.daily{max-width:1180px;margin:20px auto 0;border-radius:26px;height:min(56vh,480px)}}
+.daily img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.daily .scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.72) 0%,rgba(0,0,0,.25) 45%,rgba(0,0,0,.05) 70%,rgba(0,0,0,.28) 100%)}
+.daily .plate{position:absolute;right:-30px;top:40px;width:220px;opacity:.15;color:#fff}
+.daily .txt{position:absolute;left:0;right:0;bottom:0;padding:0 max(5vw,16px) 26px}
+.daily .kick{display:inline-block;background:var(--saffron,#f2b33d);color:#1f1915;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:5px 11px;border-radius:999px;margin-bottom:10px}
+.daily h2{font-size:clamp(30px,8vw,46px);line-height:1.05;margin:0 0 8px;text-shadow:0 2px 14px rgba(0,0,0,.35);color:#fff}
+.daily .facts{color:#fff;opacity:.92}
+.daily .facts b{color:#fff}
+.daily .brandmini{position:absolute;left:max(5vw,16px);top:calc(16px + env(safe-area-inset-top));font-family:Outfit,Figtree,sans-serif;font-weight:700;font-size:22px;letter-spacing:-.03em;opacity:.95;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+.cb-btn{position:absolute;right:max(4vw,12px);top:calc(12px + env(safe-area-inset-top));width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.94);color:#1f1915;display:grid;place-items:center;box-shadow:0 2px 10px rgba(0,0,0,.2);z-index:2}
+.cb-btn svg{width:22px;height:22px}
+.home-wrap{position:relative}
+/* ===== Bewegung ===== */
+.btn,.chip,.tabbar a,.tabbar button,.qi a,.heart-btn,.back-btn,.cb-btn,.pick,.daypick button{transition:transform .16s cubic-bezier(.3,.7,.4,1),background-color .2s,box-shadow .2s,color .2s}
+.btn:active,.chip:active,.qi a:active,.heart-btn:active,.back-btn:active,.cb-btn:active,.pick:active,.daypick button:active,.card:active{transform:scale(.96)}
+.tabbar a:active,.tabbar button:active{transform:scale(.9)}
+.ph img,.hero img,.daily img,.idea-photo{opacity:0;transition:opacity .4s ease}
+.ph img.ld,.hero img.ld,.daily img.ld,.idea-photo.ld{opacity:1}
+.skel{border-radius:18px;background:linear-gradient(100deg,var(--soft) 30%,var(--card) 50%,var(--soft) 70%);background-size:300% 100%;animation:shim 1.3s linear infinite}
+@keyframes shim{to{background-position:-150% 0}}
+@media(prefers-reduced-motion:no-preference){
+ .enter .cardw,.enter .day,.enter .qi a,.enter .cat-h,.enter .page-h,.enter .daily .txt,.enter .d-head,.enter .panel,.enter .seg,.enter .insp-box,.enter .week-nav{animation:rise .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(min(var(--i,0),10) * 40ms)}
+ @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+ .enter .daily img.ld{animation:kenb 1.4s cubic-bezier(.2,.8,.2,1) both}
+ @keyframes kenb{from{transform:scale(1.08)}to{transform:none}}
+ .ov{animation:ovIn .22s ease both}
+ .ov .sheet{animation:shUp .38s cubic-bezier(.2,.9,.25,1) both}
+ .ov.closing{animation:ovOut .2s ease forwards;pointer-events:none}
+ .ov.closing .sheet{animation:shDown .2s ease-in forwards}
+ @keyframes ovIn{from{background:rgba(10,6,4,0)}}
+ @keyframes ovOut{to{background:rgba(10,6,4,0)}}
+ @keyframes shUp{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+ @keyframes shDown{to{transform:translateY(50px);opacity:0}}
+ .toast{animation:tIn .32s cubic-bezier(.2,.9,.25,1) both, tOut .3s ease 2.85s forwards}
+ @keyframes tIn{from{opacity:0;transform:translate(-50%,16px) scale(.96)}}
+ @keyframes tOut{to{opacity:0;transform:translate(-50%,8px)}}
+ .tabbar [aria-current=page] svg{animation:tabPop .42s cubic-bezier(.3,1.6,.5,1)}
+ @keyframes tabPop{0%{transform:scale(.7)}100%{transform:none}}
+ .heart-btn.pop svg,.btn.fav.pop svg{animation:heartPop .55s cubic-bezier(.3,1.8,.5,1)}
+ @keyframes heartPop{0%{transform:scale(.4)}45%{transform:scale(1.35)}100%{transform:none}}
+ .stepper output.tick{animation:tick .3s cubic-bezier(.3,1.6,.5,1)}
+ @keyframes tick{0%{transform:scale(.8);opacity:.4}100%{transform:none;opacity:1}}
+ .saved-badge{animation:heartPop .5s cubic-bezier(.3,1.8,.5,1)}
+ .have .chip,.thumbs .t{animation:rise .3s cubic-bezier(.2,.8,.2,1) both}
+ ::view-transition-old(root),::view-transition-new(root){animation-duration:.28s}
+ ::view-transition-group(recipe-photo){animation-duration:.42s;animation-timing-function:cubic-bezier(.2,.85,.25,1)}
+ ::view-transition-old(recipe-photo),::view-transition-new(recipe-photo){height:100%;object-fit:cover;overflow:hidden}
+}
 /* Splash Screen */
 #splash{position:fixed;inset:0;z-index:100;background:#2e6a39;color:#fff;display:grid;place-items:center;transition:opacity .45s ease,visibility .45s}
 #splash.out{opacity:0;visibility:hidden}
@@ -304,7 +356,7 @@ body.detail .hero{width:100%;max-width:none;margin:0;border-radius:0;max-height:
 .zoom input{flex:1;accent-color:var(--tomato);height:44px}
 @media(max-width:600px){.top .btn{min-height:40px;padding:0 12px;font-size:14px}.top-in{gap:8px}}
 </style>
-<meta name="app-version" content="20261122094533">
+<meta name="app-version" content="20261122104458">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#2E6A39">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -490,6 +542,7 @@ const WD = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
 const dayLabel = (iso, long) => { const d = dayFromIso(iso); return long ? d.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' }) : `${WD[d.getDay()]}, ${d.getDate()}.${d.getMonth() + 1}.`; };
 async function toggleFav(id){
   const r = S.byId[id]; if (!r || !S.me) return;
+  S.popFav = isFav(r) ? null : id; setTimeout(() => { if (S.popFav === id) S.popFav = null; }, 900);
   const favBy = isFav(r) ? (r.favBy||[]).filter(x => x !== S.me) : [...(r.favBy||[]), S.me];
   try { await S.db.collection('recipes').doc(id).update({ favBy }); }
   catch { toast('Favorit konnte nicht gespeichert werden.'); }
@@ -504,12 +557,16 @@ function fmtDate(ts){ try { return new Date(ts).toLocaleDateString('de-DE',{day:
 
 function sheet(html, onMount){
   layer.innerHTML = `<div class="ov" role="dialog" aria-modal="true"><div class="sheet">${html}</div></div>`;
-  const ov = $('.ov', layer);
+  const ov = $('.ov:not(.closing)', layer);
   ov.addEventListener('click', e => { if (e.target === ov) closeSheet(); });
   onMount?.(ov);
   $('input,textarea,button', ov)?.focus();
 }
-function closeSheet(){ layer.innerHTML = ''; }
+function closeSheet(){
+  const ov = $('.ov:not(.closing)', layer); if (!ov) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { ov.remove(); return; }
+  ov.classList.add('closing'); setTimeout(() => ov.remove(), 210);
+}
 function confirmBox(title, text, okLabel, danger){
   return new Promise(res => {
     sheet(`<h2>${esc(title)}</h2><p>${esc(text)}</p><div class="btns"><button class="btn" data-a="no">Abbrechen</button><button class="btn ${danger?'danger':'primary'}" data-a="ok">${esc(okLabel)}</button></div>`, ov => {
@@ -625,7 +682,7 @@ function activeChips(){
     .map(([k, v, l]) => `<button type="button" class="chip" data-rmf="${k}" data-v="${esc(v)}" aria-label="Filter ${esc(l)} entfernen">${esc(l)} ×</button>`).join('');
 }
 function favBtn(r){
-  if (S.me && S.canWrite) return `<button type="button" class="heart-btn" data-act="fav" data-id="${esc(r.id)}" aria-pressed="${isFav(r)}" aria-label="${isFav(r) ? 'Aus Favoriten entfernen' : 'Als Favorit merken'}">${isFav(r) ? HEART_FULL : HEART}</button>`;
+  if (S.me && S.canWrite) return `<button type="button" class="heart-btn ${S.popFav === r.id ? 'pop' : ''}" data-act="fav" data-id="${esc(r.id)}" aria-pressed="${isFav(r)}" aria-label="${isFav(r) ? 'Aus Favoriten entfernen' : 'Als Favorit merken'}">${isFav(r) ? HEART_FULL : HEART}</button>`;
   return isFav(r) ? `<span class="heart-btn" title="Favorit">${HEART_FULL}</span>` : '';
 }
 function cardHTML(r){
@@ -639,7 +696,8 @@ function setTab(tab){
   $('#tabAdd').classList.toggle('hidden', !S.canWrite);
 }
 function loadingHTML(){
-  return `<div class="wrap"><p class="note">${S.slow ? 'Die Rezepte lassen sich gerade nicht laden. Prüfe die Verbindung – die Seite versucht es weiter.' : '<span class="spin"></span>&nbsp; Rezepte werden geladen …'}</p></div>`;
+  if (S.slow) return `<div class="wrap"><p class="note">Die Rezepte lassen sich gerade nicht laden. Prüfe die Verbindung – die Seite versucht es weiter.</p></div>`;
+  return `<div class="wrap" aria-busy="true" aria-label="Rezepte werden geladen"><div class="skel" style="height:34px;width:200px;margin:24px 0 14px"></div><div class="grid">${'<div class="skel" style="aspect-ratio:4/4.2"></div>'.repeat(4)}</div></div>`;
 }
 const loose = () => S.recipes.filter(r => !(r.cats || []).some(c => ALLCATS.includes(c)));
 function catItems(i){ return i === 'x' ? loose() : S.recipes.filter(r => (r.cats || []).includes(ALLCATS[i])); }
@@ -689,6 +747,22 @@ function renderQuickIdea(k){
   </div>`;
 }
 
+// ---------- Rezept des Tages ----------
+function dailyPick(){
+  const withPhoto = S.recipes.filter(r => photoSrc(r));
+  const list = (withPhoto.length ? withPhoto : S.recipes).slice().sort((a, b) => a.id < b.id ? -1 : 1);
+  if (!list.length) return null;
+  let h = 2166136261; for (const c of todayIso()) h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0;
+  return list[h % list.length];
+}
+const BOOK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 7h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+function dailyHTML(r){
+  return `<div class="home-wrap"><a class="daily" href="#r-${esc(r.id)}" aria-label="Rezept des Tages: ${esc(r.name)}">${photoSrc(r) ? `<img src="${esc(photoSrc(r))}" alt="">` : `<span class="plate">${PLATE}</span>`}<span class="scrim"></span>
+    <span class="brandmini" aria-hidden="true">spoonful</span>
+    <span class="txt"><span class="kick">Rezept des Tages</span><h2>${esc(r.name)}</h2>${factsHTML(r)}</span></a>
+    ${document.getElementById('sf-menu') ? `<button type="button" class="cb-btn" data-act="cookbook" aria-label="Kochbuch: Einladen, Name, Abmelden">${BOOK}</button>` : ''}</div>`;
+}
+
 // Start: pro Kategorie Überschrift + wischbare Rezeptkarten
 function renderStart(){
   setTab('start');
@@ -699,7 +773,9 @@ function renderStart(){
   }
   const rows = ALLCATS.map((c, i) => [c, i, catItems(i)]).filter(([, , it]) => it.length);
   const lo = loose(); if (lo.length) rows.push(['Ohne Kategorie', 'x', lo]);
-  app.innerHTML = `<div class="wrap">
+  const daily = dailyPick();
+  document.body.classList.toggle('home', !!daily);
+  app.innerHTML = `${daily ? dailyHTML(daily) : ''}<div class="wrap">
     ${quickIdeasHTML()}
     ${rows.map(([c, i, items]) => `<section class="cat" aria-label="${esc(c)}">
       <div class="cat-h"><h2>${esc(c)}</h2><a href="#k-${i}">Alle ${items.length} ›</a></div>
@@ -1223,10 +1299,10 @@ function renderDetail(id){
   <div class="hero">${photoHTML(r)}<a class="back-btn" href="#start" data-back aria-label="Zurück"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>${r.photoCredit && photoSrc(r) ? `<span class="credit">Foto: ${esc(creditText(r.photoCredit))}</span>` : ''}</div>
   <div class="wrap">
     <div class="d-head"><h2>${esc(r.name)}</h2>${r.desc ? `<p>${esc(r.desc)}</p>` : ''}${factsHTML(r)}${nutriHTML(r)}<div class="tags" style="margin-top:12px">${r.sample ? '<span class="tag sample">Beispiel</span>' : ''}${tagsHTML(r.cats)}</div>${utagsHTML(r.tags, true)}<div class="by" id="by">${esc(byLine(r))}</div>
-    ${S.canWrite ? `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">${S.me ? `<button type="button" class="btn fav" data-act="fav" data-id="${esc(id)}" aria-pressed="${isFav(r)}">${isFav(r) ? HEART_FULL + ' Favorit' : HEART + ' Als Favorit merken'}</button>` : ''}<button type="button" class="btn" data-act="plan-recipe" data-id="${esc(id)}">${CAL} Einplanen</button></div>` : ''}</div>
+    ${S.canWrite ? `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">${S.me ? `<button type="button" class="btn fav ${S.popFav === id ? 'pop' : ''}" data-act="fav" data-id="${esc(id)}" aria-pressed="${isFav(r)}">${isFav(r) ? HEART_FULL + ' Favorit' : HEART + ' Als Favorit merken'}</button>` : ''}<button type="button" class="btn" data-act="plan-recipe" data-id="${esc(id)}">${CAL} Einplanen</button></div>` : ''}</div>
     <div class="cols">
       <section class="panel"><h3>Zutaten</h3>
-        <div class="stepper" role="group" aria-label="Portionen"><button type="button" data-por="-1" aria-label="Weniger Portionen">−</button><output aria-live="polite">${p} ${p === 1 ? 'Portion' : 'Portionen'}</output><button type="button" data-por="1" aria-label="Mehr Portionen">+</button></div>
+        <div class="stepper" role="group" aria-label="Portionen"><button type="button" data-por="-1" aria-label="Weniger Portionen">−</button><output aria-live="polite" class="${S.porTick === id ? 'tick' : ''}">${p} ${p === 1 ? 'Portion' : 'Portionen'}</output><button type="button" data-por="1" aria-label="Mehr Portionen">+</button></div>
         ${p !== base ? `<p class="by" style="margin:-6px 0 10px">Umgerechnet von ${base} ${base===1?'Portion':'Portionen'} · <button class="linkish" style="min-height:0" data-por="0">zurücksetzen</button></p>` : ''}
         <ul class="ings">${(r.ingredients||[]).map(i => { const s = showQty(i.qty == null ? null : i.qty * f, i.unit); return `<li><span class="q ${p!==base && i.qty!=null ? 'changed':''}">${esc(s.text)} ${esc(s.unit||'')}</span><span>${esc(i.name)}</span></li>`; }).join('') || '<li><span></span><span class="by">Keine Zutaten eingetragen</span></li>'}</ul>
       </section>
@@ -1560,12 +1636,16 @@ async function takeShared(){
 }
 
 // ---------- Routing ----------
-function route(){
+const LIST_VIEWS = h => h === '' || h === 'start' || h === 'suche' || h === 'favoriten' || h === 'plan' || h.startsWith('k-') || h.startsWith('ideen-');
+S.scroll = {};
+function route(live){
   const h = location.hash.slice(1);
   if (F && !h.startsWith('e-') && h !== 'neu') { if (F.previewUrl) URL.revokeObjectURL(F.previewUrl); F = null; }
   if (h !== 'kategorien') CM = null;
   document.body.classList.toggle('detail', h.startsWith('r-'));
-  if (S.lastHash !== undefined && S.lastHash !== h) S.prevHash = S.lastHash;
+  document.body.classList.remove('home');
+  const changed = S.lastHash !== h;
+  if (S.lastHash !== undefined && changed) { S.prevHash = S.lastHash; S.scroll[S.lastHash] = { y: window.scrollY, rails: $$('.rail').map(r => r.scrollLeft) }; }
   if (h.startsWith('r-')) renderDetail(h.slice(2));
   else if (h.startsWith('e-')) renderForm(h.slice(2));
   else if (h === 'neu') renderForm(null);
@@ -1577,8 +1657,39 @@ function route(){
   else if (h.startsWith('k-')) renderCat(h.slice(2));
   else if (h.startsWith('ideen-')) renderQuickIdea(h.slice(6));
   else renderStart();
-  if (S.lastHash !== h) window.scrollTo(0, 0);
+  if (changed) {
+    const mem = LIST_VIEWS(h) && S.scroll[h]; // Listen: Scrollposition von vorher wiederherstellen
+    window.scrollTo(0, mem ? mem.y : 0);
+    if (mem) $$('.rail').forEach((r, i) => { r.scrollLeft = mem.rails[i] || 0; });
+  }
   S.lastHash = h;
+  if (!live && changed) playEnter();
+  markLoaded();
+}
+// Einblend-Animation der neuen Ansicht (gestaffelt)
+function playEnter(){
+  app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter');
+  let i = 0; $$('.cardw, .day, .qi a, .cat-h, .page-h, .d-head, .panel', app).forEach(el => { const r = el.getBoundingClientRect(); el.style.setProperty('--i', r.top < innerHeight + 50 ? i++ : 0); });
+  clearTimeout(S.enterT); S.enterT = setTimeout(() => app.classList.remove('enter'), 1500);
+}
+// Bilder weich einblenden
+function markLoaded(){ $$('img').forEach(i => { if (i.complete && i.naturalWidth) i.classList.add('ld'); }); setTimeout(() => $$('img:not(.ld)').forEach(i => i.classList.add('ld')), 2500); }
+document.addEventListener('load', e => { if (e.target.tagName === 'IMG') e.target.classList.add('ld'); }, true);
+document.addEventListener('error', e => { if (e.target.tagName === 'IMG') e.target.classList.add('ld'); }, true);
+// Seitenwechsel mit View Transition; das Rezeptfoto „fliegt“ von der Karte in die Rezeptseite und zurück
+const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+function navigate(){
+  if (!document.startViewTransition || reduceMotion() || $('.ov:not(.closing)', layer)) { route(); return; }
+  const to = location.hash.slice(1), from = S.lastHash || '';
+  const back = from.startsWith('r-') && !to.startsWith('r-') && !to.startsWith('e-') ? from.slice(2) : null;
+  if (back) { const hi = $('.hero img'); if (hi) hi.style.viewTransitionName = 'recipe-photo'; }
+  const tr = document.startViewTransition(() => {
+    $$('[style*="view-transition-name"]').forEach(el => { if (!el.classList.contains('vt-src')) el.style.viewTransitionName = ''; });
+    route();
+    if (to.startsWith('r-')) { const img = $('.hero img'); if (img) img.style.viewTransitionName = 'recipe-photo'; }
+    if (back) { const img = [...$$(`a[href="#r-${CSS.escape(back)}"] img`)].find(i => { const r = i.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; }); if (img) img.style.viewTransitionName = 'recipe-photo'; }
+  });
+  tr.finished.finally(() => $$('[style*="view-transition-name"]').forEach(el => { el.style.viewTransitionName = ''; el.classList.remove('vt-src'); }));
 }
 function rerenderLive(){
   const h = location.hash.slice(1);
@@ -1586,8 +1697,8 @@ function rerenderLive(){
   if (h.startsWith('r-')) {
     const id = h.slice(2);
     if (!S.byId[id] && S.loaded) { toast('Dieses Rezept wurde gelöscht.'); location.hash = 'start'; return; }
-    const y = window.scrollY; renderDetail(id); window.scrollTo(0, y);
-  } else { const y = window.scrollY, rails = $$('.rail').map(r => r.scrollLeft); route(); window.scrollTo(0, y); $$('.rail').forEach((r, i) => { r.scrollLeft = rails[i] || 0; }); }
+    const y = window.scrollY; renderDetail(id); window.scrollTo(0, y); markLoaded();
+  } else { const y = window.scrollY, rails = $$('.rail').map(r => r.scrollLeft); route(true); window.scrollTo(0, y); $$('.rail').forEach((r, i) => { r.scrollLeft = rails[i] || 0; }); }
 }
 
 // ---------- Events ----------
@@ -1641,8 +1752,8 @@ app.addEventListener('click', e => {
   if (por) {
     const id = location.hash.slice(3), r = S.byId[id]; if (!r) return;
     const base = r.servings || 1, d = +por.dataset.por;
-    S.portions[id] = d === 0 ? base : Math.max(1, Math.min(99, (S.portions[id] || base) + d));
-    const y = window.scrollY; renderDetail(id); window.scrollTo(0, y); return;
+    S.portions[id] = d === 0 ? base : Math.max(1, Math.min(99, (S.portions[id] || base) + d)); S.porTick = id;
+    const y = window.scrollY; renderDetail(id); window.scrollTo(0, y); markLoaded(); setTimeout(() => { S.porTick = null; }, 350); return;
   }
   const go = t.closest('[data-go]'); if (go) { location.hash = go.dataset.go; return; }
   const back = t.closest('[data-back]'); if (back && S.prevHash != null && !S.prevHash.startsWith('e-') && S.prevHash !== 'neu' && history.length > 1) { e.preventDefault(); history.back(); return; }
@@ -1661,6 +1772,7 @@ app.addEventListener('click', e => {
   if (act === 'delete') { del(t.closest('[data-act]').dataset.id); return; }
   if (act === 'fav') { toggleFav(t.closest('[data-act]').dataset.id); return; }
   if (act === 'export') { openExport(); return; }
+  if (act === 'cookbook') { document.getElementById('sf-menu')?.click(); return; }
   if (act === 'inspo-more') { getIdeas(true); return; }
   if (act === 'plan-recipe') { const id = t.closest('[data-act]').dataset.id; openPlanDay(id, S.portions[id]); return; }
   if (act === 'plan-fill') { openPlanFill(); return; }
@@ -1686,8 +1798,13 @@ app.addEventListener('keydown', e => {
 $('#tabAdd').addEventListener('click', openAdd);
 $('#tabbar').addEventListener('click', e => { const a = e.target.closest('[data-tab]'); if (a && location.hash === '#' + a.dataset.tab) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); if (a.dataset.tab === 'suche') $('#q')?.focus(); } else if (a?.dataset.tab === 'suche') S.focusSearch = true; });
 document.addEventListener('click', e => { const f = e.target.closest('#layer [data-act="fav"]'); if (f) toggleFav(f.dataset.id); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && layer.innerHTML) closeSheet(); });
-window.addEventListener('hashchange', route);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('.ov:not(.closing)', layer)) closeSheet(); });
+window.addEventListener('hashchange', navigate);
+// Karte angetippt: ihr Foto für den Übergang markieren
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href^="#r-"]'); if (!a || e.target.closest('[data-act]')) return;
+  const img = a.querySelector('img'); if (img && document.startViewTransition && !reduceMotion()) { img.style.viewTransitionName = 'recipe-photo'; img.classList.add('vt-src'); }
+}, true);
 
 // ---------- Start ----------
 route();
