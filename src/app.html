@@ -28,7 +28,8 @@ button{cursor:pointer}
 .top-in{max-width:1180px;margin:auto;padding:0 max(5vw,16px);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;margin-right:auto}
 .brand h1{font-family:Outfit,Figtree,sans-serif;font-size:clamp(34px,6vw,46px);font-weight:700;letter-spacing:-.04em;display:flex;align-items:baseline;line-height:1}
-.brand h1 svg{height:.74em;width:.62em;flex:none;margin:0 .05em -.2em .02em}
+.brand h1{align-items:center}
+.brand h1 .pot{height:.95em;width:1.12em;flex:none;margin:0 .22em 0 0;overflow:visible}
 .quick .chip[aria-pressed=true]{background:var(--saffron);border-color:var(--saffron);color:#1f1915}
 .chip svg,.fav svg{width:16px;height:16px;vertical-align:-3px}
 .facts{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;font-size:13px;color:var(--muted)}
@@ -195,6 +196,7 @@ body.home .top{display:none}
 .daily h2{font-size:clamp(30px,8vw,46px);line-height:1.05;margin:0 0 8px;text-shadow:0 2px 14px rgba(0,0,0,.35);color:#fff}
 .daily .facts{color:#fff;opacity:.92}
 .daily .facts b{color:#fff}
+.daily .brandmini .pot{height:.95em;width:1.12em;margin-right:.25em;vertical-align:-.12em;overflow:visible}
 .daily .brandmini{position:absolute;left:max(5vw,16px);top:calc(16px + env(safe-area-inset-top));font-family:Outfit,Figtree,sans-serif;font-weight:700;font-size:22px;letter-spacing:-.03em;opacity:.95;text-shadow:0 1px 8px rgba(0,0,0,.35)}
 .cb-btn{position:absolute;right:max(4vw,12px);top:calc(12px + env(safe-area-inset-top));width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.94);color:#1f1915;display:grid;place-items:center;box-shadow:0 2px 10px rgba(0,0,0,.2);z-index:2}
 .cb-btn svg{width:22px;height:22px}
@@ -291,16 +293,19 @@ html.splashing,html.splashing body{background:#2e6a39 !important}
 @supports not (height:100lvh){#splash{height:calc(100vh + env(safe-area-inset-bottom) + 80px)}}
 #splash .sp-in{position:fixed;top:0;left:0;right:0;height:100%;max-height:100dvh;justify-content:center;display:flex;flex-direction:column;align-items:center;gap:14px}
 #splash h1{margin:0;font-family:Outfit,Figtree,sans-serif;font-size:clamp(54px,15vw,84px);font-weight:700;letter-spacing:-.04em;display:flex;align-items:baseline;line-height:1}
-#splash h1 svg{height:.74em;width:.62em;flex:none;margin:0 .05em -.2em .02em}
+#splash .sp-pot{width:118px;height:100px;overflow:visible;margin-bottom:4px}
 #splash p{margin:0;font-size:16px;opacity:.85;letter-spacing:.02em}
 @media(prefers-reduced-motion:no-preference){
- #splash .l{display:inline-block;opacity:0;transform:translateY(14px);animation:spUp .5s cubic-bezier(.2,.8,.2,1) forwards}
- #splash .l:nth-child(2){animation-delay:.06s}
- #splash .spoon{transform-origin:50% 30%;animation:spSpoon .9s cubic-bezier(.3,1.5,.5,1) .15s both}
- #splash .l:nth-child(4){animation-delay:.22s}#splash .l:nth-child(5){animation-delay:.28s}#splash .l:nth-child(6){animation-delay:.34s}#splash .l:nth-child(7){animation-delay:.4s}#splash .l:nth-child(8){animation-delay:.46s}
- #splash p{opacity:0;animation:spFade .6s ease .7s forwards}
+ #splash .l{display:inline-block;opacity:0;transform:translateY(14px);animation:spUp .5s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(.35s + var(--k) * .05s)}
+ #splash .po{transform-origin:50px 80px;animation:spPot .6s cubic-bezier(.3,1.5,.5,1) both}
+ #splash .sl{animation:spSpoon .7s cubic-bezier(.3,1.4,.5,1) .25s both}
+ #splash .st path{stroke-dasharray:30;animation:spSteam 1.6s ease-out .55s both}
+ #splash .st path:nth-child(2){animation-delay:.75s}
+ #splash p{opacity:0;animation:spFade .6s ease .85s forwards}
  @keyframes spUp{to{opacity:1;transform:none}}
- @keyframes spSpoon{0%{opacity:0;transform:translateY(-40px) rotate(-40deg) scale(.6)}60%{opacity:1}100%{opacity:1;transform:none}}
+ @keyframes spPot{0%{opacity:0;transform:scale(.4)}100%{opacity:1;transform:none}}
+ @keyframes spSpoon{0%{opacity:0;transform:translate(14px,-30px) rotate(12deg)}100%{opacity:1;transform:none}}
+ @keyframes spSteam{0%{opacity:0;stroke-dashoffset:30;transform:translateY(6px)}40%{opacity:.85}100%{opacity:.75;stroke-dashoffset:0;transform:none}}
  @keyframes spFade{to{opacity:.85}}
 }
 /* Rezeptseite ohne Kopfleiste */
@@ -410,7 +415,7 @@ body.detail .hero{width:100%;max-width:none;margin:0;border-radius:0;max-height:
 </style>
 </head>
 <body>
-<div id="splash" aria-hidden="true"><div class="sp-in"><h1><span class="l">s</span><span class="l">p</span><svg class="spoon" viewBox="0 30 60 70"><ellipse cx="29" cy="57" rx="22" ry="24" fill="#fff"/><ellipse cx="24" cy="50" rx="7" ry="9" fill="#2e6a39" fill-opacity=".18"/><path d="M40,76 L56,99" stroke="#fff" stroke-width="9" stroke-linecap="round"/></svg><span class="l">o</span><span class="l">n</span><span class="l">f</span><span class="l">u</span><span class="l">l</span></h1><p>Euer gemeinsames Kochbuch</p></div></div>
+<div id="splash" aria-hidden="true"><div class="sp-in"><svg class="sp-pot" viewBox="5 8 90 76" aria-hidden="true"><g class="st"><path d="M36 30 q-5 -6 0 -11" fill="none" stroke="#FFF8EE" stroke-width="3.6" stroke-linecap="round"/><path d="M50 27 q-5 -6 0 -11" fill="none" stroke="#FFF8EE" stroke-width="3.6" stroke-linecap="round"/></g><path class="sl" d="M60 50 L78 14" stroke="#F2B33D" stroke-width="6.5" stroke-linecap="round"/><g class="po"><path d="M20 48 h60 v18 a14 14 0 0 1 -14 14 h-32 a14 14 0 0 1 -14 -14 z" fill="#FFF8EE"/><rect x="15" y="44" width="70" height="8" rx="4" fill="#FFF8EE"/><path d="M15 56 h-5 M85 56 h5" stroke="#FFF8EE" stroke-width="5" stroke-linecap="round"/></g></svg><h1><span class="l" style="--k:0">s</span><span class="l" style="--k:1">p</span><span class="l" style="--k:2">o</span><span class="l" style="--k:3">o</span><span class="l" style="--k:4">n</span><span class="l" style="--k:5">f</span><span class="l" style="--k:6">u</span><span class="l" style="--k:7">l</span></h1><p>Euer gemeinsames Kochbuch</p></div></div>
 <script>
 // Splash nur beim Start der installierten bzw. mobilen App, einmal pro Sitzung
 (function(){
@@ -425,7 +430,7 @@ body.detail .hero{width:100%;max-width:none;margin:0;border-radius:0;max-height:
 </script>
 <header class="top"><div class="top-in">
  <a class="brand" href="#start" aria-label="Spoonful – Startseite">
-  <h1>sp<svg viewBox="0 30 60 70" aria-hidden="true"><ellipse cx="29" cy="57" rx="22" ry="24" fill="#fff"/><ellipse cx="24" cy="50" rx="7" ry="9" fill="#2e6a39" fill-opacity=".18"/><path d="M40,76 L56,99" stroke="#fff" stroke-width="9" stroke-linecap="round"/></svg>onful</h1>
+  <h1><svg class="pot" viewBox="5 8 90 76" aria-hidden="true"><path d="M36 30 q-5 -6 0 -11 M50 27 q-5 -6 0 -11" fill="none" stroke="#FFF8EE" stroke-width="3.6" stroke-linecap="round" opacity=".75"/><path d="M60 50 L78 14" stroke="#F2B33D" stroke-width="6.5" stroke-linecap="round"/><path d="M20 48 h60 v18 a14 14 0 0 1 -14 14 h-32 a14 14 0 0 1 -14 -14 z" fill="#FFF8EE"/><rect x="15" y="44" width="70" height="8" rx="4" fill="#FFF8EE"/><path d="M15 56 h-5 M85 56 h5" stroke="#FFF8EE" stroke-width="5" stroke-linecap="round"/></svg>spoonful</h1>
  </a>
 </div></header>
 <main id="app" aria-live="polite"></main>
@@ -799,10 +804,11 @@ function dailyPick(){
   let h = 2166136261; for (const c of todayIso()) h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0;
   return list[h % list.length];
 }
+const POT_SVG = '<svg class="pot" viewBox="5 8 90 76" aria-hidden="true"><path d="M36 30 q-5 -6 0 -11 M50 27 q-5 -6 0 -11" fill="none" stroke="#FFF8EE" stroke-width="3.6" stroke-linecap="round" opacity=".75"/><path d="M60 50 L78 14" stroke="#F2B33D" stroke-width="6.5" stroke-linecap="round"/><path d="M20 48 h60 v18 a14 14 0 0 1 -14 14 h-32 a14 14 0 0 1 -14 -14 z" fill="#FFF8EE"/><rect x="15" y="44" width="70" height="8" rx="4" fill="#FFF8EE"/><path d="M15 56 h-5 M85 56 h5" stroke="#FFF8EE" stroke-width="5" stroke-linecap="round"/></svg>';
 const BOOK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 7h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 function dailyHTML(r){
   return `<div class="home-wrap"><a class="daily" href="#r-${esc(r.id)}" aria-label="Rezept des Tages: ${esc(r.name)}">${photoSrc(r) ? `<img src="${esc(photoSrc(r))}" alt="">` : `<span class="plate">${PLATE}</span>`}<span class="scrim"></span>
-    <span class="brandmini" aria-hidden="true">spoonful</span>
+    <span class="brandmini" aria-hidden="true">${POT_SVG}spoonful</span>
     <span class="txt"><span class="kick">Rezept des Tages</span><h2>${esc(r.name)}</h2>${factsHTML(r)}</span></a>
     ${document.getElementById('sf-menu') ? `<button type="button" class="cb-btn" data-act="cookbook" aria-label="Kochbuch: Einladen, Name, Abmelden">${BOOK}</button>` : ''}</div>`;
 }

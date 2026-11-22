@@ -1,5 +1,5 @@
 // Spoonful – Offline-Grundgerüst. App-Dateien kommen aus dem Cache, wenn kein Netz da ist.
-const CACHE = 'spoonful-v6';
+const CACHE = 'spoonful-v7';
 const SHARE = 'spoonful-share'; // vom Teilen-Menü übergebene Fotos/Texte, bis die App sie abholt
 const SHELL = ['./', './index.html', './config.js', './shim.js', './manifest.json', './icons/icon-192.png', './icons/icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
