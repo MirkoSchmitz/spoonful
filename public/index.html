@@ -182,6 +182,36 @@ button{cursor:pointer}
 .idea-sheet h3{font-size:20px;margin:14px 0 8px}
 .idea-sheet ul,.idea-sheet ol{padding-left:20px;margin:0}
 .idea-sheet li{padding:3px 0}
+/* Splash Screen */
+#splash{position:fixed;inset:0;z-index:100;background:#2e6a39;color:#fff;display:grid;place-items:center;transition:opacity .45s ease,visibility .45s}
+#splash.out{opacity:0;visibility:hidden}
+#splash .sp-in{display:flex;flex-direction:column;align-items:center;gap:14px}
+#splash h1{margin:0;font-family:Outfit,Figtree,sans-serif;font-size:clamp(54px,15vw,84px);font-weight:700;letter-spacing:-.04em;display:flex;align-items:baseline;line-height:1}
+#splash h1 svg{height:.74em;width:.62em;flex:none;margin:0 .05em -.2em .02em}
+#splash p{margin:0;font-size:16px;opacity:.85;letter-spacing:.02em}
+@media(prefers-reduced-motion:no-preference){
+ #splash .l{display:inline-block;opacity:0;transform:translateY(14px);animation:spUp .5s cubic-bezier(.2,.8,.2,1) forwards}
+ #splash .l:nth-child(2){animation-delay:.06s}
+ #splash .spoon{transform-origin:50% 30%;animation:spSpoon .9s cubic-bezier(.3,1.5,.5,1) .15s both}
+ #splash .l:nth-child(4){animation-delay:.22s}#splash .l:nth-child(5){animation-delay:.28s}#splash .l:nth-child(6){animation-delay:.34s}#splash .l:nth-child(7){animation-delay:.4s}#splash .l:nth-child(8){animation-delay:.46s}
+ #splash p{opacity:0;animation:spFade .6s ease .7s forwards}
+ @keyframes spUp{to{opacity:1;transform:none}}
+ @keyframes spSpoon{0%{opacity:0;transform:translateY(-40px) rotate(-40deg) scale(.6)}60%{opacity:1}100%{opacity:1;transform:none}}
+ @keyframes spFade{to{opacity:.85}}
+}
+/* Rezeptseite ohne Kopfleiste */
+body.detail .top{display:none}
+.back-btn{position:absolute;left:max(4vw,12px);top:calc(12px + env(safe-area-inset-top));width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.94);color:#1f1915;display:grid;place-items:center;box-shadow:0 2px 10px rgba(0,0,0,.2);z-index:2;text-decoration:none}
+.back-btn svg{width:22px;height:22px;opacity:1}
+body.detail .hero{width:100%;max-width:none;margin:0;border-radius:0;max-height:70vh}
+@media(min-width:820px){body.detail .hero{aspect-ratio:auto;height:min(60vh,560px)}}
+/* Schnelle Kochideen */
+.qi{display:flex;gap:10px;overflow-x:auto;padding:2px max(5vw,16px) 8px;margin:0 calc(-1 * max(5vw,16px));scrollbar-width:none}
+.qi::-webkit-scrollbar{display:none}
+@media(min-width:1240px){.qi{margin:0;padding-inline:2px;flex-wrap:wrap}}
+.qi a{flex:none;display:flex;align-items:center;gap:10px;min-height:56px;padding:6px 18px 6px 6px;border-radius:999px;background:var(--card);border:1.5px solid var(--line);color:var(--ink);text-decoration:none;font-weight:700;font-size:15px;white-space:nowrap}
+.qi .ic{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:23px;background:var(--qc,var(--soft))}
+.qi small{display:block;font-weight:500;font-size:12px;color:var(--muted)}
 /* Wochenplan */
 .week-nav{display:flex;align-items:center;gap:8px;margin:6px 0 14px}
 .week-nav b{flex:1;text-align:center;font-size:15px}
@@ -274,7 +304,7 @@ button{cursor:pointer}
 .zoom input{flex:1;accent-color:var(--tomato);height:44px}
 @media(max-width:600px){.top .btn{min-height:40px;padding:0 12px;font-size:14px}.top-in{gap:8px}}
 </style>
-<meta name="app-version" content="20261122094219">
+<meta name="app-version" content="20261122094533">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#2E6A39">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -287,6 +317,18 @@ button{cursor:pointer}
 <script src="shim.js"></script>
 </head>
 <body>
+<div id="splash" aria-hidden="true"><div class="sp-in"><h1><span class="l">s</span><span class="l">p</span><svg class="spoon" viewBox="0 30 60 70"><ellipse cx="29" cy="57" rx="22" ry="24" fill="#fff"/><ellipse cx="24" cy="50" rx="7" ry="9" fill="#2e6a39" fill-opacity=".18"/><path d="M40,76 L56,99" stroke="#fff" stroke-width="9" stroke-linecap="round"/></svg><span class="l">o</span><span class="l">n</span><span class="l">f</span><span class="l">u</span><span class="l">l</span></h1><p>Euer gemeinsames Kochbuch</p></div></div>
+<script>
+// Splash nur beim Start der installierten bzw. mobilen App, einmal pro Sitzung
+(function(){
+  var el = document.getElementById('splash'), show = false;
+  try { show = (matchMedia('(display-mode: standalone)').matches || navigator.standalone || matchMedia('(max-width: 760px)').matches) && !sessionStorage.getItem('sf-splash'); sessionStorage.setItem('sf-splash', '1'); } catch (e) {}
+  if (!show) { el.remove(); window.hideSplash = function(){}; return; }
+  var t0 = Date.now(), done = false;
+  window.hideSplash = function(){ if (done) return; done = true; setTimeout(function(){ el.classList.add('out'); setTimeout(function(){ el.remove(); }, 500); }, Math.max(0, 1300 - (Date.now() - t0))); };
+  setTimeout(window.hideSplash, 2600); // spätestens dann weg, auch ohne Netz
+})();
+</script>
 <header class="top"><div class="top-in">
  <a class="brand" href="#start" aria-label="Spoonful – Startseite">
   <h1>sp<svg viewBox="0 30 60 70" aria-hidden="true"><ellipse cx="29" cy="57" rx="22" ry="24" fill="#fff"/><ellipse cx="24" cy="50" rx="7" ry="9" fill="#2e6a39" fill-opacity=".18"/><path d="M40,76 L56,99" stroke="#fff" stroke-width="9" stroke-linecap="round"/></svg>onful</h1>
@@ -602,6 +644,51 @@ function loadingHTML(){
 const loose = () => S.recipes.filter(r => !(r.cats || []).some(c => ALLCATS.includes(c)));
 function catItems(i){ return i === 'x' ? loose() : S.recipes.filter(r => (r.cats || []).includes(ALLCATS[i])); }
 
+// ---------- Schnelle Kochideen ----------
+const MONTHS = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+// Saisonkalender (Deutschland, Freiland/Lager) – grob, pro Monat
+const SEASON = [
+  ['Grünkohl','Rosenkohl','Wirsing','Rotkohl','Weißkohl','Lauch','Porree','Pastinake','Rote Bete','Schwarzwurzel','Feldsalat','Chicorée','Topinambur','Steckrübe','Kürbis','Sellerie','Möhre','Karotte','Apfel','Birne'],
+  ['Grünkohl','Rosenkohl','Wirsing','Rotkohl','Weißkohl','Lauch','Porree','Pastinake','Rote Bete','Schwarzwurzel','Feldsalat','Chicorée','Topinambur','Steckrübe','Sellerie','Möhre','Karotte','Apfel'],
+  ['Bärlauch','Spinat','Lauch','Porree','Rote Bete','Pastinake','Feldsalat','Chicorée','Rotkohl','Wirsing','Möhre','Karotte','Sellerie','Apfel'],
+  ['Bärlauch','Spargel','Spinat','Radieschen','Rhabarber','Frühlingszwiebel','Lauch','Porree','Rucola','Kohlrabi'],
+  ['Spargel','Rhabarber','Radieschen','Kohlrabi','Spinat','Rucola','Frühlingszwiebel','Mangold','Erdbeere','Salat','Blumenkohl'],
+  ['Spargel','Erdbeere','Kohlrabi','Zucchini','Erbsen','Brokkoli','Blumenkohl','Mangold','Radieschen','Frühkartoffel','Salat','Kirsche','Rhabarber','Fenchel'],
+  ['Zucchini','Tomate','Gurke','Bohnen','Erbsen','Brokkoli','Blumenkohl','Fenchel','Kirsche','Himbeere','Heidelbeere','Johannisbeere','Aprikose','Paprika','Mais','Mangold','Salat'],
+  ['Zucchini','Tomate','Gurke','Aubergine','Paprika','Bohnen','Mais','Brokkoli','Fenchel','Pfifferling','Heidelbeere','Brombeere','Pflaume','Zwetschge','Mirabelle','Pfirsich','Salat'],
+  ['Kürbis','Zwetschge','Pflaume','Apfel','Birne','Tomate','Paprika','Aubergine','Mais','Bohnen','Brokkoli','Fenchel','Lauch','Pilze','Pfifferling','Steinpilz','Rotkohl','Weißkohl','Zucchini','Trauben'],
+  ['Kürbis','Apfel','Birne','Quitte','Pilze','Steinpilz','Maronen','Esskastanie','Rotkohl','Weißkohl','Wirsing','Rosenkohl','Lauch','Porree','Pastinake','Rote Bete','Feldsalat','Sellerie','Trauben','Walnuss'],
+  ['Kürbis','Grünkohl','Rosenkohl','Wirsing','Rotkohl','Weißkohl','Lauch','Porree','Pastinake','Rote Bete','Schwarzwurzel','Feldsalat','Topinambur','Steckrübe','Maronen','Esskastanie','Sellerie','Möhre','Apfel','Birne','Quitte'],
+  ['Grünkohl','Rosenkohl','Wirsing','Rotkohl','Weißkohl','Lauch','Porree','Pastinake','Rote Bete','Schwarzwurzel','Feldsalat','Topinambur','Steckrübe','Maronen','Kürbis','Sellerie','Möhre','Apfel','Birne']
+];
+const seasonNow = () => SEASON[new Date().getMonth()];
+const seasonHits = r => { const words = seasonNow().map(w => stem(normWord(w))); return (r.ingredients || []).filter(i => hasIng(i.name || '', words)).map(i => i.name); };
+// Landesküche: aus der Nährwert-Schätzung (r.cuisine), sonst über typische Gerichtsnamen
+const INTL_WORDS = /curry|dal|masala|tikka|paneer|naan|sushi|ramen|udon|miso|teriyaki|pad thai|thai|pho|bao|dim sum|kimchi|bibimbap|bulgogi|wok|tofu|taco|burrito|quesadilla|enchilada|chili con|fajita|guacamole|nacho|pasta|spaghetti|lasagne|risotto|pizza|gnocchi|carbonara|bolognese|pesto|tiramisu|bruschetta|focaccia|paella|tapas|gazpacho|tortilla|shakshuka|hummus|falafel|couscous|tajine|tabouleh|baba ganoush|moussaka|gyros|souvlaki|tzatziki|börek|köfte|lahmacun|ratatouille|quiche|crêpe|crepe|bouillabaisse|gulasch|borschtsch|pierogi|poke|harissa|jollof|ceviche|empanada/i;
+const isIntl = r => r.cuisine ? !/^(deutsch|österreich|schweiz)/i.test(r.cuisine) : INTL_WORDS.test(`${r.name} ${r.desc || ''}`);
+const QUICK_IDEAS = {
+  saison: { label: 'Saisonküche', icon: '🍂', color: '#f6e3c8', items: () => S.recipes.filter(r => seasonHits(r).length), wish: () => `Saisonale Gerichte im ${MONTHS[new Date().getMonth()]} mit ${seasonNow().slice(0, 8).join(', ')}` },
+  veggie: { label: 'Vegetarisch & Vegan', icon: '🥦', color: '#dcefd9', items: () => S.recipes.filter(r => (r.cats || []).some(c => /^(vegan|vegetarisch)$/i.test(c))), wish: () => 'Vegetarische oder vegane Gerichte, die richtig satt machen' },
+  intl: { label: 'Internationale Küche', icon: '🌍', color: '#d9e8f6', items: () => S.recipes.filter(isIntl), wish: () => 'Abwechslungsreiche Gerichte aus verschiedenen Ländern der Welt' },
+  backen: { label: 'Backen', icon: '🥐', color: '#f6dccf', items: () => S.recipes.filter(r => (r.cats || []).some(c => /^backen$/i.test(c))), wish: () => 'Etwas Leckeres zum Backen, süß oder herzhaft' }
+};
+function quickIdeasHTML(){
+  return `<section class="cat" aria-label="Schnelle Kochideen"><div class="cat-h"><h2>Schnelle Kochideen</h2></div>
+    <div class="qi">${Object.entries(QUICK_IDEAS).map(([k, q]) => { const n = q.items().length; return `<a href="#ideen-${k}" style="--qc:${q.color}"><span class="ic" aria-hidden="true">${q.icon}</span><span>${esc(q.label)}<small>${k === 'saison' ? esc(MONTHS[new Date().getMonth()]) + ' · ' : ''}${n} ${n === 1 ? 'Rezept' : 'Rezepte'}</small></span></a>`; }).join('')}</div></section>`;
+}
+function renderQuickIdea(k){
+  setTab('start');
+  const q = QUICK_IDEAS[k]; if (!q) { location.hash = 'start'; return; }
+  if (!S.loaded) { app.innerHTML = loadingHTML(); return; }
+  const items = q.items(), month = MONTHS[new Date().getMonth()];
+  app.innerHTML = `<div class="wrap"><div class="page-h"><a class="btn" href="#start" aria-label="Zurück zur Übersicht">←</a><h2>${q.icon} ${esc(q.label)}</h2></div>
+    ${k === 'saison' ? `<p class="by" style="margin:0 0 6px">Im ${month} hat Saison: ${esc(seasonNow().join(', '))}.</p>` : ''}
+    <p class="by" style="margin:0 0 14px">${items.length ? `${items.length} ${items.length === 1 ? 'Rezept' : 'Rezepte'} aus eurem Kochbuch` : 'Dazu habt ihr noch keine Rezepte.'}</p>
+    ${items.length ? `<div class="grid">${items.map(r => k === 'saison' ? `<div style="display:flex;flex-direction:column">${cardHTML(r)}<p class="miss">mit ${esc([...new Set(seasonHits(r))].slice(0, 3).join(', '))}</p></div>` : cardHTML(r)).join('')}</div>` : ''}
+    ${typeof S.sample?.inspire === 'function' ? `<div class="empty" style="margin-top:22px"><p>Lust auf etwas Neues?</p><button class="btn primary" data-qinspo="${k}">Neue Ideen von Claude</button></div>` : ''}
+  </div>`;
+}
+
 // Start: pro Kategorie Überschrift + wischbare Rezeptkarten
 function renderStart(){
   setTab('start');
@@ -613,6 +700,7 @@ function renderStart(){
   const rows = ALLCATS.map((c, i) => [c, i, catItems(i)]).filter(([, , it]) => it.length);
   const lo = loose(); if (lo.length) rows.push(['Ohne Kategorie', 'x', lo]);
   app.innerHTML = `<div class="wrap">
+    ${quickIdeasHTML()}
     ${rows.map(([c, i, items]) => `<section class="cat" aria-label="${esc(c)}">
       <div class="cat-h"><h2>${esc(c)}</h2><a href="#k-${i}">Alle ${items.length} ›</a></div>
       <div class="rail-w"><button type="button" class="rail-btn prev" data-rail="-1" aria-label="Zurück">‹</button><div class="rail">${items.map(cardHTML).join('')}</div><button type="button" class="rail-btn next" data-rail="1" aria-label="Weiter">›</button></div>
@@ -1048,8 +1136,8 @@ async function estimateNutrition(list){
   const items = list.slice(0, 8).filter(r => (r.ingredients || []).length);
   if (!items.length) return 0;
   const prompt = `Schätze die Nährwerte PRO PORTION für diese Rezepte (realistische Durchschnittswerte, übliche Lebensmitteldaten). Antworte NUR mit JSON:
-{"results":[{"id":string,"kcal":number,"protein":number,"carbs":number,"fat":number}]}
-protein, carbs, fat in Gramm, alles gerundet. Rezepte:
+{"results":[{"id":string,"kcal":number,"protein":number,"carbs":number,"fat":number,"cuisine":string}]}
+protein, carbs, fat in Gramm, alles gerundet. cuisine = Landesküche in einem Wort, kleingeschrieben (z. B. deutsch, italienisch, indisch, mexikanisch, thailändisch, japanisch, orientalisch, französisch, griechisch, amerikanisch, international). Rezepte:
 ${JSON.stringify(items.map(r => ({ id: r.id, name: r.name, portionen: r.servings || 1, zutaten: r.ingredients.map(ingLine) })))}`;
   try {
     const j = await S.sample.json(prompt);
@@ -1058,7 +1146,8 @@ ${JSON.stringify(items.map(r => ({ id: r.id, name: r.name, portionen: r.servings
       const cur = S.byId[res.id] || items.find(r => r.id === res.id); if (!cur) continue;
       const nut = cleanNutri(res, cur); if (!nut) continue;
       if (S.byId[res.id] && nutriKey(S.byId[res.id]) !== nut.v) continue; // inzwischen geändert
-      try { await S.db.collection('recipes').doc(res.id).update({ nutrition: nut }); n++; } catch {}
+      const cuisine = typeof res.cuisine === 'string' && res.cuisine.trim() ? res.cuisine.trim().toLowerCase().slice(0, 30) : null;
+      try { await S.db.collection('recipes').doc(res.id).update(cuisine ? { nutrition: nut, cuisine } : { nutrition: nut }); n++; } catch {}
     }
     return n;
   } catch (e) { if (['sampling_disabled', 'not_granted', 'capability_disabled'].includes(e?.code)) nutriOff = true; return 0; }
@@ -1070,7 +1159,7 @@ async function backfillNutrition(){
   await new Promise(r => setTimeout(r, 4000 + Math.random() * 8000)); // zwei Geräte nicht gleichzeitig
   try {
     for (let round = 0; round < 5 && !nutriOff; round++) {
-      const todo = S.recipes.filter(r => !nutriOk(r) && (r.ingredients || []).length);
+      const todo = S.recipes.filter(r => (!nutriOk(r) || !r.cuisine) && (r.ingredients || []).length);
       if (!todo.length) break;
       const done = await estimateNutrition(todo.slice(0, 8));
       if (!done) break;
@@ -1131,7 +1220,7 @@ function renderDetail(id){
   const base = r.servings || 1, p = S.portions[id] || base, f = p / base;
   resolveNames([r.createdBy, r.updatedBy]).then(() => { const b = $('#by'); if (b) b.textContent = byLine(r); });
   app.innerHTML = `
-  <div class="hero">${photoHTML(r)}<a class="btn back" href="#start">← Übersicht</a>${r.photoCredit && photoSrc(r) ? `<span class="credit">Foto: ${esc(creditText(r.photoCredit))}</span>` : ''}</div>
+  <div class="hero">${photoHTML(r)}<a class="back-btn" href="#start" data-back aria-label="Zurück"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>${r.photoCredit && photoSrc(r) ? `<span class="credit">Foto: ${esc(creditText(r.photoCredit))}</span>` : ''}</div>
   <div class="wrap">
     <div class="d-head"><h2>${esc(r.name)}</h2>${r.desc ? `<p>${esc(r.desc)}</p>` : ''}${factsHTML(r)}${nutriHTML(r)}<div class="tags" style="margin-top:12px">${r.sample ? '<span class="tag sample">Beispiel</span>' : ''}${tagsHTML(r.cats)}</div>${utagsHTML(r.tags, true)}<div class="by" id="by">${esc(byLine(r))}</div>
     ${S.canWrite ? `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">${S.me ? `<button type="button" class="btn fav" data-act="fav" data-id="${esc(id)}" aria-pressed="${isFav(r)}">${isFav(r) ? HEART_FULL + ' Favorit' : HEART + ' Als Favorit merken'}</button>` : ''}<button type="button" class="btn" data-act="plan-recipe" data-id="${esc(id)}">${CAL} Einplanen</button></div>` : ''}</div>
@@ -1313,7 +1402,7 @@ async function save(){
     const nutrition = prevN && prevN.v === nutriKey(d) ? prevN : null;
     const removedOnPurpose = F.photoRemoved && !F.photoBlob;
     const photoAuto = F.photoBlob || removedOnPurpose ? false : !!(cur?.photoAuto ?? F.r.photoAuto);
-    const body = { ...d, nutrition, photoAuto, noAutoPhoto: removedOnPurpose, photoId, photoUrl, photoOrigId: origId, photoOrigUrl: origUrl, photoCrop: crop, photoCredit: credit, favBy: cur?.favBy || [], sample: false, createdAt: cur?.createdAt || now, createdBy: cur?.createdBy || S.me || null, updatedAt: now, updatedBy: S.me || null };
+    const body = { ...d, nutrition, cuisine: cur?.cuisine ?? F.r.cuisine ?? null, photoAuto, noAutoPhoto: removedOnPurpose, photoId, photoUrl, photoOrigId: origId, photoOrigUrl: origUrl, photoCrop: crop, photoCredit: credit, favBy: cur?.favBy || [], sample: false, createdAt: cur?.createdAt || now, createdBy: cur?.createdBy || S.me || null, updatedAt: now, updatedBy: S.me || null };
     await ref.set(body);
     if (F.oldPhotoId && F.oldPhotoId !== photoId) { try { await S.assets.delete(F.oldPhotoId); } catch {} }
     if (F.oldOrigId && F.oldOrigId !== origId) { try { await S.assets.delete(F.oldOrigId); } catch {} }
@@ -1475,6 +1564,8 @@ function route(){
   const h = location.hash.slice(1);
   if (F && !h.startsWith('e-') && h !== 'neu') { if (F.previewUrl) URL.revokeObjectURL(F.previewUrl); F = null; }
   if (h !== 'kategorien') CM = null;
+  document.body.classList.toggle('detail', h.startsWith('r-'));
+  if (S.lastHash !== undefined && S.lastHash !== h) S.prevHash = S.lastHash;
   if (h.startsWith('r-')) renderDetail(h.slice(2));
   else if (h.startsWith('e-')) renderForm(h.slice(2));
   else if (h === 'neu') renderForm(null);
@@ -1484,6 +1575,7 @@ function route(){
   else if (h === 'plan') renderPlan();
   else if (h === 'kategorien') renderCats();
   else if (h.startsWith('k-')) renderCat(h.slice(2));
+  else if (h.startsWith('ideen-')) renderQuickIdea(h.slice(6));
   else renderStart();
   if (S.lastHash !== h) window.scrollTo(0, 0);
   S.lastHash = h;
@@ -1553,12 +1645,14 @@ app.addEventListener('click', e => {
     const y = window.scrollY; renderDetail(id); window.scrollTo(0, y); return;
   }
   const go = t.closest('[data-go]'); if (go) { location.hash = go.dataset.go; return; }
+  const back = t.closest('[data-back]'); if (back && S.prevHash != null && !S.prevHash.startsWith('e-') && S.prevHash !== 'neu' && history.length > 1) { e.preventDefault(); history.back(); return; }
   const pw = t.closest('[data-pweek]'); if (pw) { const d = +pw.dataset.pweek; S.planWeek = d === 0 ? 0 : S.planWeek + d; renderPlan(); return; }
   const padd = t.closest('[data-padd]'); if (padd) { openPickRecipe(padd.dataset.padd); return; }
   const pnote = t.closest('[data-pnote]'); if (pnote) { openPlanNote(pnote.dataset.pnote); return; }
   const prm = t.closest('[data-prm]'); if (prm) { const [iso, k] = prm.dataset.prm.split('|'); setPlanDay(iso, planItems(iso).filter(i => i.k !== k)); return; }
   const psv = t.closest('[data-pserv]'); if (psv) { const [iso, k, d] = psv.dataset.pserv.split('|'); setPlanDay(iso, planItems(iso).map(i => i.k === k ? { ...i, servings: Math.max(1, Math.min(99, (i.servings || S.byId[i.rid]?.servings || 2) + +d)) } : i)); return; }
   const pop = t.closest('[data-plan-open]'); if (pop && +pop.dataset.planOpen) { const id = pop.getAttribute('href').slice(3); S.portions[id] = +pop.dataset.planOpen; }
+  const qin = t.closest('[data-qinspo]'); if (qin) { const q = QUICK_IDEAS[qin.dataset.qinspo]; S.inspo.mode = 'lust'; S.inspo.wish = q.wish(); location.hash = 'inspiration'; setTimeout(() => getIdeas(false), 0); return; }
   const tq = t.closest('[data-tagq]'); if (tq) { S.tags = [tq.dataset.tagq]; S.meal = []; S.diet = []; S.quick = []; S.q = ''; saveFilter(); location.hash = 'suche'; return; }
   const act = t.closest('[data-act]')?.dataset.act;
   if (act === 'reset') { S.q = ''; S.meal = []; S.diet = []; S.quick = []; S.tags = []; saveFilter(); renderSearch(); return; }
@@ -1599,7 +1693,7 @@ window.addEventListener('hashchange', route);
 route();
 (async () => {
   const c = window.claude;
-  if (!c?.use) { S.slow = true; renderHome(); return; }
+  if (!c?.use) { S.slow = true; window.hideSplash?.(); renderHome(); return; }
   const [db, user, assets, sample] = await Promise.all(['db','user','assets','sample'].map(n => c.use(n).catch(() => null)));
   S.db = db; S.user = user; S.assets = assets; S.sample = sample;
   if (user) {
@@ -1616,7 +1710,7 @@ route();
     S.plan = Object.fromEntries(snap.docs.filter(isPlan).map(d => { const v = d.data() || {}; return [v.date || d.id.slice(PLAN_PREFIX.length), { date: v.date || d.id.slice(PLAN_PREFIX.length), items: Array.isArray(v.items) ? v.items : [] }]; }));
     S.recipes = snap.docs.filter(d => d.id !== CFG_ID && !isPlan(d)).map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.createdAt||0) - (a.createdAt||0));
     S.byId = Object.fromEntries(S.recipes.map(r => [r.id, r]));
-    S.loaded = true;
+    S.loaded = true; window.hideSplash?.();
     if (!snap.metadata.fromCache) { clearTimeout(timer); S.slow = false; }
     resolveNames(S.recipes.flatMap(r => [r.createdBy, r.updatedBy]));
     rerenderLive();
