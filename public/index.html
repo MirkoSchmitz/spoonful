@@ -246,6 +246,44 @@ body.home .top{display:none}
 .ctile .pic img{width:100%;height:100%;object-fit:cover;opacity:1}
 .ctile .emo{position:absolute;left:0;right:0;bottom:12%;text-align:center;font-size:48px}
 .ctile.empty-t{opacity:.55}
+/* Koch-Animation (Claude arbeitet) */
+.cook{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 10px 8px;text-align:center}
+.cook svg{width:120px;height:100px;overflow:visible}
+.cook .msg{font-weight:600;min-height:1.4em;transition:opacity .3s}
+.cook .msg.fade{opacity:0}
+.cook small{color:var(--muted);font-size:13px;max-width:300px}
+.cook.inline{flex-direction:row;padding:6px 0;gap:12px;text-align:left}
+.cook.inline svg{width:64px;height:54px;flex:none}
+@media(prefers-reduced-motion:no-preference){
+ .cook .stir{transform-origin:60px 52px;animation:stir 1.6s ease-in-out infinite}
+ @keyframes stir{0%,100%{transform:rotate(-14deg) translateX(-6px)}50%{transform:rotate(14deg) translateX(6px)}}
+ .cook .steam path{stroke-dasharray:40;animation:steam 2.2s ease-in-out infinite;opacity:0}
+ .cook .steam path:nth-child(2){animation-delay:.7s}.cook .steam path:nth-child(3){animation-delay:1.4s}
+ @keyframes steam{0%{opacity:0;transform:translateY(8px);stroke-dashoffset:40}35%{opacity:.7}100%{opacity:0;transform:translateY(-14px);stroke-dashoffset:0}}
+ .cook .bub{animation:bub 1.4s ease-in-out infinite}.cook .bub:nth-of-type(2){animation-delay:.5s}
+ @keyframes bub{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+}
+/* Gespeichert-Moment */
+#savedFx{position:fixed;inset:0;z-index:90;display:grid;place-items:center;pointer-events:none;background:rgba(250,246,240,.0);animation:sfBg 1.25s ease forwards}
+#savedFx .card-fx{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--card);border-radius:28px;padding:22px 34px 18px;box-shadow:0 20px 60px rgba(0,0,0,.22);animation:sfPop 1.25s cubic-bezier(.2,.9,.3,1.2) forwards}
+#savedFx svg{width:110px;height:90px;overflow:visible}
+#savedFx b{font-size:17px}
+#savedFx .sp{transform-origin:78px 20px;animation:sfDip 1.25s cubic-bezier(.4,0,.2,1) forwards}
+#savedFx .ck{stroke-dasharray:60;stroke-dashoffset:60;animation:sfCheck .4s ease .5s forwards}
+@keyframes sfBg{0%{background:rgba(250,246,240,0)}20%,75%{background:rgba(250,246,240,.55)}100%{background:rgba(250,246,240,0)}}
+@keyframes sfPop{0%{opacity:0;transform:scale(.7) translateY(20px)}18%{opacity:1;transform:none}78%{opacity:1;transform:none}100%{opacity:0;transform:scale(.92) translateY(-30px)}}
+@keyframes sfDip{0%{transform:translate(22px,-26px) rotate(-30deg);opacity:0}20%{opacity:1}45%{transform:translate(0,4px) rotate(0)}60%{transform:translate(4px,-6px) rotate(-8deg)}100%{transform:translate(4px,-6px) rotate(-8deg)}}
+@keyframes sfCheck{to{stroke-dashoffset:0}}
+/* Fotos scannen bei „Was ist da?“ */
+.thumbs.scanning .t::after{content:'';position:absolute;left:0;right:0;height:22%;top:-22%;background:linear-gradient(to bottom,transparent,rgba(127,178,138,.75),transparent);animation:scan 1.3s ease-in-out infinite alternate}
+.thumbs.scanning .t:nth-child(2)::after{animation-delay:.2s}.thumbs.scanning .t:nth-child(3)::after{animation-delay:.4s}.thumbs.scanning .t:nth-child(4)::after{animation-delay:.6s}
+.thumbs.scanning .t{box-shadow:0 0 0 2px #7fb28a}
+@keyframes scan{to{top:100%}}
+@media(prefers-reduced-motion:no-preference){
+ .have .chip.new{animation:chipIn .5s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--d,0) * 70ms)}
+ @keyframes chipIn{0%{opacity:0;transform:translateY(-26px) scale(.5)}100%{opacity:1;transform:none}}
+}
+@media(prefers-reduced-motion:reduce){.thumbs.scanning .t::after{animation:none;top:39%}}
 /* Splash Screen */
 #splash{position:fixed;inset:0;z-index:100;background:#2e6a39;color:#fff;display:grid;place-items:center;transition:opacity .45s ease,visibility .45s}
 #splash.out{opacity:0;visibility:hidden}
@@ -368,7 +406,7 @@ body.detail .hero{width:100%;max-width:none;margin:0;border-radius:0;max-height:
 .zoom input{flex:1;accent-color:var(--tomato);height:44px}
 @media(max-width:600px){.top .btn{min-height:40px;padding:0 12px;font-size:14px}.top-in{gap:8px}}
 </style>
-<meta name="app-version" content="20261122112856">
+<meta name="app-version" content="20261122143644">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#2E6A39">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -878,6 +916,48 @@ function openAdd(){
   });
 }
 
+// ---------- Koch-Animation, während Claude arbeitet ----------
+const COOK_SVG = `<svg viewBox="0 0 120 100" aria-hidden="true">
+  <g class="steam" fill="none" stroke="#9db8a2" stroke-width="3" stroke-linecap="round"><path d="M44 30c-5-6 5-10 0-16"/><path d="M60 26c-5-6 5-10 0-16"/><path d="M76 30c-5-6 5-10 0-16"/></g>
+  <g class="stir"><ellipse cx="62" cy="40" rx="6" ry="7" fill="#e9dfcf" transform="rotate(-20 62 40)"/><path d="M66 34 L88 2" stroke="#d9c9ae" stroke-width="5" stroke-linecap="round"/></g>
+  <path d="M18 44h84v30a16 16 0 0 1-16 16H34a16 16 0 0 1-16-16z" fill="#2e6a39"/>
+  <rect x="12" y="40" width="96" height="8" rx="4" fill="#245a2f"/>
+  <path d="M18 54h-8M102 54h8" stroke="#245a2f" stroke-width="6" stroke-linecap="round"/>
+  <circle class="bub" cx="48" cy="44" r="2.5" fill="#cfe3d3"/><circle class="bub" cx="74" cy="44" r="2" fill="#cfe3d3"/>
+</svg>`;
+// msgs: wechselnde Texte; inline: kleine Variante neben Text
+function cookHTML(msgs, note, inline){
+  return `<div class="cook ${inline ? 'inline' : ''}" role="status" aria-live="polite">${COOK_SVG}<div><div class="msg" data-msgs="${esc(JSON.stringify(msgs))}">${esc(msgs[0])}</div>${note ? `<small>${esc(note)}</small>` : ''}</div></div>`;
+}
+setInterval(() => {
+  for (const el of $$('.cook .msg[data-msgs]')) {
+    const m = JSON.parse(el.dataset.msgs); if (m.length < 2) continue;
+    el.classList.add('fade');
+    setTimeout(() => { el.dataset.i = ((+el.dataset.i || 0) + 1) % m.length; el.textContent = m[el.dataset.i]; el.classList.remove('fade'); }, 300);
+  }
+}, 2800);
+const COOK_MSGS = {
+  lust: ['Claude blättert durch Rezeptideen …', 'Schmeckt ab …', 'Sucht passende Fotos …', 'Richtet an …'],
+  pantry: ['Claude schaut, was sich daraus machen lässt …', 'Kombiniert Zutaten …', 'Sucht passende Fotos …', 'Richtet an …'],
+  detect: ['Claude schaut in den Kühlschrank …', 'Erkennt Zutaten …', 'Schaut in die Vorratskammer …'],
+  importText: ['Claude liest das Rezept …', 'Sortiert die Zutaten …', 'Schreibt die Schritte sauber auf …'],
+  importPhoto: ['Claude schaut sich das Foto an …', 'Erkennt das Gericht …', 'Schreibt das Rezept auf …'],
+  importTold: ['Claude hört genau zu …', 'Ordnet Zutaten und Mengen …', 'Schreibt die Schritte sauber auf …'],
+  plan: ['Claude blättert in eurem Kochbuch …', 'Sorgt für Abwechslung …', 'Verteilt auf die Woche …']
+};
+// Kurzer „Gespeichert“-Moment: Löffel taucht in den Teller, Häkchen erscheint
+function savedMoment(text = 'Gespeichert'){
+  if (reduceMotion()) { toast(text); return; }
+  document.getElementById('savedFx')?.remove();
+  const el = document.createElement('div'); el.id = 'savedFx'; el.setAttribute('role', 'status');
+  el.innerHTML = `<div class="card-fx"><svg viewBox="0 0 110 90" aria-hidden="true">
+    <ellipse cx="55" cy="62" rx="46" ry="18" fill="#eee6da"/><ellipse cx="55" cy="58" rx="32" ry="11" fill="#fff" stroke="#e2d8c8" stroke-width="2"/>
+    <g class="sp"><ellipse cx="62" cy="52" rx="8" ry="10" fill="#2e6a39" transform="rotate(-25 62 52)"/><path d="M67 44 L84 14" stroke="#2e6a39" stroke-width="6" stroke-linecap="round"/></g>
+    <circle cx="28" cy="28" r="15" fill="#2e6a39"/><path class="ck" d="M21 28l5 5 10-11" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg><b>${esc(text)}</b></div>`;
+  document.body.append(el); setTimeout(() => el.remove(), 1300);
+}
+
 // ---------- Inspiration ----------
 const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
 const MIC = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
@@ -915,7 +995,7 @@ function renderInspo(){
     ${I.mode === 'pantry' ? pantryHTML(ok) : lustHTML(ok)}
   </div>`;
 }
-function loadingNote(){ return S.inspo.loading ? '<p class="by">Das dauert meist 20–40 Sekunden, weil zu jedem Vorschlag noch ein passendes Foto gesucht wird.</p>' : ''; }
+function loadingNote(kind = 'lust'){ return S.inspo.loading ? cookHTML(COOK_MSGS[kind], 'Das dauert meist 20–40 Sekunden, weil zu jedem Vorschlag noch ein passendes Foto gesucht wird.') : ''; }
 function lustHTML(ok){
   const I = S.inspo, L = I.lust;
   return `<p class="by" style="margin:6px 0 6px">Sag oder schreib, worauf ihr Lust habt – Claude schlägt passende Rezepte mit Foto vor. Gespeichert wird nur, was ihr auswählt.</p>
@@ -923,7 +1003,7 @@ function lustHTML(ok){
       <div class="insp-box"><textarea id="wish" maxlength="400" placeholder="z. B. „Ich hätte Lust auf etwas Gesundes, Schnelles“" aria-label="Worauf habt ihr Lust?">${esc(I.wish)}</textarea>${micHTML('micWish')}</div>
       ${micHint()}
       <div class="ideas-q">${INSPO_EXAMPLES.map(x => `<button type="button" class="chip" data-wish="${esc(x)}">${esc(x)}</button>`).join('')}</div>
-      <div class="actions" style="margin:14px 0 6px"><button class="btn primary" type="submit" ${ok && !I.loading ? '' : 'disabled'}>${I.loading ? '<span class="spin"></span>&nbsp;Claude überlegt …' : 'Vorschläge holen'}</button>${I.loading ? '<button type="button" class="btn" data-act="inspo-stop">Abbrechen</button>' : ''}</div>
+      <div class="actions" style="margin:14px 0 6px"><button class="btn primary" type="submit" ${ok && !I.loading ? '' : 'disabled'}>${I.loading ? 'Claude kocht …' : 'Vorschläge holen'}</button>${I.loading ? '<button type="button" class="btn" data-act="inspo-stop">Abbrechen</button>' : ''}</div>
     </form>
     ${loadingNote()}
     ${I.error ? `<p class="note" style="color:var(--danger)">${esc(I.error)}</p>` : ''}
@@ -936,15 +1016,16 @@ function pantryHTML(ok){
     <div class="insp-box"><textarea id="pantryText" maxlength="600" placeholder="z. B. Zucchini, Feta, Reis, Eier, Joghurt" aria-label="Was ist da?">${esc(P.text)}</textarea>${micHTML('micPantry')}</div>
     ${micHint()}
     <div class="actions" style="margin:10px 0 0">${P.photos.length < MAX_PANTRY_PHOTOS ? `<label class="btn" style="position:relative">📷 Foto hinzufügen<input id="pantryImg" type="file" accept="image/*" multiple style="position:absolute;inset:0;opacity:0" aria-label="Fotos von Kühlschrank oder Vorrat"></label>` : ''}
-      <button type="button" class="btn ${P.have.length ? '' : 'primary'}" data-act="pantry-detect" ${ok && !P.detecting && (P.text.trim() || P.photos.length) ? '' : 'disabled'}>${P.detecting ? '<span class="spin"></span>&nbsp;Erkenne …' : P.have.length ? 'Zur Liste hinzufügen' : 'Zutaten erkennen'}</button></div>
-    ${P.photos.length ? `<div class="thumbs">${P.photos.map((p, i) => `<div class="t"><img src="${p.url}" alt="Foto ${i + 1}"><button type="button" data-prm-photo="${i}" aria-label="Foto ${i + 1} entfernen">×</button></div>`).join('')}</div><p class="by" style="margin:4px 0 0">${P.photos.length} von ${MAX_PANTRY_PHOTOS} Fotos</p>` : ''}
+      <button type="button" class="btn ${P.have.length ? '' : 'primary'}" data-act="pantry-detect" ${ok && !P.detecting && (P.text.trim() || P.photos.length) ? '' : 'disabled'}>${P.detecting ? 'Erkenne …' : P.have.length ? 'Zur Liste hinzufügen' : 'Zutaten erkennen'}</button></div>
+    ${P.detecting ? cookHTML(COOK_MSGS.detect, '', true) : ''}
+    ${P.photos.length ? `<div class="thumbs ${P.detecting ? 'scanning' : ''}">${P.photos.map((p, i) => `<div class="t"><img src="${p.url}" alt="Foto ${i + 1}"><button type="button" data-prm-photo="${i}" aria-label="Foto ${i + 1} entfernen">×</button></div>`).join('')}</div><p class="by" style="margin:4px 0 0">${P.photos.length} von ${MAX_PANTRY_PHOTOS} Fotos</p>` : ''}
     ${P.have.length ? `<h3 class="sec-t" style="margin-top:20px">Das ist da (${P.have.length})</h3><p class="by" style="margin:0">Prüft die Liste: Falsches antippen zum Entfernen, Fehlendes ergänzen.</p>
-      <div class="have">${P.have.map((h, i) => `<button type="button" class="chip" data-hrm="${i}" aria-label="${esc(h)} entfernen">${esc(h)} ×</button>`).join('')}</div>
+      <div class="have">${P.have.map((h, i) => `<button type="button" class="chip ${P.newFrom != null && i >= P.newFrom ? 'new' : ''}" style="--d:${P.newFrom != null ? i - P.newFrom : 0}" data-hrm="${i}" aria-label="${esc(h)} entfernen">${esc(h)} ×</button>`).join('')}</div>
       <div class="have-add"><input id="haveIn" maxlength="40" placeholder="Zutat ergänzen" aria-label="Zutat ergänzen" autocomplete="off"><button type="button" class="btn" data-act="have-add">+</button></div>
-      <div class="actions" style="margin:14px 0 6px"><button type="button" class="btn primary" data-act="pantry-find" ${I.loading ? 'disabled' : ''}>${I.loading ? '<span class="spin"></span>&nbsp;Claude überlegt …' : 'Rezepte finden'}</button>${I.loading ? '<button type="button" class="btn" data-act="inspo-stop">Abbrechen</button>' : ''}<button type="button" class="linkish" data-act="pantry-clear">Alles leeren</button></div>` : ''}
+      <div class="actions" style="margin:14px 0 6px"><button type="button" class="btn primary" data-act="pantry-find" ${I.loading ? 'disabled' : ''}>${I.loading ? 'Claude kocht …' : 'Rezepte finden'}</button>${I.loading ? '<button type="button" class="btn" data-act="inspo-stop">Abbrechen</button>' : ''}<button type="button" class="linkish" data-act="pantry-clear">Alles leeren</button></div>` : ''}
     ${I.error ? `<p class="note" style="color:var(--danger)">${esc(I.error)}</p>` : ''}
     ${P.matches ? `<h3 class="sec-t" id="ideasTop">Aus eurem Kochbuch</h3>${P.matches.length ? `<div class="grid">${P.matches.map(m => `<div style="display:flex;flex-direction:column">${cardHTML(m.r)}<p class="miss">${m.missing.length ? `fehlt: ${esc(m.missing.slice(0, 4).join(', '))}${m.missing.length > 4 ? ' …' : ''}` : '<b>Alles da!</b>'}</p></div>`).join('')}</div>` : '<p class="by">Dafür passt keins eurer Rezepte so richtig – schaut bei den neuen Ideen.</p>'}` : ''}
-    ${P.searched ? `<h3 class="sec-t">Neue Ideen</h3>${loadingNote()}${P.ideas.length ? `<div class="grid">${P.ideas.map((r, i) => ideaCard(r, i, 'pantry')).join('')}</div>` : I.loading ? '' : '<p class="by">Keine neuen Ideen geladen.</p>'}` : ''}`;
+    ${P.searched ? `<h3 class="sec-t">Neue Ideen</h3>${loadingNote('pantry')}${P.ideas.length ? `<div class="grid">${P.ideas.map((r, i) => ideaCard(r, i, 'pantry')).join('')}</div>` : I.loading ? '' : '<p class="by">Keine neuen Ideen geladen.</p>'}` : ''}`;
 }
 function ideaCard(r, i, src){
   const saved = S.inspo[src].saved[i];
@@ -1027,6 +1108,7 @@ async function detectPantry(){
   const P = S.inspo.pantry; S.inspo.error = '';
   stopMic();
   const text = P.text.trim();
+  P.newFrom = P.have.length; setTimeout(() => { P.newFrom = null; }, 2500);
   if (text) addHave(text.split(/,|;|\n| und | sowie /i));
   if (P.photos.length) {
     P.detecting = true; renderInspo();
@@ -1078,7 +1160,7 @@ function openIdea(i, src){
         try {
           const id = await saveIdea(r, src, i);
           closeSheet(); renderInspo();
-          if (a === 'plan') openPlanDay(id, r.servings, { id, ...ideaBody(r) }); else toast('Im Kochbuch gespeichert');
+          if (a === 'plan') openPlanDay(id, r.servings, { id, ...ideaBody(r) }); else savedMoment('Im Kochbuch gespeichert');
         } catch { b.disabled = false; b.innerHTML = label; toast('Speichern hat nicht geklappt.'); }
       }
     });
@@ -1188,7 +1270,7 @@ function openPlanFill(){
       if (a === 'close') { closeSheet(); return; }
       if (a === 'ok') { closeSheet(); for (const p of proposal) { const r = S.byId[p.id]; if (r) await addToPlan(p.date, { rid: r.id, servings: r.servings || 2 }); } toast('Woche geplant'); return; }
       if (a === 'go') wish = $('#fillWish', ov)?.value.trim() || '';
-      e.target.disabled = true; $('#fillStatus', ov).innerHTML = '<span class="spin"></span>&nbsp; Claude plant …';
+      e.target.disabled = true; $('#fillStatus', ov).innerHTML = cookHTML(COOK_MSGS.plan, '', true);
       const recent = Object.values(S.plan).filter(d => d.date >= isoDay(addDays(new Date(), -14))).flatMap(d => d.items).map(i => i.rid).filter(Boolean);
       const prompt = `Plane Abendessen für ein Paar aus IHREM Kochbuch. Freie Tage: ${free.map(d => `${d} (${dayLabel(d, true)})`).join(', ')}.
 ${wish ? `Wünsche: "${wish}".` : ''} Achte auf Abwechslung (nicht zweimal dasselbe, verschiedene Kategorien), unter der Woche eher schnellere Gerichte, Rezepte der letzten zwei Wochen möglichst vermeiden (${[...new Set(recent)].join(', ') || 'keine'}). Sind weniger passende Rezepte als Tage da, lass Tage weg.
@@ -1512,7 +1594,7 @@ async function save(){
     await ref.set(body);
     if (F.oldPhotoId && F.oldPhotoId !== photoId) { try { await S.assets.delete(F.oldPhotoId); } catch {} }
     if (F.oldOrigId && F.oldOrigId !== origId) { try { await S.assets.delete(F.oldOrigId); } catch {} }
-    toast('Gespeichert');
+    savedMoment(cur ? 'Gespeichert' : 'Rezept gespeichert');
     F = null; location.hash = 'r-' + ref.id;
     if (!nutrition) estimateNutrition([{ id: ref.id, ...body }]);
     if (needsPhoto(body)) autoPhoto({ id: ref.id, ...body }).then(ok => { if (ok && location.hash === '#r-' + ref.id) toast('Passendes Foto ergänzt – ihr könnt es jederzeit ersetzen'); });
@@ -1611,7 +1693,7 @@ async function openImport(preset = {}){
       if (!text && !file) { $('#impStatus', ov).textContent = 'Bitte Text einfügen oder ein Bild wählen.'; return; }
       const isUrl = !file && /^https?:\/\/\S+$/i.test(text);
       if (isUrl && typeof S.sample.importUrl !== 'function') { $('#impStatus', ov).textContent = 'Import per Link geht nur in der eigenständigen Spoonful-App. Kopiere hier bitte den Rezepttext von der Seite.'; return; }
-      const go = e.target; go.disabled = true; $('#impStatus', ov).innerHTML = `<span class="spin"></span>&nbsp; Claude ${file && text ? 'macht aus Foto und Beschreibung ein Rezept' : file ? 'schaut sich das Foto an' : 'liest das Rezept'} … das kann bis zu einer Minute dauern.`;
+      const go = e.target; go.disabled = true; $('#impStatus', ov).innerHTML = cookHTML(COOK_MSGS[file && text ? 'importTold' : file ? 'importPhoto' : 'importText'], 'Das kann bis zu einer Minute dauern.', true);
       ctl = new AbortController();
       const told = !!file && !!text; // Foto + eigene Beschreibung (getippt oder gesprochen)
       const prompt = `Extrahiere ein Kochrezept aus dem Material unten${file ? ' (Text und/oder beigefügtes Bild)' : ''}.${told ? ' Das Bild zeigt das Gericht oder ein Rezept; der Text ist die eigene Beschreibung der Person, wie sie es zubereitet (evtl. gesprochen und daher umgangssprachlich). Diese Beschreibung ist die Hauptquelle: übernimm ihre Zutaten, Mengen und Schritte, ergänze nur Fehlendes sinnvoll aus dem Bild und mach daraus saubere, kurze Arbeitsschritte. Setze "suggested": false. Setze "dishPhoto": true, wenn das Bild das fertige Gericht zeigt (keinen Rezepttext).' : file ? ' Zeigt das Bild KEINEN Rezepttext, sondern ein fertiges Gericht, dann erkenne das Gericht und schlage ein typisches, gut nachkochbares Rezept dafür vor (realistische Zutaten und Mengen) und setze "suggested": true und "dishPhoto": true. Liest du das Rezept dagegen aus Text oder Bildtext ab, setze "suggested": false und "dishPhoto": false.' : ''} Antworte NUR mit einem JSON-Objekt dieser Form:
