@@ -406,7 +406,7 @@ body.detail .hero{width:100%;max-width:none;margin:0;border-radius:0;max-height:
 .zoom input{flex:1;accent-color:var(--tomato);height:44px}
 @media(max-width:600px){.top .btn{min-height:40px;padding:0 12px;font-size:14px}.top-in{gap:8px}}
 </style>
-<meta name="app-version" content="20261122143644">
+<meta name="app-version" content="20261122145652">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#2E6A39">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -842,11 +842,11 @@ function renderStart(){
   const daily = dailyPick();
   document.body.classList.toggle('home', !!daily);
   app.innerHTML = `${daily ? dailyHTML(daily) : ''}<div class="wrap">
+    ${quickIdeasHTML()}
     ${rows.map(([c, i, items]) => `<section class="cat" aria-label="${esc(c)}">
       <div class="cat-h"><h2>${esc(c)}</h2><a href="#k-${i}">Alle ${items.length} ›</a></div>
       <div class="rail-w"><button type="button" class="rail-btn prev" data-rail="-1" aria-label="Zurück">‹</button><div class="rail">${items.map(cardHTML).join('')}</div><button type="button" class="rail-btn next" data-rail="1" aria-label="Weiter">›</button></div>
     </section>`).join('')}
-    ${quickIdeasHTML()}
     ${tiles.length ? `<section class="cat" aria-label="Kategorien"><div class="cat-h"><h2>Kategorien</h2></div>
       <div class="ctiles">${tiles.map(([c, i, items], k) => catTileHTML(c, i, items, k)).join('')}</div></section>` : ''}
     ${S.slow ? '<p class="note">Die Anzeige ist evtl. nicht aktuell.</p>' : ''}

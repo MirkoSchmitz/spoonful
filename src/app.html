@@ -831,11 +831,11 @@ function renderStart(){
   const daily = dailyPick();
   document.body.classList.toggle('home', !!daily);
   app.innerHTML = `${daily ? dailyHTML(daily) : ''}<div class="wrap">
+    ${quickIdeasHTML()}
     ${rows.map(([c, i, items]) => `<section class="cat" aria-label="${esc(c)}">
       <div class="cat-h"><h2>${esc(c)}</h2><a href="#k-${i}">Alle ${items.length} ›</a></div>
       <div class="rail-w"><button type="button" class="rail-btn prev" data-rail="-1" aria-label="Zurück">‹</button><div class="rail">${items.map(cardHTML).join('')}</div><button type="button" class="rail-btn next" data-rail="1" aria-label="Weiter">›</button></div>
     </section>`).join('')}
-    ${quickIdeasHTML()}
     ${tiles.length ? `<section class="cat" aria-label="Kategorien"><div class="cat-h"><h2>Kategorien</h2></div>
       <div class="ctiles">${tiles.map(([c, i, items], k) => catTileHTML(c, i, items, k)).join('')}</div></section>` : ''}
     ${S.slow ? '<p class="note">Die Anzeige ist evtl. nicht aktuell.</p>' : ''}
