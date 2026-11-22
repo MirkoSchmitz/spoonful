@@ -393,7 +393,7 @@ async function loadSource(fileOrBlob){
   c.getContext('2d').drawImage(src, 0, 0, c.width, c.height);
   return c;
 }
-function openCrop(canvas){
+function openCrop(canvas, init){
   return new Promise(resolve => {
     const url = canvas.toDataURL('image/jpeg', 0.9);
     sheet(`<h2>Bildausschnitt wählen</h2><p>Verschiebe das Foto mit dem Finger oder der Maus und zoome, bis das Essen gut im Rahmen sitzt. So erscheint es in der Übersicht und im Rezept.</p>
@@ -410,8 +410,13 @@ function openCrop(canvas){
         W = box.clientWidth; H = box.clientHeight; s0 = Math.max(W / iw, H / ih);
         x = W / 2 - cx * s0 * z; y = H / 2 - cy * s0 * z; draw();
       };
+      if (init && init.z >= 1 && init.z <= 4) { z = init.z; zoomEl.value = z; }
+      const start = init && init.cx >= 0 && init.cx <= 1 && init.cy >= 0 && init.cy <= 1 ? init : null;
       const zoomTo = (nz, px = W / 2, py = H / 2) => { nz = Math.min(4, Math.max(1, nz)); const s = s0 * z, ns = s0 * nz; x = px - (px - x) * ns / s; y = py - (py - y) * ns / s; z = nz; zoomEl.value = z; draw(); };
-      const ro = new ResizeObserver(measure); ro.observe(box);
+      const ro = new ResizeObserver(() => {
+        if (start && !W) { W = box.clientWidth; H = box.clientHeight; s0 = Math.max(W / iw, H / ih); x = W / 2 - start.cx * iw * s0 * z; y = H / 2 - start.cy * ih * s0 * z; draw(); return; }
+        measure();
+      }); ro.observe(box);
       const pts = new Map(); let pinch = null;
       box.addEventListener('pointerdown', e => { box.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), z }; } box.style.cursor = 'grabbing'; });
       box.addEventListener('pointermove', e => {
@@ -433,7 +438,8 @@ function openCrop(canvas){
         const ow = Math.round(Math.min(1600, sw)), oh = Math.round(ow * 3 / 4);
         const out = document.createElement('canvas'); out.width = ow; out.height = oh;
         out.getContext('2d').drawImage(canvas, sx, sy, sw, sh, 0, 0, ow, oh);
-        out.toBlob(b => { closeSheet(); resolve(b); }, 'image/jpeg', 0.85);
+        const crop = { cx: +((sx + sw / 2) / iw).toFixed(4), cy: +((sy + sh / 2) / ih).toFixed(4), z: +z.toFixed(3) };
+        out.toBlob(b => { closeSheet(); resolve(b ? { blob: b, crop } : null); }, 'image/jpeg', 0.85);
       };
       ov.addEventListener('click', e => { const c = e.target.closest('[data-c]')?.dataset.c; if (c) finish(c === 'ok'); else if (e.target === ov) finish(false); });
     });
@@ -758,7 +764,7 @@ function renderForm(id){
   let r;
   if (id) { r = S.byId[id]; if (!r) { renderDetail(id); return; } r = structuredClone(r); }
   else { r = S.draft || {}; S.draft = null; }
-  F = { id: id || null, base: id ? r.updatedAt : null, photoBlob: null, photoRemoved: false, previewUrl: null, oldPhotoId: r.photoId || null, r };
+  F = { id: id || null, base: id ? r.updatedAt : null, photoBlob: null, photoRemoved: false, previewUrl: null, oldPhotoId: r.photoId || null, oldOrigId: r.photoOrigId || null, srcFrom: null, crop: null, r };
   const ings = (r.ingredients && r.ingredients.length ? r.ingredients : [{},{},{}]);
   const steps = (r.steps && r.steps.length ? r.steps : ['']);
   const cats = r.cats || [];
@@ -797,12 +803,14 @@ async function onPhoto(input){
   let src;
   try { src = await loadSource(file); } catch { toast('Dieses Bild kann der Browser nicht lesen. Versuch ein JPG oder PNG.'); return; }
   F.keepCredit = false;
-  await cropAndSet(src);
+  await cropAndSet(src, 'new');
 }
-async function cropAndSet(src){
-  const blob = await openCrop(src);
-  if (!blob || !F) return;
-  F.src = src; F.photoBlob = blob; F.photoRemoved = false; if (F.keepCredit !== true) F.keepCredit = false;
+// srcFrom: 'new' = neu gewähltes Foto, 'orig' = gespeichertes Original, 'remote' = bisheriges Foto ohne Original
+async function cropAndSet(src, from, init){
+  const res = await openCrop(src, init);
+  if (!res || !F) return;
+  const blob = res.blob;
+  F.src = src; F.srcFrom = from; F.crop = res.crop; F.photoBlob = blob; F.photoRemoved = false; if (F.keepCredit !== true) F.keepCredit = false;
   if (F.previewUrl) URL.revokeObjectURL(F.previewUrl);
   F.previewUrl = URL.createObjectURL(blob);
   $('#pv').innerHTML = `<img src="${F.previewUrl}" alt="Vorschau">`;
@@ -812,12 +820,12 @@ async function cropAndSet(src){
 async function useAsPhoto(file, askCrop){
   try {
     const src = await loadSource(file); if (!F) return;
-    if (askCrop) { F.keepCredit = false; await cropAndSet(src); if (F && F.photoBlob) return; }
+    if (askCrop) { F.keepCredit = false; await cropAndSet(src, 'new'); if (F && F.photoBlob) return; }
     const w = src.width, h = src.height, cw = Math.min(w, h * 4 / 3), ch = cw * 3 / 4;
     const ow = Math.round(Math.min(1600, cw)), out = document.createElement('canvas'); out.width = ow; out.height = Math.round(ow * 3 / 4);
     out.getContext('2d').drawImage(src, (w - cw) / 2, (h - ch) / 2, cw, ch, 0, 0, out.width, out.height);
     const blob = await new Promise(res => out.toBlob(res, 'image/jpeg', 0.85)); if (!F || !blob) return;
-    F.src = src; F.photoBlob = blob; F.photoRemoved = false; F.keepCredit = false;
+    F.src = src; F.srcFrom = 'new'; F.crop = { cx: .5, cy: .5, z: 1 }; F.photoBlob = blob; F.photoRemoved = false; F.keepCredit = false;
     if (F.previewUrl) URL.revokeObjectURL(F.previewUrl);
     F.previewUrl = URL.createObjectURL(blob);
     $('#pv').innerHTML = `<img src="${F.previewUrl}" alt="Vorschau">`;
@@ -825,7 +833,7 @@ async function useAsPhoto(file, askCrop){
   } catch {}
 }
 async function loadRemote(url){
-  const fresh = url + (url.includes('?') ? '&' : '?') + 'crop=' + Date.now(); // am Zwischenspeicher vorbei
+  const fresh = /^(blob|data):/.test(url) ? url : url + (url.includes('?') ? '&' : '?') + 'crop=' + Date.now(); // am Zwischenspeicher vorbei
   try {
     const res = await fetch(fresh, { mode: 'cors', cache: 'no-store' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -839,17 +847,19 @@ async function loadRemote(url){
     return c;
   }
 }
+// Unsplash-Fotos ohne festen Zuschnitt laden, damit wieder das ganze Bild zur Wahl steht
+const fullUrl = u => /images\.unsplash\.com/.test(u) ? u.replace(/([?&])(h|fit|crop)=[^&]*/g, '$1').replace(/w=\d+/, 'w=2400').replace(/&{2,}/g, '&').replace(/\?&/, '?') : u;
 async function recrop(){
-  let src = F.src;
-  if (!src) {
-    const url = photoSrc(F.r); if (!url) return;
-    const btn = $('#cropPhoto'); if (btn) { btn.disabled = true; btn.textContent = 'Lädt …'; }
-    try { src = await loadRemote(url); F.src = src; F.keepCredit = true; }
-    catch { toast('Das gespeicherte Foto lässt sich gerade nicht laden. Prüfe die Verbindung oder wähle das Foto neu aus.'); return; }
-    finally { if (btn) { btn.disabled = false; btn.textContent = 'Ausschnitt ändern'; } }
-  }
-  await cropAndSet(src);
+  if (F.src) { await cropAndSet(F.src, F.srcFrom, F.crop); return; }
+  const orig = F.r.photoOrigUrl, url = orig || fullUrl(photoSrc(F.r)); if (!url) return;
+  const btn = $('#cropPhoto'); if (btn) { btn.disabled = true; btn.textContent = 'Lädt …'; }
+  let src;
+  try { src = await loadRemote(url); F.keepCredit = true; }
+  catch { toast('Das gespeicherte Foto lässt sich gerade nicht laden. Prüfe die Verbindung oder wähle das Foto neu aus.'); return; }
+  finally { if (btn) { btn.disabled = false; btn.textContent = 'Ausschnitt ändern'; } }
+  await cropAndSet(src, orig ? 'orig' : 'remote', orig ? F.r.photoCrop : null);
 }
+const canvasBlob = (c, q) => new Promise(res => c.toBlob(res, 'image/jpeg', q));
 function collectForm(){
   const ingredients = $$('#ings .ing').map(row => ({ qty: parseQty($('.iq', row).value), unit: $('.iu', row).value.trim(), name: $('.in', row).value.trim() })).filter(i => i.name);
   const steps = $$('#steps .st').map(t => t.value.trim()).filter(Boolean);
@@ -872,18 +882,25 @@ async function save(){
   saving = true; const btn = $('#saveBtn'); btn.disabled = true; btn.innerHTML = '<span class="spin"></span>&nbsp;Speichern …';
   try {
     let photoId = F.oldPhotoId, photoUrl = cur?.photoUrl || F.r.photoUrl || null;
-    if (F.photoRemoved) { photoId = null; photoUrl = null; }
+    let origId = F.oldOrigId, origUrl = cur?.photoOrigUrl || F.r.photoOrigUrl || null, crop = cur?.photoCrop || F.r.photoCrop || null;
+    if (F.photoRemoved) { photoId = null; photoUrl = null; origId = null; origUrl = null; crop = null; }
     if (F.photoBlob) {
       btn.innerHTML = '<span class="spin"></span>&nbsp;Foto wird hochgeladen …';
       const a = await S.assets.upload(F.photoBlob);
-      photoId = a.id; photoUrl = a.url || null;
+      photoId = a.id; photoUrl = a.url || null; crop = F.crop || null;
+      if (F.srcFrom !== 'orig' && F.src) { // Original aufheben, damit der Ausschnitt später wieder frei wählbar ist
+        origId = null; origUrl = null;
+        try { const ob = await canvasBlob(F.src, 0.85); if (ob) { const o = await S.assets.upload(ob); origId = o.id; origUrl = o.url || null; } } catch {}
+        if (!origId) crop = null;
+      }
     }
     const now = Date.now();
     const ref = F.id ? S.db.collection('recipes').doc(F.id) : S.db.collection('recipes').doc();
     const credit = F.photoRemoved || (F.photoBlob && !F.keepCredit) ? null : (cur?.photoCredit || F.r.photoCredit || null);
-    const body = { ...d, photoId, photoUrl, photoCredit: credit, favBy: cur?.favBy || [], sample: false, createdAt: cur?.createdAt || now, createdBy: cur?.createdBy || S.me || null, updatedAt: now, updatedBy: S.me || null };
+    const body = { ...d, photoId, photoUrl, photoOrigId: origId, photoOrigUrl: origUrl, photoCrop: crop, photoCredit: credit, favBy: cur?.favBy || [], sample: false, createdAt: cur?.createdAt || now, createdBy: cur?.createdBy || S.me || null, updatedAt: now, updatedBy: S.me || null };
     await ref.set(body);
     if (F.oldPhotoId && F.oldPhotoId !== photoId) { try { await S.assets.delete(F.oldPhotoId); } catch {} }
+    if (F.oldOrigId && F.oldOrigId !== origId) { try { await S.assets.delete(F.oldOrigId); } catch {} }
     toast('Gespeichert');
     F = null; location.hash = 'r-' + ref.id;
   } catch (e) {
@@ -897,6 +914,7 @@ async function del(id){
   try {
     await S.db.collection('recipes').doc(id).delete();
     if (r.photoId && S.assets) { try { await S.assets.delete(r.photoId); } catch {} }
+    if (r.photoOrigId && S.assets) { try { await S.assets.delete(r.photoOrigId); } catch {} }
     toast('Gelöscht'); location.hash = 'start';
   } catch { toast('Löschen hat nicht geklappt.'); }
 }
