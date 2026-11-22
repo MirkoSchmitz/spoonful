@@ -416,12 +416,14 @@ body.detail .hero{width:100%;max-width:none;margin:0;border-radius:0;max-height:
 /* Bildausschnitt */
 .crop{position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;border-radius:14px;background:#111;touch-action:none;cursor:grab;user-select:none}
 .crop img{position:absolute;left:0;top:0;transform-origin:0 0;max-width:none;pointer-events:none}
+.crop .bgblur{inset:-20px;width:calc(100% + 40px)!important;height:calc(100% + 40px)!important;object-fit:cover;filter:blur(18px) saturate(1.1);opacity:.85;transform:none!important}
+.zoom .btn{min-height:38px;font-size:14px;padding:0 12px;white-space:nowrap}
 .crop .grid3{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to right,transparent 33.2%,rgba(255,255,255,.45) 33.3%,transparent 33.5%,transparent 66.5%,rgba(255,255,255,.45) 66.6%,transparent 66.8%),linear-gradient(to bottom,transparent 33.2%,rgba(255,255,255,.45) 33.3%,transparent 33.5%,transparent 66.5%,rgba(255,255,255,.45) 66.6%,transparent 66.8%)}
 .zoom{display:flex;align-items:center;gap:10px;margin-top:14px}
 .zoom input{flex:1;accent-color:var(--tomato);height:44px}
 @media(max-width:600px){.top .btn{min-height:40px;padding:0 12px;font-size:14px}.top-in{gap:8px}}
 </style>
-<meta name="app-version" content="20261122183239">
+<meta name="app-version" content="20261122185358">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#2E6A39">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -667,24 +669,27 @@ function openCrop(canvas, init){
   return new Promise(resolve => {
     const url = canvas.toDataURL('image/jpeg', 0.9);
     sheet(`<h2>Bildausschnitt wählen</h2><p>Verschiebe das Foto mit dem Finger oder der Maus und zoome, bis das Essen gut im Rahmen sitzt. So erscheint es in der Übersicht und im Rezept.</p>
-      <div class="crop" id="cropBox"><img id="cropImg" src="${url}" alt="Foto zum Zuschneiden"><span class="grid3"></span></div>
-      <label class="zoom"><span>Zoom</span><input type="range" id="cropZoom" min="1" max="4" step="0.01" value="1" aria-label="Zoom"></label>
+      <div class="crop" id="cropBox"><img class="bgblur" src="${url}" alt=""><img id="cropImg" src="${url}" alt="Foto zum Zuschneiden"><span class="grid3"></span></div>
+      <div class="zoom"><span>Zoom</span><input type="range" id="cropZoom" min="1" max="4" step="0.01" value="1" aria-label="Zoom"><button type="button" class="btn" id="cropFit">Ganzes Bild</button></div>
+      <p class="by" style="margin:6px 0 0">Passt das Foto nicht ins Querformat, zeigt „Ganzes Bild“ alles – die Ränder werden dann mit einer weichgezeichneten Version aufgefüllt.</p>
       <div class="btns"><button class="btn" data-c="cancel">Abbrechen</button><button class="btn primary" data-c="ok">Übernehmen</button></div>`, ov => {
       const box = $('#cropBox', ov), img = $('#cropImg', ov), zoomEl = $('#cropZoom', ov);
       const iw = canvas.width, ih = canvas.height;
-      let W = 0, H = 0, s0 = 1, z = 1, x = 0, y = 0;
-      const clamp = () => { const s = s0 * z; x = Math.min(0, Math.max(W - iw * s, x)); y = Math.min(0, Math.max(H - ih * s, y)); };
+      let W = 0, H = 0, s0 = 1, z = 1, x = 0, y = 0, zMin = 1;
+      // Ist das Bild in einer Richtung kleiner als der Rahmen (herausgezoomt), wird es dort mittig gehalten
+      const clamp = () => { const s = s0 * z, w = iw * s, h = ih * s; x = w <= W ? (W - w) / 2 : Math.min(0, Math.max(W - w, x)); y = h <= H ? (H - h) / 2 : Math.min(0, Math.max(H - h, y)); };
+      const setMin = () => { zMin = Math.min(1, Math.min(W / iw, H / ih) / s0); zoomEl.min = zMin.toFixed(3); };
       const draw = () => { clamp(); img.style.transform = `translate(${x}px,${y}px) scale(${s0 * z})`; img.style.width = iw + 'px'; img.style.height = ih + 'px'; };
       const measure = () => {
         const oldS = s0 * z, cx = W ? (W / 2 - x) / oldS : iw / 2, cy = H ? (H / 2 - y) / oldS : ih / 2;
-        W = box.clientWidth; H = box.clientHeight; s0 = Math.max(W / iw, H / ih);
+        W = box.clientWidth; H = box.clientHeight; s0 = Math.max(W / iw, H / ih); setMin(); if (z < zMin) z = zMin;
         x = W / 2 - cx * s0 * z; y = H / 2 - cy * s0 * z; draw();
       };
-      if (init && init.z >= 1 && init.z <= 4) { z = init.z; zoomEl.value = z; }
+      if (init && init.z > 0.05 && init.z <= 4) { z = init.z; zoomEl.value = z; }
       const start = init && init.cx >= 0 && init.cx <= 1 && init.cy >= 0 && init.cy <= 1 ? init : null;
-      const zoomTo = (nz, px = W / 2, py = H / 2) => { nz = Math.min(4, Math.max(1, nz)); const s = s0 * z, ns = s0 * nz; x = px - (px - x) * ns / s; y = py - (py - y) * ns / s; z = nz; zoomEl.value = z; draw(); };
+      const zoomTo = (nz, px = W / 2, py = H / 2) => { nz = Math.min(4, Math.max(zMin, nz)); const s = s0 * z, ns = s0 * nz; x = px - (px - x) * ns / s; y = py - (py - y) * ns / s; z = nz; zoomEl.value = z; draw(); };
       const ro = new ResizeObserver(() => {
-        if (start && !W) { W = box.clientWidth; H = box.clientHeight; s0 = Math.max(W / iw, H / ih); x = W / 2 - start.cx * iw * s0 * z; y = H / 2 - start.cy * ih * s0 * z; draw(); return; }
+        if (start && !W) { W = box.clientWidth; H = box.clientHeight; s0 = Math.max(W / iw, H / ih); setMin(); if (z < zMin) z = zMin; zoomEl.value = z; x = W / 2 - start.cx * iw * s0 * z; y = H / 2 - start.cy * ih * s0 * z; draw(); return; }
         measure();
       }); ro.observe(box);
       const pts = new Map(); let pinch = null;
@@ -701,13 +706,26 @@ function openCrop(canvas, init){
       box.addEventListener('pointerup', up); box.addEventListener('pointercancel', up);
       box.addEventListener('wheel', e => { e.preventDefault(); const r = box.getBoundingClientRect(); zoomTo(z * (e.deltaY < 0 ? 1.08 : 1 / 1.08), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
       zoomEl.addEventListener('input', () => zoomTo(+zoomEl.value));
+      $('#cropFit', ov).addEventListener('click', () => zoomTo(z <= zMin + 0.001 ? 1 : zMin));
       const finish = async ok => {
         ro.disconnect();
         if (!ok) { closeSheet(); resolve(null); return; }
         const s = s0 * z, sx = -x / s, sy = -y / s, sw = W / s, sh = H / s;
-        const ow = Math.round(Math.min(1600, sw)), oh = Math.round(ow * 3 / 4);
+        const ow = Math.round(Math.max(800, Math.min(1600, sw))), oh = Math.round(ow * 3 / 4), k = ow / W;
         const out = document.createElement('canvas'); out.width = ow; out.height = oh;
-        out.getContext('2d').drawImage(canvas, sx, sy, sw, sh, 0, 0, ow, oh);
+        const ctx = out.getContext('2d');
+        if (iw * s < W - 1 || ih * s < H - 1) { // herausgezoomt: Ränder mit weichgezeichnetem Bild füllen
+          const cs = Math.max(ow / iw, oh / ih) * 1.15, bx = (ow - iw * cs) / 2, by = (oh - ih * cs) / 2;
+          if (typeof ctx.filter === 'string') { ctx.filter = 'blur(30px) saturate(1.1)'; ctx.drawImage(canvas, bx, by, iw * cs, ih * cs); ctx.filter = 'none'; }
+          else { // ältere Safari ohne ctx.filter: stufenweise verkleinern und weich wieder hochskalieren
+            let src = canvas, w = iw, h = ih;
+            for (const t of [96, 24]) { const c = document.createElement('canvas'); c.width = t; c.height = Math.max(4, Math.round(t * h / w)); c.getContext('2d').drawImage(src, 0, 0, c.width, c.height); src = c; }
+            for (const t of [96, 320]) { const c = document.createElement('canvas'); c.width = t; c.height = Math.max(4, Math.round(t * ih / iw)); const g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(src, 0, 0, c.width, c.height); src = c; }
+            ctx.imageSmoothingQuality = 'high'; ctx.drawImage(src, bx, by, iw * cs, ih * cs);
+          }
+          ctx.fillStyle = 'rgba(0,0,0,.08)'; ctx.fillRect(0, 0, ow, oh);
+        }
+        ctx.drawImage(canvas, 0, 0, iw, ih, x * k, y * k, iw * s * k, ih * s * k);
         const crop = { cx: +((sx + sw / 2) / iw).toFixed(4), cy: +((sy + sh / 2) / ih).toFixed(4), z: +z.toFixed(3) };
         out.toBlob(b => { closeSheet(); resolve(b ? { blob: b, crop } : null); }, 'image/jpeg', 0.85);
       };
