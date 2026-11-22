@@ -286,6 +286,14 @@ body.home .top{display:none}
  @keyframes chipIn{0%{opacity:0;transform:translateY(-26px) scale(.5)}100%{opacity:1;transform:none}}
 }
 @media(prefers-reduced-motion:reduce){.thumbs.scanning .t::after{animation:none;top:39%}}
+/* Rezept per Sprache ändern */
+.voice-edit{display:flex;align-items:center;gap:12px;width:100%;margin:-4px 0 20px;padding:12px 14px;border-radius:16px;border:1.5px dashed var(--basil,#2e6a39);background:var(--basil-soft);color:var(--ink);font:inherit;text-align:left}
+.voice-edit .mi{width:44px;height:44px;border-radius:50%;background:#2e6a39;color:#fff;display:grid;place-items:center;flex:none}
+.voice-edit .mi svg{width:22px;height:22px}
+.voice-edit b{display:block;font-size:15px}.voice-edit small{color:var(--muted);font-size:13px}
+.ve-done{margin:-8px 0 20px;padding:12px 14px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
+.ve-done ul{margin:6px 0 8px;padding-left:20px}.ve-done li{padding:2px 0}
+@media(prefers-reduced-motion:no-preference){.flash{animation:flash 1.6s ease}@keyframes flash{0%,30%{background:#fff2c4;box-shadow:0 0 0 3px #f2b33d}}}
 /* Splash Screen */
 html.splashing,html.splashing body{background:#2e6a39 !important}
 #splash{position:fixed;top:0;left:0;right:0;height:calc(100lvh + env(safe-area-inset-bottom) + 80px);z-index:100;background:#2e6a39;color:#fff;display:grid;place-items:center;transition:opacity .45s ease,visibility .45s}
@@ -413,7 +421,7 @@ body.detail .hero{width:100%;max-width:none;margin:0;border-radius:0;max-height:
 .zoom input{flex:1;accent-color:var(--tomato);height:44px}
 @media(max-width:600px){.top .btn{min-height:40px;padding:0 12px;font-size:14px}.top-in{gap:8px}}
 </style>
-<meta name="app-version" content="20261122181211">
+<meta name="app-version" content="20261122183239">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#2E6A39">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1465,6 +1473,7 @@ function renderForm(id){
   const cats = r.cats || [];
   app.innerHTML = `<form class="form wrap" id="form" novalidate>
     <h2>${id ? 'Rezept bearbeiten' : 'Neues Rezept'}</h2>
+    ${typeof S.sample?.json === 'function' ? `<button type="button" class="voice-edit" id="voiceEdit"><span class="mi">${MIC}</span><span><b>${id ? 'Per Sprache ändern' : 'Per Sprache ausfüllen'}</b><small>${id ? 'Sag einfach, was anders sein soll – z. B. „für 4 Personen“ oder „Sahne durch Kokosmilch ersetzen“' : 'Erzähl, was du kochst – Claude füllt das Formular aus'}</small></span></button><div id="veDone"></div>` : ''}
     ${r.suggested ? '<p class="note" style="margin:-6px 0 18px;background:var(--basil-soft);color:var(--ink)"><b>Vorschlag von Claude</b> anhand eures Fotos – das ist eine typische Version des Gerichts, nicht euer Originalrezept. Zutaten, Mengen und Schritte bitte prüfen und anpassen.</p>' : ''}
     <div class="field"><span>Foto</span>
       <div class="photo-box"><div class="ph" id="pv">${photoHTML(r, 'Vorschau')}</div>
@@ -1557,6 +1566,81 @@ async function recrop(){
   await cropAndSet(src, orig ? 'orig' : 'remote', orig ? F.r.photoCrop : null);
 }
 const canvasBlob = (c, q) => new Promise(res => c.toBlob(res, 'image/jpeg', q));
+// ---------- Rezept per Sprache ändern ----------
+function fillForm(d){
+  $('#fName').value = d.name || ''; $('#fDesc').value = d.desc || '';
+  $('#fServ').value = d.servings || 2; $('#fTime').value = d.time || ''; $('#fLevel').value = LEVELS.includes(d.level) ? d.level : '';
+  $$('#form [data-chip]').forEach(b => b.setAttribute('aria-pressed', String((d.cats || []).includes(b.dataset.v))));
+  F.tags = [...(d.tags || [])]; $('#tagEdit').innerHTML = tagEditHTML();
+  $('#ings').innerHTML = (d.ingredients?.length ? d.ingredients : [{}]).map(ingRow).join('');
+  $('#steps').innerHTML = (d.steps?.length ? d.steps : ['']).map(stepRow).join('');
+  renumber();
+}
+function flashChanges(a, b){
+  const mark = el => { if (!el) return; el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); };
+  if (a.name !== b.name) mark($('#fName')); if (a.desc !== b.desc) mark($('#fDesc'));
+  if (a.servings !== b.servings) mark($('#fServ')); if (a.time !== b.time) mark($('#fTime')); if (a.level !== b.level) mark($('#fLevel'));
+  $$('#ings .ing').forEach((row, k) => { const i = b.ingredients[k]; if (i && !a.ingredients.some(x => x.name === i.name && x.qty === i.qty && x.unit === i.unit)) mark(row); });
+  $$('#steps .step').forEach((row, k) => { if (b.steps[k] && !a.steps.includes(b.steps[k])) mark(row); });
+  if (JSON.stringify(a.cats.slice().sort()) !== JSON.stringify(b.cats.slice().sort())) mark($('.catgrid'));
+}
+function openVoiceEdit(){
+  if (!F) return;
+  const isNew = !F.id;
+  const EX = isNew ? ['Ein schnelles Curry mit Kichererbsen für 2', 'Omas Apfelkuchen'] : ['Für 4 Personen statt 2', 'Sahne durch Kokosmilch ersetzen', 'Mach es vegetarisch', 'Etwas schärfer', 'Schritte kürzer fassen'];
+  sheet(`<h2>${isNew ? 'Per Sprache ausfüllen' : 'Per Sprache ändern'}</h2><p>${isNew ? 'Erzähl, was du kochst – Zutaten, Mengen, wie es geht. Claude füllt das Formular aus.' : 'Sag oder schreib, was am Rezept anders sein soll. Claude passt das Formular an, gespeichert wird erst, wenn du auf „Speichern“ tippst.'}</p>
+    <div class="insp-box" style="margin:0"><textarea id="veText" maxlength="2000" style="min-height:120px" placeholder="${isNew ? 'z. B. „Wir machen Nudeln mit Brokkoli: 250 g Nudeln, ein Brokkoli …“' : 'z. B. „Mach das für 4 Personen und ersetz die Sahne durch Kokosmilch“'}" aria-label="Änderungswunsch"></textarea>${micHTML('micVe')}</div>
+    ${micHint()}
+    <div class="ideas-q">${EX.map(x => `<button type="button" class="chip" data-vex="${esc(x)}">${esc(x)}</button>`).join('')}</div>
+    <div id="veStatus" aria-live="polite"></div>
+    <div class="btns"><button class="btn" data-ve="close">Abbrechen</button><button class="btn primary" data-ve="go">${isNew ? 'Formular ausfüllen' : 'Änderungen übernehmen'}</button></div>`, ov => {
+    const ta = $('#veText', ov), mic = $('#micVe', ov);
+    let ctl = null;
+    mic?.addEventListener('click', e => { e.stopPropagation(); startMic(mic, ta); });
+    if (mic) startMic(mic, ta); // gleich zuhören
+    ov.addEventListener('click', async e => {
+      const ex = e.target.closest('[data-vex]'); if (ex) { ta.value = ex.dataset.vex; return; }
+      const a = e.target.closest('[data-ve]')?.dataset.ve; if (!a) return;
+      if (a === 'close') { ctl?.abort(); stopMic(); closeSheet(); return; }
+      stopMic();
+      const wish = ta.value.trim(); if (!wish) { $('#veStatus', ov).innerHTML = '<p class="by">Sag oder schreib kurz, was du möchtest.</p>'; return; }
+      const before = collectForm();
+      const btn = e.target; btn.disabled = true;
+      $('#veStatus', ov).innerHTML = cookHTML(isNew ? COOK_MSGS.importTold : ['Claude passt das Rezept an …', 'Rechnet Mengen um …', 'Schreibt die Schritte neu …'], '', true);
+      ctl = new AbortController();
+      const prompt = `${isNew ? 'Hier ist ein (evtl. noch leeres) Rezeptformular als JSON und eine gesprochene Beschreibung eines Rezepts. Fülle das Rezept daraus aus.' : 'Hier ist ein Rezept als JSON und ein Änderungswunsch (evtl. gesprochen, umgangssprachlich). Ändere das Rezept entsprechend.'}
+Ändere nur, was gewünscht ist und was logisch daraus folgt (z. B. bei anderer Portionenzahl alle Mengen umrechnen, bei ersetzten Zutaten die Schritte anpassen). Alles andere bleibt wortgleich.
+Antworte NUR mit JSON: {"recipe":{"name":string,"desc":string,"servings":number,"time":number|null,"level":"leicht"|"mittel"|"anspruchsvoll"|null,"ingredients":[{"qty":number|null,"unit":string,"name":string}],"steps":[string],"cats":[string],"tags":[string]},"changes":[string]}
+changes: kurze deutsche Stichpunkte, was geändert wurde (max. 6). Einheiten metrisch (g, kg, ml, l, EL, TL, Stück, Prise, Zehe, Bund, Dose, Packung). cats nur aus: ${ALLCATS.join(', ')}.
+Rezept: ${JSON.stringify(before)}
+Wunsch: "${wish.replace(/"/g, "'")}"`;
+      try {
+        const j = await S.sample.json(prompt, { signal: ctl.signal });
+        const r = j?.recipe; if (!r || !r.name) throw { code: 'invalid_json' };
+        const after = {
+          name: String(r.name).slice(0, 120), desc: String(r.desc || '').slice(0, 600),
+          servings: Math.max(1, Math.min(99, Math.round(+r.servings) || before.servings)),
+          time: +r.time > 0 ? Math.min(1440, Math.round(+r.time)) : null, level: LEVELS.includes(r.level) ? r.level : null,
+          ingredients: (Array.isArray(r.ingredients) ? r.ingredients : []).map(i => ({ qty: i?.qty == null || i.qty === '' ? null : (typeof i.qty === 'number' ? i.qty : parseQty(i.qty)), unit: String(i?.unit || ''), name: String(i?.name || '') })).filter(i => i.name),
+          steps: (Array.isArray(r.steps) ? r.steps : []).map(String).filter(Boolean),
+          cats: (Array.isArray(r.cats) ? r.cats : []).filter(c => ALLCATS.includes(c)),
+          tags: (Array.isArray(r.tags) ? r.tags : before.tags).map(normTag).filter(Boolean)
+        };
+        const changes = (Array.isArray(j.changes) ? j.changes : []).map(String).filter(Boolean).slice(0, 6);
+        closeSheet(); if (!F) return;
+        fillForm(after); flashChanges(before, after);
+        S.veUndo = before;
+        $('#veDone').innerHTML = `<div class="ve-done" role="status"><b>${isNew ? 'Formular ausgefüllt' : 'Geändert'} – bitte prüfen und speichern</b>${changes.length ? `<ul>${changes.map(c => `<li>${esc(c)}</li>`).join('')}</ul>` : ''}<button type="button" class="linkish" id="veUndo">Rückgängig</button> · <button type="button" class="linkish" id="voiceEdit2">Noch etwas ändern</button></div>`;
+        $('#veDone').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (err) {
+        if (err?.code === 'cancelled') return;
+        btn.disabled = false;
+        $('#veStatus', ov).innerHTML = `<p class="by" style="color:var(--danger)">${err?.code === 'sampling_disabled' ? 'Dafür fehlt der Claude-Schlüssel in Supabase.' : 'Das hat nicht geklappt – bitte nochmal versuchen.'}</p>`;
+      }
+    });
+  });
+}
+
 function collectForm(){
   const ingredients = $$('#ings .ing').map(row => ({ qty: parseQty($('.iq', row).value), unit: $('.iu', row).value.trim(), name: $('.in', row).value.trim() })).filter(i => i.name);
   const steps = $$('#steps .st').map(t => t.value.trim()).filter(Boolean);
@@ -1919,6 +2003,8 @@ app.addEventListener('click', e => {
   if (t.closest('[data-rm]')) { const row = t.closest('.row'); const box = row.parentElement; if (box.children.length > 1) row.remove(); else $$('input,textarea', row).forEach(i => i.value = ''); renumber(); return; }
   if (t.id === 'rmPhoto') { F.photoBlob = null; F.src = null; F.photoRemoved = true; $('#pv').innerHTML = PLATE; t.classList.add('hidden'); $('#cropPhoto').classList.add('hidden'); }
   if (t.id === 'cropPhoto') { recrop(); }
+  if (t.closest('#voiceEdit') || t.id === 'voiceEdit2') { openVoiceEdit(); return; }
+  if (t.id === 'veUndo' && S.veUndo) { fillForm(S.veUndo); S.veUndo = null; $('#veDone').innerHTML = ''; toast('Änderungen zurückgenommen'); return; }
   const trm = t.closest('[data-tagrm]'); if (trm && F) { F.tags.splice(+trm.dataset.tagrm, 1); $('#tagEdit').innerHTML = tagEditHTML(); return; }
 });
 app.addEventListener('keydown', e => {
