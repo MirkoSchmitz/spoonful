@@ -199,15 +199,15 @@ body.home .top{display:none}
 .cb-btn svg{width:22px;height:22px}
 .home-wrap{position:relative}
 /* ===== Bewegung ===== */
-.btn,.chip,.tabbar a,.tabbar button,.qi a,.heart-btn,.back-btn,.cb-btn,.pick,.daypick button{transition:transform .16s cubic-bezier(.3,.7,.4,1),background-color .2s,box-shadow .2s,color .2s}
-.btn:active,.chip:active,.qi a:active,.heart-btn:active,.back-btn:active,.cb-btn:active,.pick:active,.daypick button:active,.card:active{transform:scale(.96)}
+.btn,.chip,.tabbar a,.tabbar button,.qi a,.ctile,.heart-btn,.back-btn,.cb-btn,.pick,.daypick button{transition:transform .16s cubic-bezier(.3,.7,.4,1),background-color .2s,box-shadow .2s,color .2s}
+.btn:active,.chip:active,.qi a:active,.ctile:active,.heart-btn:active,.back-btn:active,.cb-btn:active,.pick:active,.daypick button:active,.card:active{transform:scale(.96)}
 .tabbar a:active,.tabbar button:active{transform:scale(.9)}
 .ph img,.hero img,.daily img,.idea-photo{opacity:0;transition:opacity .4s ease}
 .ph img.ld,.hero img.ld,.daily img.ld,.idea-photo.ld{opacity:1}
 .skel{border-radius:18px;background:linear-gradient(100deg,var(--soft) 30%,var(--card) 50%,var(--soft) 70%);background-size:300% 100%;animation:shim 1.3s linear infinite}
 @keyframes shim{to{background-position:-150% 0}}
 @media(prefers-reduced-motion:no-preference){
- .enter .cardw,.enter .day,.enter .qi a,.enter .cat-h,.enter .page-h,.enter .daily .txt,.enter .d-head,.enter .panel,.enter .seg,.enter .insp-box,.enter .week-nav{animation:rise .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(min(var(--i,0),10) * 40ms)}
+ .enter .cardw,.enter .day,.enter .qi a,.enter .ctile,.enter .cat-h,.enter .page-h,.enter .daily .txt,.enter .d-head,.enter .panel,.enter .seg,.enter .insp-box,.enter .week-nav{animation:rise .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(min(var(--i,0),10) * 40ms)}
  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
  .enter .daily img.ld{animation:kenb 1.4s cubic-bezier(.2,.8,.2,1) both}
  @keyframes kenb{from{transform:scale(1.08)}to{transform:none}}
@@ -234,6 +234,17 @@ body.home .top{display:none}
  ::view-transition-group(recipe-photo){animation-duration:.42s;animation-timing-function:cubic-bezier(.2,.85,.25,1)}
  ::view-transition-old(recipe-photo),::view-transition-new(recipe-photo){height:100%;object-fit:cover;overflow:hidden}
 }
+/* Kategorie-Kacheln (Startseite) */
+.ctiles{display:grid;grid-auto-flow:column;grid-auto-columns:min(40%,180px);gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:max(5vw,16px);padding:2px max(5vw,16px) 10px;margin:0 calc(-1 * max(5vw,16px));scrollbar-width:none}
+.ctiles::-webkit-scrollbar{display:none}
+@media(min-width:1240px){.ctiles{margin:0;padding-inline:2px}}
+.ctile{position:relative;display:block;aspect-ratio:1;border-radius:20px;overflow:hidden;background:var(--tc);color:#1f1915;text-decoration:none;scroll-snap-align:start}
+.ctile b{position:absolute;left:10px;right:10px;top:16px;text-align:center;font-family:Figtree,sans-serif;font-weight:800;font-size:clamp(13px,3.6vw,16px);letter-spacing:.16em;text-transform:uppercase;line-height:1.25;overflow-wrap:anywhere}
+.ctile small{position:absolute;left:0;right:0;top:calc(16px + 2.6em);text-align:center;font-size:12px;font-weight:600;opacity:.7}
+.ctile .pic{position:absolute;left:12%;right:12%;bottom:-10%;height:52%;border-radius:50% 50% 14px 14px / 40% 40% 14px 14px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.18);background:rgba(255,255,255,.35)}
+.ctile .pic img{width:100%;height:100%;object-fit:cover;opacity:1}
+.ctile .emo{position:absolute;left:0;right:0;bottom:12%;text-align:center;font-size:48px}
+.ctile.empty-t{opacity:.55}
 /* Splash Screen */
 #splash{position:fixed;inset:0;z-index:100;background:#2e6a39;color:#fff;display:grid;place-items:center;transition:opacity .45s ease,visibility .45s}
 #splash.out{opacity:0;visibility:hidden}
@@ -356,7 +367,7 @@ body.detail .hero{width:100%;max-width:none;margin:0;border-radius:0;max-height:
 .zoom input{flex:1;accent-color:var(--tomato);height:44px}
 @media(max-width:600px){.top .btn{min-height:40px;padding:0 12px;font-size:14px}.top-in{gap:8px}}
 </style>
-<meta name="app-version" content="20261122104458">
+<meta name="app-version" content="20261122105851">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#2E6A39">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -763,6 +774,16 @@ function dailyHTML(r){
     ${document.getElementById('sf-menu') ? `<button type="button" class="cb-btn" data-act="cookbook" aria-label="Kochbuch: Einladen, Name, Abmelden">${BOOK}</button>` : ''}</div>`;
 }
 
+// Kachel je Kategorie: Farbe, Name, Foto eines passenden Rezepts (sonst Symbol)
+const TILE_COLORS = ['#f7d64a', '#7fb28a', '#5b9bc0', '#ec9a7c', '#b49bd0', '#f4b6c2', '#6fbfb4', '#f6b25e', '#b7c97d', '#e8c6a0'];
+const TILE_EMOJI = { vegan: '🥑', vegetarisch: '🥦', fleisch: '🥩', fisch: '🐟', suppen: '🍲', suppe: '🍲', backen: '🥐', vorspeisen: '🥗', dessert: '🍰', desserts: '🍰', snack: '🥨', snacks: '🥨', frühstück: '🍳', getränke: '🥤', salate: '🥗', 'ohne kategorie': '🍽️' };
+function catTileHTML(name, idx, items, k){
+  const withPic = items.find(r => photoSrc(r));
+  return `<a class="ctile ${items.length ? '' : 'empty-t'}" href="#k-${idx}" style="--tc:${TILE_COLORS[k % TILE_COLORS.length]}" aria-label="${esc(name)}, ${items.length} ${items.length === 1 ? 'Rezept' : 'Rezepte'}">
+    <b>${esc(name)}</b><small>${items.length} ${items.length === 1 ? 'Rezept' : 'Rezepte'}</small>
+    ${withPic ? `<span class="pic"><img src="${esc(photoSrc(withPic))}" alt="" loading="lazy"></span>` : `<span class="emo" aria-hidden="true">${TILE_EMOJI[name.toLowerCase()] || '🍽️'}</span>`}</a>`;
+}
+
 // Start: pro Kategorie Überschrift + wischbare Rezeptkarten
 function renderStart(){
   setTab('start');
@@ -771,16 +792,22 @@ function renderStart(){
     app.innerHTML = `<div class="wrap"><div class="empty" style="margin-top:24px"><h2>Noch leer hier</h2><p>Leg euer erstes Rezept an – am besten direkt mit einem Foto vom Teller. Oder importiere ein Rezept aus kopiertem Text oder einem Foto einer Kochbuchseite.</p>${S.canWrite ? '<div class="actions" style="justify-content:center;margin:0"><button class="btn primary" data-go="neu">Rezept anlegen</button><button class="btn" data-act="import">Importieren</button></div>' : ''}</div></div>`;
     return;
   }
-  const rows = ALLCATS.map((c, i) => [c, i, catItems(i)]).filter(([, , it]) => it.length);
-  const lo = loose(); if (lo.length) rows.push(['Ohne Kategorie', 'x', lo]);
+  // Oben als Wischreihen: die Mahlzeiten, die am häufigsten gebraucht werden; alles andere als Kacheln
+  const MAIN = ['frühstück', 'mittagessen', 'abendessen'];
+  const isMain = c => MAIN.includes(c.toLowerCase());
+  const rows = ALLCATS.map((c, i) => [c, i, catItems(i)]).filter(([c, , it]) => isMain(c) && it.length);
+  const tiles = ALLCATS.map((c, i) => [c, i, catItems(i)]).filter(([c]) => !isMain(c));
+  const lo = loose(); if (lo.length) tiles.push(['Ohne Kategorie', 'x', lo]);
   const daily = dailyPick();
   document.body.classList.toggle('home', !!daily);
   app.innerHTML = `${daily ? dailyHTML(daily) : ''}<div class="wrap">
-    ${quickIdeasHTML()}
     ${rows.map(([c, i, items]) => `<section class="cat" aria-label="${esc(c)}">
       <div class="cat-h"><h2>${esc(c)}</h2><a href="#k-${i}">Alle ${items.length} ›</a></div>
       <div class="rail-w"><button type="button" class="rail-btn prev" data-rail="-1" aria-label="Zurück">‹</button><div class="rail">${items.map(cardHTML).join('')}</div><button type="button" class="rail-btn next" data-rail="1" aria-label="Weiter">›</button></div>
     </section>`).join('')}
+    ${quickIdeasHTML()}
+    ${tiles.length ? `<section class="cat" aria-label="Kategorien"><div class="cat-h"><h2>Kategorien</h2></div>
+      <div class="ctiles">${tiles.map(([c, i, items], k) => catTileHTML(c, i, items, k)).join('')}</div></section>` : ''}
     ${S.slow ? '<p class="note">Die Anzeige ist evtl. nicht aktuell.</p>' : ''}
     <p style="text-align:center;margin-top:32px;display:flex;gap:4px 18px;justify-content:center;flex-wrap:wrap">${S.canWrite ? '<a class="linkish" href="#kategorien">Kategorien &amp; Schlagworte verwalten</a>' : ''}<button class="linkish" data-act="export">Sicherung aller Rezepte</button></p>
   </div>`;
@@ -1669,7 +1696,7 @@ function route(live){
 // Einblend-Animation der neuen Ansicht (gestaffelt)
 function playEnter(){
   app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter');
-  let i = 0; $$('.cardw, .day, .qi a, .cat-h, .page-h, .d-head, .panel', app).forEach(el => { const r = el.getBoundingClientRect(); el.style.setProperty('--i', r.top < innerHeight + 50 ? i++ : 0); });
+  let i = 0; $$('.cardw, .day, .qi a, .ctile, .cat-h, .page-h, .d-head, .panel', app).forEach(el => { const r = el.getBoundingClientRect(); el.style.setProperty('--i', r.top < innerHeight + 50 ? i++ : 0); });
   clearTimeout(S.enterT); S.enterT = setTimeout(() => app.classList.remove('enter'), 1500);
 }
 // Bilder weich einblenden
