@@ -1363,14 +1363,25 @@ async function openImport(){
   let caps = null; try { caps = await S.sample.limits(); } catch {}
   const img = !!caps?.images;
   sheet(`<h2>Rezept importieren</h2><p>Füge den Rezepttext ein (z. B. von einer Webseite kopiert)${img ? ' oder wähle ein Foto – von einer Rezeptseite oder einfach vom fertigen Gericht' : ''}. Claude erkennt Zutaten und Schritte, du prüfst danach alles im Formular.</p>
+    <div id="impPrev" class="hidden" style="margin:0 0 14px"><div style="position:relative"><img id="impPrevImg" alt="Gewähltes Foto" style="width:100%;max-height:260px;object-fit:cover;border-radius:14px;display:block;background:var(--soft)"><button type="button" id="impPrevRm" aria-label="Foto entfernen" style="position:absolute;top:8px;right:8px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:20px">×</button></div></div>
     <div class="field"><span id="impTextLbl">Rezepttext${typeof S.sample.importUrl === 'function' ? ' oder Link' : ''}</span><div class="insp-box" style="margin:0"><textarea id="impText" style="min-height:160px" placeholder="Zutaten, Mengen, Zubereitung …" aria-labelledby="impTextLbl"></textarea>${micHTML('micImp')}</div>${SpeechRec ? '<small style="color:var(--muted)">Tipp: Aufs Mikrofon tippen und einfach erzählen, wie ihr es kocht.</small>' : ''}</div>
-    ${img ? `<div class="field"><span>Oder Foto: Rezeptseite, Screenshot oder fertiges Gericht</span><label class="btn" style="position:relative;width:max-content">Bild wählen<input id="impImg" type="file" accept="${esc(caps.images.mediaTypes.join(','))}" style="position:absolute;inset:0;opacity:0"></label><small id="impImgName" style="color:var(--muted)"></small></div>` : ''}
+    ${img ? `<div class="field"><span>Oder Foto: Rezeptseite, Screenshot oder fertiges Gericht</span><label class="btn" style="position:relative;width:max-content"><span id="impImgBtn">Bild wählen</span><input id="impImg" type="file" accept="${esc(caps.images.mediaTypes.join(','))}" style="position:absolute;inset:0;opacity:0"></label><small id="impImgName" style="color:var(--muted)"></small></div>` : ''}
     <p id="impStatus" class="by" aria-live="polite"></p>
     <div class="btns"><button class="btn" data-a="cancel">Abbrechen</button><button class="btn primary" data-a="go">Rezept erkennen</button></div>`, ov => {
     let ctl = null;
+    let prevUrl = null;
+    const showPrev = file => {
+      if (prevUrl) { URL.revokeObjectURL(prevUrl); prevUrl = null; }
+      if (file) { prevUrl = URL.createObjectURL(file); $('#impPrevImg', ov).src = prevUrl; }
+      $('#impPrev', ov).classList.toggle('hidden', !file);
+      $('#impImgBtn', ov).textContent = file ? 'Anderes Bild wählen' : 'Bild wählen';
+    };
+    $('#impPrevRm', ov)?.addEventListener('click', e => { e.stopPropagation(); const inp = $('#impImg', ov); inp.value = ''; inp.dispatchEvent(new Event('change')); });
     $('#impImg', ov)?.addEventListener('change', e => {
       const has = !!e.target.files[0];
-      $('#impImgName', ov).textContent = e.target.files[0]?.name || '';
+      showPrev(e.target.files[0] || null);
+      if (has) $('#impPrev', ov).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      $('#impImgName', ov).textContent = '';
       $('#impTextLbl', ov).textContent = has ? 'Optional: Erzähl oder schreib, wie ihr es zubereitet' : 'Rezepttext';
       $('#impText', ov).placeholder = has ? 'z. B. „Wir braten zwei Zwiebeln an, dann 500 g Hack dazu …“ – dann wird euer Rezept daraus, nicht ein allgemeiner Vorschlag.' : 'Zutaten, Mengen, Zubereitung …';
     });
