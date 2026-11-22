@@ -205,6 +205,15 @@
         return Object.fromEntries(ids.map(i => [i, m[i] || { id: i, name: '' }]));
       }
     });
+    // Mindestversion der Edge Function „import-recipe“, die diese App-Version braucht
+    const FN_VERSION_NEEDED = 5; let fnWarned = false;
+    function checkFnVersion(d) {
+      const v = +(d?.version || 0);
+      if (v >= FN_VERSION_NEEDED || fnWarned) return; fnWarned = true;
+      const t = document.createElement('div'); t.className = 'toast'; t.style.cssText = 'bottom:calc(150px + env(safe-area-inset-bottom));animation:none';
+      t.textContent = `Die Edge Function „import-recipe“ in Supabase ist veraltet (${v ? 'Version ' + v : 'ohne Versionsnummer'}, nötig: Version ${FN_VERSION_NEEDED}). Bitte den neuen Code einspielen.`;
+      document.body.append(t); setTimeout(() => t.remove(), 8000);
+    }
     async function callFn(body) {
       const { data, error } = await sb.functions.invoke('import-recipe', { body });
       if (error) {
@@ -212,6 +221,7 @@
         try { const j = await error.context.json(); code = j.code || code; msg = j.error || msg; } catch {}
         throw fail(code, msg);
       }
+      checkFnVersion(data);
       if (data?.error) throw fail(data.code || 'upstream_error', data.error);
       return data;
     }
@@ -224,6 +234,7 @@
       return parseJson(d.text ?? d);
     };
     sample.importUrl = async (url, prompt) => { const d = await callFn({ url, prompt }); return d.recipe || parseJson(d.text ?? d); };
+    sample.photo = async (name, desc) => { const d = await callFn({ action: 'photo', name, desc }); return d && 'photo' in d ? d.photo : null; };
     sample.inspire = async prompt => { const d = await callFn({ action: 'inspire', prompt }); if (!Array.isArray(d?.recipes)) throw Object.assign(new Error('inspire: Funktion veraltet'), { code: 'outdated' }); return d.recipes; };
     ns.sample = sample;
   }

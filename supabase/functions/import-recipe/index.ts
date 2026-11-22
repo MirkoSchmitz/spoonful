@@ -1,16 +1,28 @@
-// Spoonful – Rezept-Import (Supabase Edge Function)
+// Spoonful – Rezept-Import (Supabase Edge Function „import-recipe“)
+//
+// VERSION 5 · 22.11.2026
+// Versionsverlauf:
+//   v5 (22.11.2026)  Foto-Suche für Rezepte ohne Bild (action 'photo'), Versionsnummer in jeder Antwort
+//   v4 (22.11.2026)  bis zu 4 Bilder pro Anfrage („Was ist da?“ mit Vorratsfotos)
+//   v3 (21.11.2026)  Inspiration: Rezeptvorschläge mit freien Fotos (action 'inspire')
+//   v2 (21.11.2026)  Text- und Foto-Import über Claude
+//   v1 (20.11.2026)  Link-Import über eingebettete Rezeptdaten (schema.org/Recipe)
+//
+// Was die Funktion macht:
 // 1) Link: liest die Webseite und übernimmt das eingebettete Rezept (schema.org/Recipe) – ohne KI, kostenlos.
 // 2) Text/Foto oder Seiten ohne Rezeptdaten: fragt Claude, falls ANTHROPIC_API_KEY als Secret gesetzt ist.
-// 3) Inspiration: Claude schlägt Rezepte vor, dazu werden echte, frei nutzbare Fotos gesucht
+// 3) Foto-Suche für Rezepte ohne Bild (action 'photo').
+// 4) Inspiration: Claude schlägt Rezepte vor, dazu werden echte, frei nutzbare Fotos gesucht
 //    (Unsplash, falls UNSPLASH_ACCESS_KEY gesetzt ist, sonst Wikimedia Commons). Es werden keine Bilder generiert.
 // Nur angemeldete Nutzer können die Funktion aufrufen (JWT-Prüfung ist bei Supabase standardmäßig an).
 
+const VERSION = 5;
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
-const reply = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { ...CORS, 'Content-Type': 'application/json' } });
+const reply = (b: Record<string, unknown>, status = 200) => new Response(JSON.stringify({ ...b, version: VERSION }), { status, headers: { ...CORS, 'Content-Type': 'application/json' } });
 
 const KEY = Deno.env.get('ANTHROPIC_API_KEY');
 const MODEL = Deno.env.get('ANTHROPIC_MODEL') ?? 'claude-haiku-5-5';
@@ -142,7 +154,19 @@ function guessCats(text: string): string[] {
 Deno.serve(async req => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   try {
-    const { url, prompt, images, action } = await req.json();
+    const body = await req.json();
+    const { url, prompt, images, action } = body;
+
+    if (action === 'photo') {
+      // Passendes freies Foto für ein Rezept ohne Bild suchen
+      const name = String(body.name ?? '').slice(0, 120), desc = String(body.desc ?? '').slice(0, 300);
+      if (!name) return reply({ photo: null });
+      let query = '';
+      if (KEY) {
+        try { query = (await askClaude(`Gib 2–4 englische Wörter zurück, mit denen man ein Foto dieses fertigen Gerichts findet (nur die Wörter, nichts sonst). Gericht: "${name}"${desc ? ` – ${desc}` : ''}`, [], 30)).replace(/["\n.]/g, ' ').trim().slice(0, 60); } catch { /* ohne Übersetzung weiter */ }
+      }
+      return reply({ photo: await findPhoto(query || name, name) });
+    }
 
     if (action === 'inspire') {
       if (!KEY) return reply({ error: 'Für Inspiration fehlt der ANTHROPIC_API_KEY.', code: 'sampling_disabled' });
