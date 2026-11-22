@@ -1,6 +1,8 @@
 // Spoonful – Rezept-Import (Supabase Edge Function)
 // 1) Link: liest die Webseite und übernimmt das eingebettete Rezept (schema.org/Recipe) – ohne KI, kostenlos.
 // 2) Text/Foto oder Seiten ohne Rezeptdaten: fragt Claude, falls ANTHROPIC_API_KEY als Secret gesetzt ist.
+// 3) Inspiration: Claude schlägt Rezepte vor, dazu werden echte, frei nutzbare Fotos gesucht
+//    (Unsplash, falls UNSPLASH_ACCESS_KEY gesetzt ist, sonst Wikimedia Commons). Es werden keine Bilder generiert.
 // Nur angemeldete Nutzer können die Funktion aufrufen (JWT-Prüfung ist bei Supabase standardmäßig an).
 
 const CORS = {
@@ -14,19 +16,62 @@ const KEY = Deno.env.get('ANTHROPIC_API_KEY');
 const MODEL = Deno.env.get('ANTHROPIC_MODEL') ?? 'claude-haiku-5-5';
 const CATS = ['Frühstück', 'Vorspeisen', 'Mittagessen', 'Abendessen', 'Snack', 'Dessert', 'Backen', 'vegan', 'vegetarisch', 'Fleisch', 'Fisch', 'Suppen'];
 
-async function askClaude(prompt: string, images: { media_type: string; data: string }[] = []) {
+async function askClaude(prompt: string, images: { media_type: string; data: string }[] = [], maxTokens = 4000) {
   const content = [
-    ...images.slice(0, 1).map(i => ({ type: 'image', source: { type: 'base64', media_type: i.media_type, data: i.data } })),
+    ...images.slice(0, 4).map(i => ({ type: 'image', source: { type: 'base64', media_type: i.media_type, data: i.data } })),
     { type: 'text', text: prompt },
   ];
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'x-api-key': KEY!, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-    body: JSON.stringify({ model: MODEL, max_tokens: 4000, messages: [{ role: 'user', content }] }),
+    body: JSON.stringify({ model: MODEL, max_tokens: maxTokens, messages: [{ role: 'user', content }] }),
   });
   if (!r.ok) throw new Error(`Claude-API ${r.status}: ${(await r.text()).slice(0, 300)}`);
   const j = await r.json();
   return (j.content ?? []).filter((c: { type: string }) => c.type === 'text').map((c: { text: string }) => c.text).join('');
+}
+
+// ---- Fotos für Inspiration ----
+const UNSPLASH = Deno.env.get('UNSPLASH_ACCESS_KEY');
+type Photo = { url: string; credit: string; link: string } | null;
+const clean = (s: string) => s.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+
+async function unsplashPhoto(q: string): Promise<Photo> {
+  const r = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=1&orientation=landscape&content_filter=high`, { headers: { Authorization: `Client-ID ${UNSPLASH}`, 'Accept-Version': 'v1' } });
+  if (!r.ok) return null;
+  const p = (await r.json()).results?.[0];
+  if (!p) return null;
+  fetch(p.links.download_location, { headers: { Authorization: `Client-ID ${UNSPLASH}` } }).catch(() => {}); // von Unsplash verlangt
+  return { url: `${p.urls.raw}&auto=format&fit=crop&w=1200&h=900&q=75`, credit: `${p.user.name} / Unsplash`, link: `${p.links.html}?utm_source=spoonful&utm_medium=referral` };
+}
+
+async function commonsPhoto(q: string): Promise<Photo> {
+  const u = 'https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrnamespace=6&gsrlimit=8'
+    + `&gsrsearch=${encodeURIComponent(q + ' filetype:bitmap')}&prop=imageinfo&iiprop=url|extmetadata|mime|size&iiurlwidth=1200&origin=*`;
+  const r = await fetch(u, { headers: { 'User-Agent': 'Spoonful/1.0 (private recipe app; https://spoonful-mz.netlify.app)' } });
+  if (!r.ok) return null;
+  const pages = Object.values((await r.json()).query?.pages ?? {}) as { index: number; imageinfo?: { mime: string; width: number; height: number; thumburl?: string; descriptionurl: string; extmetadata?: Record<string, { value: string }> }[] }[];
+  pages.sort((a, b) => a.index - b.index);
+  for (const p of pages) {
+    const ii = p.imageinfo?.[0];
+    if (!ii || !/jpeg|png|webp/.test(ii.mime) || ii.width < 600 || ii.width < ii.height * 0.9) continue;
+    const m = ii.extmetadata ?? {};
+    const lic = clean(m.LicenseShortName?.value ?? '');
+    if (!/^(cc|public domain|pd)/i.test(lic)) continue;
+    const artist = clean(m.Artist?.value ?? '').slice(0, 60) || 'Unbekannt';
+    return { url: ii.thumburl ?? '', credit: `${artist} (${lic}) / Wikimedia Commons`, link: ii.descriptionurl };
+  }
+  return null;
+}
+
+async function findPhoto(q: string, fallback: string): Promise<Photo> {
+  for (const term of [q, fallback].filter(Boolean)) {
+    try {
+      const p = UNSPLASH ? (await unsplashPhoto(term)) ?? (await commonsPhoto(term)) : await commonsPhoto(term);
+      if (p?.url) return p;
+    } catch { /* nächster Versuch */ }
+  }
+  return null;
 }
 
 // ---- schema.org/Recipe auslesen ----
@@ -97,7 +142,18 @@ function guessCats(text: string): string[] {
 Deno.serve(async req => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   try {
-    const { url, prompt, images } = await req.json();
+    const { url, prompt, images, action } = await req.json();
+
+    if (action === 'inspire') {
+      if (!KEY) return reply({ error: 'Für Inspiration fehlt der ANTHROPIC_API_KEY.', code: 'sampling_disabled' });
+      if (!prompt) return reply({ error: 'Kein Wunsch angegeben.', code: 'upstream_error' });
+      const txt = await askClaude(String(prompt).slice(0, 20000), [], 6000);
+      let data: { recipes?: Record<string, unknown>[] };
+      try { data = JSON.parse(txt.slice(txt.indexOf('{'), txt.lastIndexOf('}') + 1)); } catch { return reply({ error: 'Antwort war kein JSON.', code: 'invalid_json' }); }
+      const list = (Array.isArray(data.recipes) ? data.recipes : []).slice(0, 6);
+      const recipes = await Promise.all(list.map(async r => ({ ...r, photo: await findPhoto(String(r.photoQuery ?? ''), String(r.name ?? '')) })));
+      return reply({ recipes });
+    }
 
     if (url) {
       if (!/^https?:\/\//i.test(url)) return reply({ error: 'Ungültiger Link.', code: 'upstream_error' });

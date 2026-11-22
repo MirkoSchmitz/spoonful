@@ -216,7 +216,7 @@
       return data;
     }
     const sample = async () => { throw fail('capability_disabled', 'Nur sample.json wird unterstützt'); };
-    sample.limits = async () => ({ maxPromptBytes: 200000, images: { maxCount: 1, maxInputBytes: 20e6, mediaTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] } });
+    sample.limits = async () => ({ maxPromptBytes: 200000, images: { maxCount: 4, maxInputBytes: 20e6, mediaTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] } });
     sample.json = async (prompt, opts = {}) => {
       const images = [];
       for (const f of [].concat(opts.images ? Array.from(opts.images.length !== undefined ? opts.images : [opts.images]) : [])) images.push({ media_type: 'image/jpeg', data: await toB64(await shrink(f)) });
@@ -224,6 +224,7 @@
       return parseJson(d.text ?? d);
     };
     sample.importUrl = async (url, prompt) => { const d = await callFn({ url, prompt }); return d.recipe || parseJson(d.text ?? d); };
+    sample.inspire = async prompt => { const d = await callFn({ action: 'inspire', prompt }); if (!Array.isArray(d?.recipes)) throw Object.assign(new Error('inspire: Funktion veraltet'), { code: 'outdated' }); return d.recipes; };
     ns.sample = sample;
   }
 
@@ -263,7 +264,7 @@
       if (m === 'logout') { await sb.auth.signOut(); location.reload(); }
       if (m === 'import') {
         let list; try { const j = JSON.parse(ov.querySelector('#sf-json').value); list = Array.isArray(j) ? j : j.recipes; if (!Array.isArray(list)) throw 0; } catch { st('Das ist keine gültige Sicherung.'); return; }
-        const rowsIn = list.filter(r => r && r.id && r.name).map(({ id, ...r }) => ({ cookbook_id: cb.id, id: String(id).replace(/[^A-Za-z0-9_-]/g, '').slice(0, 40) || rid(), data: { ...r, photoId: null, photoUrl: null, createdBy: r.createdBy && r.createdBy === ctx.user.id ? r.createdBy : null, updatedBy: null, favBy: [] }, updated_at: now() }));
+        const rowsIn = list.filter(r => r && r.id && r.name).map(({ id, ...r }) => ({ cookbook_id: cb.id, id: String(id).replace(/[^A-Za-z0-9_-]/g, '').slice(0, 40) || rid(), data: { ...r, photoId: null, photoUrl: null, photoOrigId: null, photoOrigUrl: null, photoCrop: null, createdBy: r.createdBy && r.createdBy === ctx.user.id ? r.createdBy : null, updatedBy: null, favBy: [] }, updated_at: now() }));
         st(`Übernehme ${rowsIn.length} Rezepte …`);
         const { error } = await sb.from('recipes').upsert(rowsIn);
         st(error ? 'Übernehmen hat nicht geklappt: ' + error.message : `${rowsIn.length} Rezepte übernommen.`);

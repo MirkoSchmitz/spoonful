@@ -136,14 +136,14 @@ button{cursor:pointer}
 @media(prefers-reduced-motion:reduce){.spin{animation:none}.card{transition:none}}
 .hidden{display:none!important}
 /* Tab Bar */
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:8;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--card);border-top:1px solid var(--line);padding:6px max(2vw,8px) calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 18px rgba(0,0,0,.05)}
-.tabbar a,.tabbar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;border:0;background:none;color:var(--muted);font-size:12px;font-weight:600;text-decoration:none;padding:0}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:8;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));background:var(--card);border-top:1px solid var(--line);padding:6px max(2vw,8px) calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 18px rgba(0,0,0,.05)}
+.tabbar a,.tabbar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;border:0;background:none;color:var(--muted);font-size:10.5px;font-weight:600;text-decoration:none;padding:0}
 .tabbar svg{width:24px;height:24px}
 .tabbar [aria-current=page]{color:var(--tomato)}
 .tabbar [aria-current=page] svg path{fill:currentColor;fill-opacity:.16}
 .tabbar .add .plus{width:44px;height:44px;border-radius:50%;background:var(--tomato);display:grid;place-items:center;margin-top:-18px;box-shadow:0 6px 16px rgba(46,106,57,.35)}
 .tabbar .add .plus svg{width:22px;height:22px}
-@media(min-width:900px){.tabbar{left:50%;right:auto;transform:translateX(-50%);width:520px;bottom:14px;border:1px solid var(--line);border-radius:22px;padding-bottom:6px}}
+@media(min-width:900px){.tabbar{left:50%;right:auto;transform:translateX(-50%);width:660px;bottom:14px;border:1px solid var(--line);border-radius:22px;padding-bottom:6px}}
 /* Kategorie-Reihen */
 .cat{margin-top:26px}
 .cat-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
@@ -167,6 +167,83 @@ button{cursor:pointer}
 .cm-row input{min-height:46px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);padding:0 12px;font-size:16px;width:100%}
 .cm-row button{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:transparent;color:var(--muted);font-size:18px}
 .cm-row button:disabled{opacity:.35}
+/* Inspiration */
+.insp-box{position:relative;margin-top:8px}
+.insp-box textarea{width:100%;min-height:104px;border-radius:16px;border:1.5px solid var(--line);background:var(--soft);padding:14px 60px 14px 16px;font-size:17px;resize:vertical}
+.mic{position:absolute;right:10px;top:10px;width:44px;height:44px;border-radius:50%;border:0;background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12);display:grid;place-items:center}
+.mic svg{width:22px;height:22px}
+.mic.on{background:var(--heart);color:#fff}
+@media(prefers-reduced-motion:no-preference){.mic.on{animation:pulse 1.2s ease-in-out infinite}@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(211,58,32,.18)}}}
+.ideas-q{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}
+.idea-card{display:flex;flex-direction:column;width:100%;text-align:left;padding:0;font:inherit;color:inherit;cursor:pointer}
+.idea-card p{margin:6px 0 0;font-size:14px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.saved-badge{position:absolute;top:8px;left:8px;background:var(--tomato);color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px}
+.idea-photo{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block;background:var(--soft)}
+.idea-sheet h3{font-size:20px;margin:14px 0 8px}
+.idea-sheet ul,.idea-sheet ol{padding-left:20px;margin:0}
+.idea-sheet li{padding:3px 0}
+/* Wochenplan */
+.week-nav{display:flex;align-items:center;gap:8px;margin:6px 0 14px}
+.week-nav b{flex:1;text-align:center;font-size:15px}
+.week-nav .btn{min-width:44px;padding:0 12px}
+.days{display:grid;gap:12px}
+@media(min-width:900px){.days{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.day{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 14px}
+.day.today{border-color:var(--tomato);box-shadow:0 0 0 1px var(--tomato)}
+.day.past{opacity:.6}
+.day-h{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
+.day-h b{font-size:16px}
+.day-h small{color:var(--muted);font-size:13px}
+.day-h .now{background:var(--tomato);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px}
+.pi{display:grid;grid-template-columns:56px minmax(0,1fr) auto 40px;gap:10px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
+.pi:first-of-type{border-top:0}
+.pi .th{width:56px;height:42px;border-radius:9px;overflow:hidden;background:var(--soft);color:var(--muted);display:grid;place-items:center}
+.pi .th img{width:100%;height:100%;object-fit:cover}
+.pi .th svg{width:30px}
+.pi a,.pi .tx{font-weight:600;color:inherit;text-decoration:none;line-height:1.25;overflow-wrap:anywhere}
+.pi .tx{font-weight:500;font-style:italic}
+.pi .x{width:40px;height:40px;border-radius:50%;border:0;background:transparent;color:var(--muted);font-size:20px}
+.mini-step{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:999px;font-size:13px}
+.mini-step button{width:30px;height:32px;border:0;background:transparent;font-size:17px;font-weight:700}
+.mini-step span{min-width:30px;text-align:center;font-weight:700}
+.day-add{display:flex;gap:8px;margin-top:8px}
+.day-add .btn{min-height:38px;font-size:14px;padding:0 12px}
+.pick-list{display:grid;gap:6px;max-height:50vh;overflow:auto;margin-top:10px}
+.pick{display:grid;grid-template-columns:56px minmax(0,1fr);gap:10px;align-items:center;text-align:left;border:1.5px solid var(--line);border-radius:12px;background:var(--card);padding:6px;font:inherit;color:inherit}
+.pick .th{width:56px;height:42px;border-radius:8px;overflow:hidden;background:var(--soft);display:grid;place-items:center;color:var(--muted)}
+.pick .th img{width:100%;height:100%;object-fit:cover}.pick .th svg{width:30px}
+.pick small{display:block;color:var(--muted);font-size:12px}
+.daypick{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:10px}
+.daypick button{border:1.5px solid var(--line);border-radius:12px;background:var(--card);padding:8px 10px;text-align:left;font:inherit;color:inherit;min-height:52px}
+.daypick button b{display:block;font-size:14px}
+.daypick button small{display:block;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fill-list{display:grid;gap:6px;margin-top:10px}
+.fill-row{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--card)}
+.fill-row b{min-width:72px;font-size:14px}
+/* Inspiration-Umschalter, Vorrat */
+.seg{display:inline-flex;background:var(--soft);border-radius:999px;padding:4px;gap:4px;margin:4px 0 6px}
+.seg button{border:0;background:transparent;border-radius:999px;min-height:40px;padding:0 16px;font:inherit;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed=true]{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.thumbs .t{position:relative;width:84px;height:64px;border-radius:10px;overflow:hidden;background:var(--soft)}
+.thumbs .t img{width:100%;height:100%;object-fit:cover}
+.thumbs .t button{position:absolute;top:2px;right:2px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:16px}
+.have{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.have .chip{background:var(--basil-soft);border-color:transparent;min-height:34px;font-size:14px}
+.have-add{display:flex;gap:8px;margin-top:8px}
+.have-add input{flex:1;min-height:42px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);padding:0 12px;font-size:16px}
+.miss{font-size:13px;color:var(--muted);margin:4px 0 0}
+.miss b{color:var(--basil)}
+.sec-t{font-size:20px;margin:26px 0 10px}
+/* Nährwerte, Schlagworte */
+.nutri{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:14px;color:var(--muted);margin-top:8px}
+.nutri b{color:var(--ink)}
+.utags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.utag{border:1.5px solid var(--line);background:transparent;border-radius:999px;min-height:32px;padding:0 12px;font:inherit;font-size:13px;color:var(--ink)}
+.utag::before{content:'#';color:var(--muted);margin-right:1px}
+.tag-edit{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tag-edit .utag{display:inline-flex;align-items:center;gap:4px}
+.tag-edit input{flex:1;min-width:160px;min-height:42px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);padding:0 12px;font-size:16px}
 /* Kategorie-Kacheln */
 .secs-h{font-family:Figtree,sans-serif;font-size:14px;color:var(--muted);font-weight:600;margin:22px 0 10px}
 .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:12px}
@@ -208,9 +285,12 @@ button{cursor:pointer}
 <nav class="tabbar" id="tabbar" aria-label="Hauptnavigation">
  <a href="#start" data-tab="start"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>Start</span></a>
  <a href="#suche" data-tab="suche"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Suche</span></a>
+ <a href="#plan" data-tab="plan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4 10h16M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Plan</span></a>
  <button type="button" id="tabAdd" class="add" aria-label="Rezept hinzufügen"><span class="plus"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg></span><span>Neu</span></button>
+ <a href="#inspiration" data-tab="inspiration"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg><span>Inspiration</span></a>
  <a href="#favoriten" data-tab="favoriten"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>Favoriten</span></a>
 </nav>
+<datalist id="alltags"></datalist>
 <datalist id="units"><option value="g"><option value="kg"><option value="ml"><option value="l"><option value="EL"><option value="TL"><option value="Stück"><option value="Prise"><option value="Zehe"><option value="Bund"><option value="Dose"><option value="Packung"><option value="Tasse"><option value="Becher"><option value="Msp."><option value="Scheibe"></datalist>
 <div id="layer"></div>
 <script>
@@ -238,6 +318,7 @@ const SAMPLE_PHOTOS = {
   'sample-15': ['1560684352-8497838a2229', 'Do mee'],
   'sample-16': ['1781941622552-ee49f32acdd3', 'jackson kondili']
 };
+const creditText = c => String(c).includes('/') ? String(c) : `${c} / Unsplash`;
 const unsplashUrl = id => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=1200&h=900&q=75`;
 const patchedSamples = new Set();
 async function addSamplePhotos(){
@@ -256,16 +337,18 @@ function setCats(cfg){
 const HALF_UNITS = ['','stück','stk','stk.','zehe','zehen','bund','dose','dosen','packung','pck','pck.','scheibe','scheiben','ei','eier','blatt','zweig','zweige','handvoll','becher','glas','gläser','prise','prisen'];
 const QUARTER_UNITS = ['el','tl','tasse','tassen','msp','msp.'];
 const LEVELS = ['leicht','mittel','anspruchsvoll'];
-const QUICK = [['fav','Favoriten'],['fast','bis 30 Min'],['easy','leicht']];
+const QUICK = [['fav','Favoriten'],['fast','bis 30 Min'],['easy','leicht'],['light','unter 600 kcal']];
 const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
+const CAL = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="vertical-align:-3px"><path d="M4 6.5A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 10h16M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 const HEART_FULL = HEART.replace('fill="none"', 'fill="currentColor"');
 const PLATE ='<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="32" cy="32" r="16" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10v14M2 10v10a4 4 0 0 0 8 0V10M58 10c-4 2-5 8-5 14h5v30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>';
 
 // ---------- Zustand ----------
 const S = { db:null, user:null, assets:null, sample:null, me:null, canWrite:true,
   recipes:[], byId:{}, loaded:false, slow:false, names:{},
-  q:'', meal:[], diet:[], quick:[], draft:null, portions:{}, open:new Set(), shut:new Set() };
-try { const f = JSON.parse(localStorage.getItem('rw-filter')||'{}'); S.meal=f.meal||[]; S.diet=f.diet||[]; S.quick=f.quick||[]; } catch {}
+  q:'', meal:[], diet:[], quick:[], tags:[], draft:null, portions:{}, open:new Set(), shut:new Set(),
+  plan:{}, planWeek:0 };
+try { const f = JSON.parse(localStorage.getItem('rw-filter')||'{}'); S.meal=f.meal||[]; S.diet=f.diet||[]; S.quick=f.quick||[]; S.tags=f.tags||[]; } catch {}
 
 const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => [...r.querySelectorAll(s)];
@@ -317,7 +400,7 @@ function toast(msg){ const t = document.createElement('div'); t.className='toast
 function photoSrc(r){ return r.photoUrl || (r.photoId ? '/_blob/' + r.photoId : ''); }
 function photoHTML(r, alt){ const s = photoSrc(r); return s ? `<img src="${esc(s)}" alt="${esc(alt||r.name)}" loading="lazy">` : PLATE; }
 function tagsHTML(cats){ return (cats||[]).map(c => `<span class="tag ${DIET.includes(c)?'diet':''}">${esc(c)}</span>`).join(''); }
-function saveFilter(){ try{ localStorage.setItem('rw-filter', JSON.stringify({meal:S.meal, diet:S.diet, quick:S.quick})); }catch{} }
+function saveFilter(){ try{ localStorage.setItem('rw-filter', JSON.stringify({meal:S.meal, diet:S.diet, quick:S.quick, tags:S.tags})); }catch{} }
 const isFav = r => !!S.me && (r.favBy||[]).includes(S.me);
 function factsHTML(r){
   const f = [];
@@ -325,6 +408,33 @@ function factsHTML(r){
   if (r.level) f.push(`<span>${esc(r.level)}</span>`);
   return f.length ? `<div class="facts">${f.join('<span aria-hidden="true">·</span>')}</div>` : '';
 }
+// Nährwerte (Schätzung pro Portion); v = Prüfsumme der Zutaten, damit Änderungen erkannt werden
+function nutriKey(r){
+  const t = (r.servings || 1) + '|' + (r.ingredients || []).map(i => `${i.qty ?? ''} ${i.unit || ''} ${i.name || ''}`.trim().toLowerCase()).join(';');
+  let h = 5381; for (let i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36);
+}
+const nutriOk = r => !!r.nutrition && r.nutrition.v === nutriKey(r) && +r.nutrition.kcal > 0;
+function cleanNutri(n, r){
+  if (!n || !(+n.kcal > 0)) return null;
+  const k = v => Math.max(0, Math.round(+v || 0));
+  return { kcal: Math.min(5000, k(n.kcal)), protein: k(n.protein), carbs: k(n.carbs), fat: k(n.fat), v: nutriKey(r) };
+}
+function nutriHTML(r){
+  if (!nutriOk(r)) return '';
+  const n = r.nutrition;
+  return `<div class="nutri" title="Grobe Schätzung von Claude"><span><b>ca. ${n.kcal} kcal</b></span><span>${n.protein} g Eiweiß</span><span>${n.carbs} g Kohlenhydrate</span><span>${n.fat} g Fett</span><span>pro Portion · geschätzt</span></div>`;
+}
+const normTag = t => String(t || '').replace(/^#+/, '').replace(/\s+/g, ' ').trim().slice(0, 30);
+function allTags(){ const m = new Map(); for (const r of S.recipes) for (const t of r.tags || []) if (!m.has(t.toLowerCase())) m.set(t.toLowerCase(), t); return [...m.values()].sort((a, b) => a.localeCompare(b, 'de')); }
+function utagsHTML(tags, clickable){ return (tags || []).length ? `<div class="utags">${tags.map(t => clickable ? `<button type="button" class="utag" data-tagq="${esc(t)}" aria-label="Alle Rezepte mit ${esc(t)}">${esc(t)}</button>` : `<span class="utag">${esc(t)}</span>`).join('')}</div>` : ''; }
+const pad2 = n => String(n).padStart(2, '0');
+const isoDay = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const dayFromIso = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const todayIso = () => isoDay(new Date());
+const WD = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+const dayLabel = (iso, long) => { const d = dayFromIso(iso); return long ? d.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' }) : `${WD[d.getDay()]}, ${d.getDate()}.${d.getMonth() + 1}.`; };
 async function toggleFav(id){
   const r = S.byId[id]; if (!r || !S.me) return;
   const favBy = isFav(r) ? (r.favBy||[]).filter(x => x !== S.me) : [...(r.favBy||[]), S.me];
@@ -376,7 +486,7 @@ async function loadSource(fileOrBlob){
   c.getContext('2d').drawImage(src, 0, 0, c.width, c.height);
   return c;
 }
-function openCrop(canvas){
+function openCrop(canvas, init){
   return new Promise(resolve => {
     const url = canvas.toDataURL('image/jpeg', 0.9);
     sheet(`<h2>Bildausschnitt wählen</h2><p>Verschiebe das Foto mit dem Finger oder der Maus und zoome, bis das Essen gut im Rahmen sitzt. So erscheint es in der Übersicht und im Rezept.</p>
@@ -393,8 +503,13 @@ function openCrop(canvas){
         W = box.clientWidth; H = box.clientHeight; s0 = Math.max(W / iw, H / ih);
         x = W / 2 - cx * s0 * z; y = H / 2 - cy * s0 * z; draw();
       };
+      if (init && init.z >= 1 && init.z <= 4) { z = init.z; zoomEl.value = z; }
+      const start = init && init.cx >= 0 && init.cx <= 1 && init.cy >= 0 && init.cy <= 1 ? init : null;
       const zoomTo = (nz, px = W / 2, py = H / 2) => { nz = Math.min(4, Math.max(1, nz)); const s = s0 * z, ns = s0 * nz; x = px - (px - x) * ns / s; y = py - (py - y) * ns / s; z = nz; zoomEl.value = z; draw(); };
-      const ro = new ResizeObserver(measure); ro.observe(box);
+      const ro = new ResizeObserver(() => {
+        if (start && !W) { W = box.clientWidth; H = box.clientHeight; s0 = Math.max(W / iw, H / ih); x = W / 2 - start.cx * iw * s0 * z; y = H / 2 - start.cy * ih * s0 * z; draw(); return; }
+        measure();
+      }); ro.observe(box);
       const pts = new Map(); let pinch = null;
       box.addEventListener('pointerdown', e => { box.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), z }; } box.style.cursor = 'grabbing'; });
       box.addEventListener('pointermove', e => {
@@ -416,7 +531,8 @@ function openCrop(canvas){
         const ow = Math.round(Math.min(1600, sw)), oh = Math.round(ow * 3 / 4);
         const out = document.createElement('canvas'); out.width = ow; out.height = oh;
         out.getContext('2d').drawImage(canvas, sx, sy, sw, sh, 0, 0, ow, oh);
-        out.toBlob(b => { closeSheet(); resolve(b); }, 'image/jpeg', 0.85);
+        const crop = { cx: +((sx + sw / 2) / iw).toFixed(4), cy: +((sy + sh / 2) / ih).toFixed(4), z: +z.toFixed(3) };
+        out.toBlob(b => { closeSheet(); resolve(b ? { blob: b, crop } : null); }, 'image/jpeg', 0.85);
       };
       ov.addEventListener('click', e => { const c = e.target.closest('[data-c]')?.dataset.c; if (c) finish(c === 'ok'); else if (e.target === ov) finish(false); });
     });
@@ -433,8 +549,10 @@ function filtered(){
     if (S.quick.includes('fav') && !isFav(r)) return false;
     if (S.quick.includes('fast') && !(r.time && r.time <= 30)) return false;
     if (S.quick.includes('easy') && r.level !== 'leicht') return false;
+    if (S.quick.includes('light') && !(nutriOk(r) && r.nutrition.kcal < 600)) return false;
+    if (S.tags.length && !S.tags.some(t => (r.tags || []).includes(t))) return false;
     if (q) {
-      const hay = [r.name, r.desc, ...(r.ingredients||[]).map(i => i.name)].join(' ').toLowerCase();
+      const hay = [r.name, r.desc, ...(r.tags || []), ...(r.ingredients||[]).map(i => i.name)].join(' ').toLowerCase();
       if (!q.split(/\s+/).every(w => hay.includes(w))) return false;
     }
     return true;
@@ -444,13 +562,13 @@ function chipRow(label, list, sel, cls){
   return `<div class="chiprow" role="group" aria-label="${label}"><span class="lbl">${label}</span>${list.map(c => `<button type="button" class="chip ${cls}" data-chip="${cls}" data-v="${esc(c)}" aria-pressed="${sel.includes(c)}">${esc(c)}</button>`).join('')}</div>`;
 }
 function quickRow(){
-  return `<div class="chiprow quick" role="group" aria-label="Schnellfilter"><span class="lbl">Schnell</span>${QUICK.filter(([k]) => k !== 'fav' || S.me).map(([k, l]) => `<button type="button" class="chip" data-chip="quick" data-v="${k}" aria-pressed="${S.quick.includes(k)}">${k === 'fav' ? HEART + ' ' : ''}${l}</button>`).join('')}</div>`;
+  return `<div class="chiprow quick" role="group" aria-label="Schnellfilter"><span class="lbl">Schnell</span>${QUICK.filter(([k]) => (k !== 'fav' || S.me) && (k !== 'light' || S.quick.includes('light') || S.recipes.some(nutriOk))).map(([k, l]) => `<button type="button" class="chip" data-chip="quick" data-v="${k}" aria-pressed="${S.quick.includes(k)}">${k === 'fav' ? HEART + ' ' : ''}${l}</button>`).join('')}</div>`;
 }
 const FILTER_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M3 5h18M6 12h12M10 19h4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>';
-const nFilters = () => S.meal.length + S.diet.length + S.quick.length;
+const nFilters = () => S.meal.length + S.diet.length + S.quick.length + S.tags.length;
 function activeChips(){
   const q = Object.fromEntries(QUICK);
-  return [...S.meal.map(v => ['meal', v, v]), ...S.diet.map(v => ['diet', v, v]), ...S.quick.map(v => ['quick', v, q[v]])]
+  return [...S.meal.map(v => ['meal', v, v]), ...S.diet.map(v => ['diet', v, v]), ...S.quick.map(v => ['quick', v, q[v]]), ...S.tags.map(v => ['tags', v, '#' + v])]
     .map(([k, v, l]) => `<button type="button" class="chip" data-rmf="${k}" data-v="${esc(v)}" aria-label="Filter ${esc(l)} entfernen">${esc(l)} ×</button>`).join('');
 }
 function favBtn(r){
@@ -489,7 +607,7 @@ function renderStart(){
       <div class="rail-w"><button type="button" class="rail-btn prev" data-rail="-1" aria-label="Zurück">‹</button><div class="rail">${items.map(cardHTML).join('')}</div><button type="button" class="rail-btn next" data-rail="1" aria-label="Weiter">›</button></div>
     </section>`).join('')}
     ${S.slow ? '<p class="note">Die Anzeige ist evtl. nicht aktuell.</p>' : ''}
-    <p style="text-align:center;margin-top:32px;display:flex;gap:4px 18px;justify-content:center;flex-wrap:wrap">${S.canWrite ? '<a class="linkish" href="#kategorien">Kategorien verwalten</a>' : ''}<button class="linkish" data-act="export">Sicherung aller Rezepte</button></p>
+    <p style="text-align:center;margin-top:32px;display:flex;gap:4px 18px;justify-content:center;flex-wrap:wrap">${S.canWrite ? '<a class="linkish" href="#kategorien">Kategorien &amp; Schlagworte verwalten</a>' : ''}<button class="linkish" data-act="export">Sicherung aller Rezepte</button></p>
   </div>`;
 }
 // Alle Rezepte einer Kategorie
@@ -529,7 +647,7 @@ function renderFavs(){
 const renderHome = () => route();
 function openFilters(){
   const body = () => `<h2>Filter</h2><p>Mehrere Filter innerhalb einer Zeile verbinden sich mit „oder“, zwischen den Zeilen mit „und“.</p>
-    <div class="filters">${chipRow('Mahlzeit', MEAL, S.meal, 'meal')}${chipRow('Ernährung', DIET, S.diet, 'diet')}${quickRow()}</div>
+    <div class="filters">${chipRow('Mahlzeit', MEAL, S.meal, 'meal')}${chipRow('Ernährung', DIET, S.diet, 'diet')}${quickRow()}${allTags().length ? chipRow('Schlagworte', [...new Set([...allTags(), ...S.tags])], S.tags, 'tags') : ''}</div>
     <p class="by" style="margin-top:14px">${filtered().length} passende Rezepte</p>
     <div class="btns"><button class="btn" data-f="reset">Zurücksetzen</button><button class="btn primary" data-f="done">Fertig</button></div>`;
   const wrapRows = el => el.querySelectorAll('.chiprow').forEach(r => { r.style.flexWrap = 'wrap'; r.style.overflow = 'visible'; });
@@ -539,7 +657,7 @@ function openFilters(){
       const chip = e.target.closest('[data-chip]');
       if (chip) { const key = chip.dataset.chip, v = chip.dataset.v, on = !S[key].includes(v); S[key] = on ? [...S[key], v] : S[key].filter(x => x !== v); }
       const f = e.target.closest('[data-f]')?.dataset.f;
-      if (f === 'reset') { S.meal = []; S.diet = []; S.quick = []; }
+      if (f === 'reset') { S.meal = []; S.diet = []; S.quick = []; S.tags = []; }
       if (chip || f === 'reset') { saveFilter(); renderSearch(); sheetEl.innerHTML = body(); wrapRows(sheetEl); }
       if (f === 'done') closeSheet();
     });
@@ -555,18 +673,391 @@ function openAdd(){
   });
 }
 
+// ---------- Inspiration ----------
+const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+const MIC = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+const INSPO_EXAMPLES = ['Gesund und schnell', 'Irgendwas mit Ofenkartoffeln', 'Vegetarisch für Gäste', 'Warm und gemütlich', 'Resteverwertung aus dem Kühlschrank'];
+const MAX_PANTRY_PHOTOS = 4;
+S.inspo = { mode: 'lust', wish: '', loading: false, error: '',
+  lust: { ideas: [], saved: {}, lastWish: '' },
+  pantry: { text: '', photos: [], have: [], detecting: false, matches: null, ideas: [], saved: {}, searched: false } };
+let rec = null, inspoCtl = null;
+
+// Spracheingabe (Web Speech API) für ein Textfeld
+const micHTML = id => SpeechRec ? `<button type="button" class="mic ${rec?._id === id ? 'on' : ''}" id="${id}" data-mic aria-pressed="${rec?._id === id}" aria-label="${rec?._id === id ? 'Spracheingabe beenden' : 'Spracheingabe starten'}">${MIC}</button>` : '';
+const micHint = () => SpeechRec ? '' : '<p class="by" style="margin:6px 0 0">Tipp: Zum Sprechen das Mikrofon deiner Handy-Tastatur nutzen.</p>';
+function startMic(btn, ta, onChange){
+  if (rec) { const same = rec._id === btn.id; try { rec.stop(); } catch {} if (same) return; }
+  if (!SpeechRec || !ta) return;
+  const base = ta.value.trim(), id = btn.id;
+  const show = on => { const b = document.getElementById(id); if (b) { b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Spracheingabe beenden' : 'Spracheingabe starten'); } };
+  try {
+    const r = new SpeechRec(); rec = r; r._id = id; r.lang = 'de-DE'; r.interimResults = true; r.continuous = false;
+    r.onresult = e => { let t = ''; for (const x of e.results) t += x[0].transcript; const v = (base ? base + ' ' : '') + t; const cur = document.getElementById(ta.id) || ta; cur.value = v; onChange?.(v); };
+    r.onerror = e => toast(e.error === 'not-allowed' || e.error === 'service-not-allowed' ? 'Mikrofon wurde nicht erlaubt – bitte in den Einstellungen freigeben.' : e.error === 'no-speech' ? 'Nichts gehört – bitte nochmal.' : 'Spracheingabe hat nicht geklappt.');
+    r.onend = () => { if (rec === r) rec = null; show(false); };
+    r.start(); show(true);
+  } catch { rec = null; toast('Spracheingabe ist hier nicht verfügbar.'); }
+}
+const stopMic = () => { if (rec) { try { rec.stop(); } catch {} } };
+
+function renderInspo(){
+  setTab('inspiration');
+  const I = S.inspo, ok = typeof S.sample?.inspire === 'function';
+  app.innerHTML = `<div class="wrap"><div class="page-h"><h2>Inspiration</h2></div>
+    <div class="seg" role="group" aria-label="Art der Inspiration"><button type="button" data-imode="lust" aria-pressed="${I.mode === 'lust'}">Worauf habt ihr Lust?</button><button type="button" data-imode="pantry" aria-pressed="${I.mode === 'pantry'}">Was ist da?</button></div>
+    ${ok ? '' : '<p class="note">Inspiration gibt es nur in eurer Spoonful-App mit eingerichteter Import-Funktion.</p>'}
+    ${I.mode === 'pantry' ? pantryHTML(ok) : lustHTML(ok)}
+  </div>`;
+}
+function loadingNote(){ return S.inspo.loading ? '<p class="by">Das dauert meist 20–40 Sekunden, weil zu jedem Vorschlag noch ein passendes Foto gesucht wird.</p>' : ''; }
+function lustHTML(ok){
+  const I = S.inspo, L = I.lust;
+  return `<p class="by" style="margin:6px 0 6px">Sag oder schreib, worauf ihr Lust habt – Claude schlägt passende Rezepte mit Foto vor. Gespeichert wird nur, was ihr auswählt.</p>
+    <form id="inspoForm" novalidate>
+      <div class="insp-box"><textarea id="wish" maxlength="400" placeholder="z. B. „Ich hätte Lust auf etwas Gesundes, Schnelles“" aria-label="Worauf habt ihr Lust?">${esc(I.wish)}</textarea>${micHTML('micWish')}</div>
+      ${micHint()}
+      <div class="ideas-q">${INSPO_EXAMPLES.map(x => `<button type="button" class="chip" data-wish="${esc(x)}">${esc(x)}</button>`).join('')}</div>
+      <div class="actions" style="margin:14px 0 6px"><button class="btn primary" type="submit" ${ok && !I.loading ? '' : 'disabled'}>${I.loading ? '<span class="spin"></span>&nbsp;Claude überlegt …' : 'Vorschläge holen'}</button>${I.loading ? '<button type="button" class="btn" data-act="inspo-stop">Abbrechen</button>' : ''}</div>
+    </form>
+    ${loadingNote()}
+    ${I.error ? `<p class="note" style="color:var(--danger)">${esc(I.error)}</p>` : ''}
+    ${L.ideas.length ? `<div class="meta-line" id="ideasTop"><span>${L.ideas.length} Vorschläge für „${esc(L.lastWish)}“</span><button class="linkish" data-act="inspo-more" ${I.loading ? 'disabled' : ''}>Andere Vorschläge</button></div>
+      <div class="grid">${L.ideas.map((r, i) => ideaCard(r, i, 'lust')).join('')}</div>` : ''}`;
+}
+function pantryHTML(ok){
+  const I = S.inspo, P = I.pantry;
+  return `<p class="by" style="margin:6px 0 6px">Schreib oder sag, was da ist, oder fotografiert Kühlschrank und Vorratskammer. Ihr bekommt passende Rezepte aus eurem Kochbuch und neue Ideen.</p>
+    <div class="insp-box"><textarea id="pantryText" maxlength="600" placeholder="z. B. Zucchini, Feta, Reis, Eier, Joghurt" aria-label="Was ist da?">${esc(P.text)}</textarea>${micHTML('micPantry')}</div>
+    ${micHint()}
+    <div class="actions" style="margin:10px 0 0">${P.photos.length < MAX_PANTRY_PHOTOS ? `<label class="btn" style="position:relative">📷 Foto hinzufügen<input id="pantryImg" type="file" accept="image/*" multiple style="position:absolute;inset:0;opacity:0" aria-label="Fotos von Kühlschrank oder Vorrat"></label>` : ''}
+      <button type="button" class="btn ${P.have.length ? '' : 'primary'}" data-act="pantry-detect" ${ok && !P.detecting && (P.text.trim() || P.photos.length) ? '' : 'disabled'}>${P.detecting ? '<span class="spin"></span>&nbsp;Erkenne …' : P.have.length ? 'Zur Liste hinzufügen' : 'Zutaten erkennen'}</button></div>
+    ${P.photos.length ? `<div class="thumbs">${P.photos.map((p, i) => `<div class="t"><img src="${p.url}" alt="Foto ${i + 1}"><button type="button" data-prm-photo="${i}" aria-label="Foto ${i + 1} entfernen">×</button></div>`).join('')}</div><p class="by" style="margin:4px 0 0">${P.photos.length} von ${MAX_PANTRY_PHOTOS} Fotos</p>` : ''}
+    ${P.have.length ? `<h3 class="sec-t" style="margin-top:20px">Das ist da (${P.have.length})</h3><p class="by" style="margin:0">Prüft die Liste: Falsches antippen zum Entfernen, Fehlendes ergänzen.</p>
+      <div class="have">${P.have.map((h, i) => `<button type="button" class="chip" data-hrm="${i}" aria-label="${esc(h)} entfernen">${esc(h)} ×</button>`).join('')}</div>
+      <div class="have-add"><input id="haveIn" maxlength="40" placeholder="Zutat ergänzen" aria-label="Zutat ergänzen" autocomplete="off"><button type="button" class="btn" data-act="have-add">+</button></div>
+      <div class="actions" style="margin:14px 0 6px"><button type="button" class="btn primary" data-act="pantry-find" ${I.loading ? 'disabled' : ''}>${I.loading ? '<span class="spin"></span>&nbsp;Claude überlegt …' : 'Rezepte finden'}</button>${I.loading ? '<button type="button" class="btn" data-act="inspo-stop">Abbrechen</button>' : ''}<button type="button" class="linkish" data-act="pantry-clear">Alles leeren</button></div>` : ''}
+    ${I.error ? `<p class="note" style="color:var(--danger)">${esc(I.error)}</p>` : ''}
+    ${P.matches ? `<h3 class="sec-t" id="ideasTop">Aus eurem Kochbuch</h3>${P.matches.length ? `<div class="grid">${P.matches.map(m => `<div style="display:flex;flex-direction:column">${cardHTML(m.r)}<p class="miss">${m.missing.length ? `fehlt: ${esc(m.missing.slice(0, 4).join(', '))}${m.missing.length > 4 ? ' …' : ''}` : '<b>Alles da!</b>'}</p></div>`).join('')}</div>` : '<p class="by">Dafür passt keins eurer Rezepte so richtig – schaut bei den neuen Ideen.</p>'}` : ''}
+    ${P.searched ? `<h3 class="sec-t">Neue Ideen</h3>${loadingNote()}${P.ideas.length ? `<div class="grid">${P.ideas.map((r, i) => ideaCard(r, i, 'pantry')).join('')}</div>` : I.loading ? '' : '<p class="by">Keine neuen Ideen geladen.</p>'}` : ''}`;
+}
+function ideaCard(r, i, src){
+  const saved = S.inspo[src].saved[i];
+  return `<div class="cardw"><button type="button" class="card idea-card" data-idea="${i}" data-src="${src}"><div class="ph">${r.photoUrl ? `<img src="${esc(r.photoUrl)}" alt="${esc(r.name)}" loading="lazy">` : PLATE}</div><div class="card-b"><h3>${esc(r.name)}</h3>${factsHTML(r)}<p>${esc(r.desc)}</p>${r.missing?.length ? `<p class="miss" style="-webkit-line-clamp:1">zusätzlich: ${esc(r.missing.join(', '))}</p>` : ''}</div></button>${saved ? '<span class="saved-badge">Gespeichert</span>' : ''}</div>`;
+}
+function ideaPrompt(task, avoid, extraField){
+  const names = S.recipes.map(r => r.name).slice(0, 80).join('; ');
+  return `Du bist ein Koch-Assistent für ein Paar in Deutschland. ${task}
+Nicht vorschlagen (schon im Kochbuch${avoid.length ? ' oder eben schon vorgeschlagen' : ''}): ${[names, ...avoid].filter(Boolean).join('; ') || '–'}.
+Antworte NUR mit JSON in dieser Form:
+{"recipes":[{"name":string,"description":string (1–2 Sätze: was es ist und warum es passt),"servings":2,"time":number (Gesamtzeit in Minuten),"level":"leicht"|"mittel"|"anspruchsvoll","ingredients":[{"qty":number|null,"unit":string,"name":string}],"steps":[string],"categories":[string],"nutrition":{"kcal":number,"protein":number,"carbs":number,"fat":number} (Schätzung pro Portion, Gramm),${extraField || ''}"photoQuery":string}]}
+Regeln: Alles auf Deutsch außer photoQuery. Mengen für 2 Portionen, metrische Einheiten (g, kg, ml, l, EL, TL, Stück, Prise, Zehe, Bund, Dose, Packung). Ohne Mengenangabe qty null und unit "". Schritte kurz, ohne Nummerierung. categories nur aus: ${ALLCATS.join(', ')}. photoQuery: 2–4 englische Wörter, die das fertige Gericht für eine Fotosuche beschreiben (z. B. "baked potato wedges").`;
+}
+function toIdea(j){
+  const idea = {
+    name: String(j.name).slice(0, 120), desc: String(j.description || '').slice(0, 600),
+    servings: Math.max(1, Math.min(99, Math.round(+j.servings) || 2)),
+    time: +j.time > 0 ? Math.round(+j.time) : null, level: LEVELS.includes(j.level) ? j.level : null,
+    ingredients: (Array.isArray(j.ingredients) ? j.ingredients : []).map(i => ({ qty: i?.qty == null || i.qty === '' ? null : (typeof i.qty === 'number' ? i.qty : parseQty(i.qty)), unit: String(i?.unit || ''), name: String(i?.name || '') })).filter(i => i.name),
+    steps: (Array.isArray(j.steps) ? j.steps : []).map(String).filter(Boolean),
+    cats: (Array.isArray(j.categories) ? j.categories : []).filter(c => ALLCATS.includes(c)),
+    missing: (Array.isArray(j.missing) ? j.missing : []).map(String).filter(Boolean).slice(0, 8),
+    photoUrl: j.photo?.url || null, photoCredit: j.photo?.credit || null
+  };
+  idea.nutrition = cleanNutri(j.nutrition, idea);
+  return idea;
+}
+async function fetchIdeas(src, prompt){
+  const I = S.inspo;
+  stopMic();
+  I.loading = true; I.error = ''; renderInspo();
+  inspoCtl = new AbortController(); const ctl = inspoCtl;
+  let ok = false;
+  try {
+    const list = await S.sample.inspire(prompt);
+    if (ctl.signal.aborted) return false;
+    const ideas = (Array.isArray(list) ? list : []).filter(r => r && r.name).slice(0, 6).map(toIdea);
+    if (!ideas.length) throw { code: 'empty' };
+    I[src].ideas = ideas; I[src].saved = {}; ok = true;
+  } catch (e) {
+    if (ctl.signal.aborted) return false;
+    const c = e?.code;
+    I.error = c === 'sampling_disabled' ? 'Für Vorschläge fehlt der Claude-API-Schlüssel in Supabase.' : c === 'empty' || c === 'invalid_json' ? 'Claude hat keine brauchbaren Vorschläge geliefert – bitte nochmal versuchen.' : c === 'outdated' || /inspire|unbekannt|Kein Inhalt/i.test(e?.message || '') ? 'Die Import-Funktion bei Supabase ist noch nicht auf dem neuesten Stand (siehe Anleitung).' : 'Das hat nicht geklappt – bitte gleich nochmal versuchen.';
+  }
+  I.loading = false;
+  if (location.hash === '#inspiration') { renderInspo(); if (ok) $('#ideasTop')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  return ok;
+}
+async function getIdeas(more){
+  const I = S.inspo, L = I.lust, wish = (more ? L.lastWish : I.wish).trim();
+  if (!wish) { I.error = 'Schreib oder sag kurz, worauf ihr Lust habt.'; renderInspo(); $('#wish')?.focus(); return; }
+  const avoid = more ? L.ideas.map(r => r.name) : [];
+  const prev = L.lastWish; L.lastWish = wish;
+  if (!await fetchIdeas('lust', ideaPrompt(`Ihr Wunsch: "${wish}".\nSchlage 4 abwechslungsreiche, realistische und gut nachkochbare Rezepte vor, die gut zu diesem Wunsch passen.`, avoid)) && !L.ideas.length) L.lastWish = prev;
+}
+
+// ---- Was ist da? ----
+const BASICS = ['salz', 'pfeffer', 'öl', 'wasser', 'zucker', 'gewürz', 'brühe', 'essig', 'muskat', 'paprikapulver', 'oregano', 'chili', 'kreuzkümmel', 'zimt', 'backpulver', 'natron'];
+const normWord = w => w.toLowerCase().replace(/[^a-zäöüß]/g, '');
+const stem = w => w.length > 4 ? w.replace(/(en|er|n|e|s)$/, '') : w;
+const isBasic = name => { const n = name.toLowerCase(); return BASICS.some(b => n.includes(b)); };
+function hasIng(name, haveStems){
+  const words = name.split(/[\s,/()\-+]+/).map(normWord).filter(w => w.length >= 3).map(stem);
+  return words.some(w => haveStems.some(h => w === h || (h.length >= 4 && w.includes(h)) || (w.length >= 4 && h.includes(w))));
+}
+function pantryMatches(have){
+  const hs = have.flatMap(h => h.split(/\s+/)).map(normWord).filter(w => w.length >= 3).map(stem);
+  return S.recipes.map(r => {
+    const need = (r.ingredients || []).filter(i => i.name && !isBasic(i.name));
+    const got = need.filter(i => hasIng(i.name, hs));
+    return { r, n: need.length, got: got.length, missing: need.filter(i => !got.includes(i)).map(i => i.name) };
+  }).filter(m => m.n && m.got >= 1 && (m.missing.length <= 3 || m.got / m.n >= 0.6))
+    .sort((a, b) => a.missing.length - b.missing.length || b.got - a.got).slice(0, 12);
+}
+function addHave(items){
+  const P = S.inspo.pantry, seen = new Set(P.have.map(h => h.toLowerCase()));
+  for (let it of items) { it = String(it || '').replace(/\s+/g, ' ').trim().slice(0, 40); if (it && !seen.has(it.toLowerCase())) { seen.add(it.toLowerCase()); P.have.push(it); } }
+}
+async function detectPantry(){
+  const P = S.inspo.pantry; S.inspo.error = '';
+  stopMic();
+  const text = P.text.trim();
+  if (text) addHave(text.split(/,|;|\n| und | sowie /i));
+  if (P.photos.length) {
+    P.detecting = true; renderInspo();
+    try {
+      const j = await S.sample.json(`Auf ${P.photos.length === 1 ? 'dem Foto' : 'den Fotos'} sind Kühlschrank, Vorratskammer oder Lebensmittel zu sehen. Liste alle erkennbaren Lebensmittel auf, die man zum Kochen verwenden kann – auf Deutsch, mit einfachen Namen (z. B. "Paprika", "Feta", "Haferflocken", "passierte Tomaten"), ohne Marken und ohne Mengen. Unsicheres nur aufnehmen, wenn es wahrscheinlich ist. Antworte NUR mit JSON: {"items":[string]}`, { images: P.photos.map(p => p.file) });
+      const items = Array.isArray(j?.items) ? j.items : [];
+      addHave(items);
+      if (!items.length) S.inspo.error = 'Auf den Fotos waren keine Lebensmittel zu erkennen.';
+      else { P.photos.forEach(p => URL.revokeObjectURL(p.url)); P.photos = []; }
+    } catch (e) { S.inspo.error = e?.code === 'sampling_disabled' ? 'Für die Foto-Erkennung fehlt der Claude-API-Schlüssel in Supabase.' : 'Die Fotos konnten nicht ausgewertet werden – bitte nochmal versuchen.'; }
+    P.detecting = false;
+  }
+  P.text = '';
+  if (location.hash === '#inspiration') renderInspo();
+}
+async function findPantry(){
+  const P = S.inspo.pantry; if (!P.have.length) return;
+  P.matches = pantryMatches(P.have); P.searched = true; P.ideas = []; P.saved = {};
+  await fetchIdeas('pantry', ideaPrompt(`Zu Hause ist vorhanden: ${P.have.join(', ')}.
+Schlage 4 abwechslungsreiche, realistische Rezepte vor, die vor allem diese Zutaten verwenden und möglichst wenig zusätzlich brauchen. Grundzutaten (Salz, Pfeffer, Öl, Butter, Zucker, Mehl, Zwiebel, Knoblauch, übliche Gewürze, Brühe) gelten als vorhanden. Gib in "missing" an, was man zusätzlich kaufen müsste (leere Liste, wenn alles da ist).`, [], '"missing":[string],'));
+}
+
+function ideaBody(r){
+  return { name: r.name, desc: r.desc, servings: r.servings, time: r.time, level: r.level, ingredients: r.ingredients, steps: r.steps, cats: r.cats, tags: [], nutrition: r.nutrition || null };
+}
+async function saveIdea(r, src, i){
+  if (S.inspo[src].saved[i]) return S.inspo[src].saved[i];
+  const now = Date.now(), ref = S.db.collection('recipes').doc();
+  await ref.set({ ...ideaBody(r), photoId: null, photoUrl: r.photoUrl, photoCredit: r.photoCredit, favBy: [], sample: false, createdAt: now, createdBy: S.me || null, updatedAt: now, updatedBy: S.me || null });
+  S.inspo[src].saved[i] = ref.id;
+  return ref.id;
+}
+function openIdea(i, src){
+  const r = S.inspo[src]?.ideas[i]; if (!r) return;
+  const saved = S.inspo[src].saved[i];
+  sheet(`<div class="idea-sheet">${r.photoUrl ? `<img class="idea-photo" src="${esc(r.photoUrl)}" alt="${esc(r.name)}">${r.photoCredit ? `<p class="by" style="margin:4px 0 0">Foto: ${esc(creditText(r.photoCredit))}</p>` : ''}` : ''}
+    <h2 style="margin-top:12px">${esc(r.name)}</h2><p>${esc(r.desc)}</p>${factsHTML(r)}${nutriHTML(r)}<div class="tags" style="margin-top:8px">${tagsHTML(r.cats)}</div>
+    ${r.missing?.length ? `<p class="note" style="margin-top:12px">Zusätzlich nötig: ${esc(r.missing.join(', '))}</p>` : ''}
+    <h3>Zutaten für ${r.servings} ${r.servings === 1 ? 'Portion' : 'Portionen'}</h3><ul>${r.ingredients.map(x => { const q = showQty(x.qty, x.unit); return `<li>${esc([q.text, q.unit, x.name].filter(Boolean).join(' '))}</li>`; }).join('')}</ul>
+    <h3>Zubereitung</h3><ol>${r.steps.map(x => `<li>${esc(x)}</li>`).join('')}</ol>
+    <p class="by" style="margin-top:12px">${saved ? 'Schon in eurem Kochbuch gespeichert.' : 'Vorschlag von Claude – noch nicht in eurem Kochbuch.'}</p></div>
+    <div class="btns"><button class="btn" data-i="close">Schließen</button>${S.canWrite ? `${saved ? '' : '<button class="btn" data-i="edit">Anpassen &amp; speichern</button>'}<button class="btn" data-i="plan">${CAL} Einplanen</button><button class="btn primary" data-i="save" ${saved ? 'disabled' : ''}>${saved ? 'Gespeichert' : 'Speichern'}</button>` : ''}</div>`, ov => {
+    ov.addEventListener('click', async e => {
+      const b = e.target.closest('[data-i]'), a = b?.dataset.i; if (!a) return;
+      if (a === 'close') { closeSheet(); return; }
+      if (a === 'edit') { closeSheet(); S.draft = { ...ideaBody(r), photoUrl: r.photoUrl, photoCredit: r.photoCredit, suggested: true }; location.hash = 'neu'; return; }
+      if (a === 'save' || a === 'plan') {
+        b.disabled = true; const label = b.innerHTML; b.innerHTML = '<span class="spin"></span>&nbsp;Speichern …';
+        try {
+          const id = await saveIdea(r, src, i);
+          closeSheet(); renderInspo();
+          if (a === 'plan') openPlanDay(id, r.servings, { id, ...ideaBody(r) }); else toast('Im Kochbuch gespeichert');
+        } catch { b.disabled = false; b.innerHTML = label; toast('Speichern hat nicht geklappt.'); }
+      }
+    });
+  });
+}
+
+// ---------- Wochenplan ----------
+// Ein Dokument pro Tag: recipes/plan-YYYY-MM-DD = {type:'plan', date, items:[{k, rid, text, servings}]}
+const PLAN_PREFIX = 'plan-';
+const planItems = iso => S.plan[iso]?.items || [];
+const pk = () => Math.random().toString(36).slice(2, 9);
+async function setPlanDay(iso, items){
+  const prev = S.plan[iso];
+  S.plan[iso] = { ...(prev || {}), date: iso, items }; // sofort anzeigen
+  try {
+    const ref = S.db.collection('recipes').doc(PLAN_PREFIX + iso);
+    if (items.length) await ref.set({ type: 'plan', date: iso, items, updatedAt: Date.now(), updatedBy: S.me || null });
+    else await ref.delete();
+  } catch { if (prev) S.plan[iso] = prev; else delete S.plan[iso]; toast('Plan konnte nicht gespeichert werden.'); }
+  if (location.hash === '#plan') renderPlan();
+}
+const addToPlan = (iso, item) => setPlanDay(iso, [...planItems(iso), { k: pk(), ...item }]);
+function weekStart(off){ const d = new Date(); d.setHours(0, 0, 0, 0); return addDays(d, -((d.getDay() + 6) % 7) + off * 7); }
+function renderPlan(){
+  setTab('plan');
+  if (!S.loaded) { app.innerHTML = loadingHTML(); return; }
+  const ws = weekStart(S.planWeek), today = todayIso();
+  const days = [...Array(7)].map((_, i) => isoDay(addDays(ws, i)));
+  const range = `${dayFromIso(days[0]).toLocaleDateString('de-DE', { day: 'numeric', month: 'short' })} – ${dayFromIso(days[6]).toLocaleDateString('de-DE', { day: 'numeric', month: 'short' })}`;
+  const label = S.planWeek === 0 ? 'Diese Woche' : S.planWeek === 1 ? 'Nächste Woche' : S.planWeek === -1 ? 'Letzte Woche' : range;
+  const itemHTML = (iso, it) => {
+    if (it.rid) {
+      const r = S.byId[it.rid];
+      return `<div class="pi"><span class="th">${r ? photoHTML(r) : PLATE}</span>${r ? `<a href="#r-${esc(r.id)}" data-plan-open="${esc(it.servings || '')}">${esc(r.name)}</a>` : '<span class="tx">Rezept wurde gelöscht</span>'}
+        ${S.canWrite && r ? `<span class="mini-step" role="group" aria-label="Portionen"><button type="button" data-pserv="${iso}|${it.k}|-1" aria-label="Weniger Portionen">−</button><span>${it.servings || r.servings || 2}</span><button type="button" data-pserv="${iso}|${it.k}|1" aria-label="Mehr Portionen">+</button></span>` : '<span></span>'}
+        ${S.canWrite ? `<button type="button" class="x" data-prm="${iso}|${it.k}" aria-label="Aus dem Plan entfernen">×</button>` : ''}</div>`;
+    }
+    return `<div class="pi"><span class="th" aria-hidden="true">✎</span><span class="tx">${esc(it.text)}</span><span></span>${S.canWrite ? `<button type="button" class="x" data-prm="${iso}|${it.k}" aria-label="Notiz entfernen">×</button>` : ''}</div>`;
+  };
+  const free = days.filter(d => d >= today && !planItems(d).length).length;
+  app.innerHTML = `<div class="wrap"><div class="page-h"><h2>Wochenplan</h2></div>
+    <div class="week-nav"><button class="btn" data-pweek="-1" aria-label="Vorherige Woche">‹</button><b>${esc(label)}<br><small style="font-weight:500;color:var(--muted)">${esc(range)}</small></b><button class="btn" data-pweek="1" aria-label="Nächste Woche">›</button></div>
+    ${S.planWeek !== 0 ? '<p style="text-align:center;margin:-6px 0 12px"><button class="linkish" data-pweek="0">Zur aktuellen Woche</button></p>' : ''}
+    ${S.canWrite && free && typeof S.sample?.json === 'function' && S.recipes.length ? `<div class="actions" style="margin:0 0 14px"><button class="btn" data-act="plan-fill">✨ Freie Tage füllen (${free})</button></div>` : ''}
+    <div class="days">${days.map(iso => `<section class="day ${iso === today ? 'today' : ''} ${iso < today ? 'past' : ''}" aria-label="${esc(dayLabel(iso, true))}">
+      <div class="day-h"><b>${esc(dayLabel(iso, true).split(',')[0])}</b><small>${dayFromIso(iso).getDate()}.${dayFromIso(iso).getMonth() + 1}.</small>${iso === today ? '<span class="now">Heute</span>' : ''}</div>
+      ${planItems(iso).map(it => itemHTML(iso, it)).join('') || '<p class="by" style="margin:2px 0 0">Noch nichts geplant</p>'}
+      ${S.canWrite ? `<div class="day-add"><button class="btn" data-padd="${iso}">+ Rezept</button><button class="btn" data-pnote="${iso}">+ Notiz</button></div>` : ''}
+    </section>`).join('')}</div></div>`;
+}
+function openPickRecipe(iso){
+  const list = q => S.recipes.filter(r => !q || [r.name, ...(r.tags || []), ...(r.cats || [])].join(' ').toLowerCase().includes(q.toLowerCase())).slice(0, 60)
+    .map(r => `<button type="button" class="pick" data-pick="${esc(r.id)}"><span class="th">${photoHTML(r)}</span><span><b>${esc(r.name)}</b><small>${[r.time ? r.time + ' Min' : '', (r.cats || []).slice(0, 2).join(', ')].filter(Boolean).join(' · ')}</small></span></button>`).join('') || '<p class="by">Nichts gefunden.</p>';
+  sheet(`<h2>${esc(dayLabel(iso, true))}</h2><p>Welches Rezept wollt ihr kochen?</p>
+    <div class="search"><input id="pickQ" type="search" placeholder="Rezept suchen" aria-label="Rezept suchen" autocomplete="off"></div>
+    <div class="pick-list" id="pickList">${list('')}</div>
+    <div class="btns"><button class="btn" data-pk="close">Abbrechen</button></div>`, ov => {
+    $('#pickQ', ov).addEventListener('input', e => { $('#pickList', ov).innerHTML = list(e.target.value.trim()); });
+    ov.addEventListener('click', e => {
+      if (e.target.closest('[data-pk=close]')) { closeSheet(); return; }
+      const b = e.target.closest('[data-pick]'); if (!b) return;
+      const r = S.byId[b.dataset.pick]; closeSheet();
+      addToPlan(iso, { rid: r.id, servings: r.servings || 2 }); toast(`„${r.name}“ eingeplant`);
+    });
+  });
+}
+function openPlanNote(iso){
+  sheet(`<h2>${esc(dayLabel(iso, true))}</h2><label class="field"><span>Notiz</span><input id="pnote" maxlength="80" placeholder="z. B. Essen bei Mama, Reste, Pizza bestellen"></label>
+    <div class="btns"><button class="btn" data-pn="close">Abbrechen</button><button class="btn primary" data-pn="ok">Hinzufügen</button></div>`, ov => {
+    const inp = $('#pnote', ov); inp.focus();
+    const ok = () => { const v = inp.value.trim(); if (!v) return; closeSheet(); addToPlan(iso, { text: v.slice(0, 80) }); };
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') ok(); });
+    ov.addEventListener('click', e => { const a = e.target.closest('[data-pn]')?.dataset.pn; if (a === 'close') closeSheet(); if (a === 'ok') ok(); });
+  });
+}
+// Rezept einplanen: Tag wählen (heute + 13 Tage)
+function openPlanDay(rid, servings, fallback){
+  const r = S.byId[rid] || fallback; if (!r) return;
+  const days = [...Array(14)].map((_, i) => isoDay(addDays(new Date(), i)));
+  sheet(`<h2>„${esc(r.name)}“ einplanen</h2><p>An welchem Tag wollt ihr es kochen?</p>
+    <div class="daypick">${days.map((iso, i) => { const it = planItems(iso); const names = it.map(x => x.rid ? S.byId[x.rid]?.name : x.text).filter(Boolean).join(', ');
+      return `<button type="button" data-pday="${iso}"><b>${i === 0 ? 'Heute' : i === 1 ? 'Morgen' : esc(dayLabel(iso))}</b><small>${names ? esc(names) : 'frei'}</small></button>`; }).join('')}</div>
+    <div class="btns"><button class="btn" data-pd="close">Abbrechen</button></div>`, ov => {
+    ov.addEventListener('click', e => {
+      if (e.target.closest('[data-pd=close]')) { closeSheet(); return; }
+      const b = e.target.closest('[data-pday]'); if (!b) return;
+      closeSheet(); addToPlan(b.dataset.pday, { rid, servings: servings || r.servings || 2 });
+      toast(`Eingeplant für ${dayLabel(b.dataset.pday, true)}`);
+    });
+  });
+}
+// Freie Tage mit eigenen Rezepten füllen (Claude wählt aus dem Kochbuch)
+function openPlanFill(){
+  const ws = weekStart(S.planWeek), today = todayIso();
+  const free = [...Array(7)].map((_, i) => isoDay(addDays(ws, i))).filter(d => d >= today && !planItems(d).length);
+  if (!free.length) return;
+  let proposal = null;
+  const body = (status = '') => `<h2>Freie Tage füllen</h2><p>Claude sucht aus eurem Kochbuch abwechslungsreiche Abendessen für ${free.length === 1 ? 'den freien Tag' : `die ${free.length} freien Tage`} aus. Für ganz neue Ideen nutzt die Inspiration.</p>
+    ${proposal ? `<div class="fill-list">${proposal.map(p => `<div class="fill-row"><b>${esc(dayLabel(p.date))}</b><span>${esc(S.byId[p.id]?.name || '')}</span></div>`).join('')}</div>`
+      : `<label class="field"><span>Wünsche (optional)</span><input id="fillWish" maxlength="200" placeholder="z. B. eher leicht, einmal Fisch, unter der Woche schnell"></label>`}
+    <p class="by" id="fillStatus" aria-live="polite">${status}</p>
+    <div class="btns"><button class="btn" data-fl="close">Abbrechen</button>${proposal ? '<button class="btn" data-fl="again">Neu vorschlagen</button><button class="btn primary" data-fl="ok">Übernehmen</button>' : '<button class="btn primary" data-fl="go">Vorschlagen</button>'}</div>`;
+  sheet(body(), ov => {
+    const sh = $('.sheet', ov); let wish = '';
+    ov.addEventListener('click', async e => {
+      const a = e.target.closest('[data-fl]')?.dataset.fl; if (!a) return;
+      if (a === 'close') { closeSheet(); return; }
+      if (a === 'ok') { closeSheet(); for (const p of proposal) { const r = S.byId[p.id]; if (r) await addToPlan(p.date, { rid: r.id, servings: r.servings || 2 }); } toast('Woche geplant'); return; }
+      if (a === 'go') wish = $('#fillWish', ov)?.value.trim() || '';
+      e.target.disabled = true; $('#fillStatus', ov).innerHTML = '<span class="spin"></span>&nbsp; Claude plant …';
+      const recent = Object.values(S.plan).filter(d => d.date >= isoDay(addDays(new Date(), -14))).flatMap(d => d.items).map(i => i.rid).filter(Boolean);
+      const prompt = `Plane Abendessen für ein Paar aus IHREM Kochbuch. Freie Tage: ${free.map(d => `${d} (${dayLabel(d, true)})`).join(', ')}.
+${wish ? `Wünsche: "${wish}".` : ''} Achte auf Abwechslung (nicht zweimal dasselbe, verschiedene Kategorien), unter der Woche eher schnellere Gerichte, Rezepte der letzten zwei Wochen möglichst vermeiden (${[...new Set(recent)].join(', ') || 'keine'}). Sind weniger passende Rezepte als Tage da, lass Tage weg.
+Antworte NUR mit JSON: {"plan":[{"date":"YYYY-MM-DD","id":string}]}. Nur ids aus dieser Liste verwenden:
+${JSON.stringify(S.recipes.slice(0, 150).map(r => ({ id: r.id, name: r.name, kat: r.cats || [], min: r.time || null })))}`;
+      try {
+        const j = await S.sample.json(prompt);
+        proposal = (Array.isArray(j?.plan) ? j.plan : []).filter(p => free.includes(p.date) && S.byId[p.id]);
+        proposal = free.map(d => proposal.find(p => p.date === d)).filter(Boolean);
+        if (!proposal.length) { proposal = null; sh.innerHTML = body('Claude hat nichts Passendes gefunden – versucht es mit anderen Wünschen.'); return; }
+        sh.innerHTML = body();
+      } catch (err) { proposal = null; sh.innerHTML = body(err?.code === 'sampling_disabled' ? 'Dafür fehlt der Claude-Schlüssel in Supabase.' : 'Das hat nicht geklappt – bitte nochmal versuchen.'); }
+    });
+  });
+}
+
+let planCleaned = false;
+async function cleanupPlan(){ // Tage älter als 8 Wochen entfernen
+  if (planCleaned || !S.canWrite) return; planCleaned = true;
+  const cut = isoDay(addDays(new Date(), -56));
+  for (const iso of Object.keys(S.plan).filter(d => d < cut)) { try { await S.db.collection('recipes').doc(PLAN_PREFIX + iso).delete(); } catch {} }
+}
+
+// ---------- Nährwerte schätzen ----------
+const ingLine = i => [i.qty != null ? String(Math.round(i.qty * 100) / 100) : '', i.unit || '', i.name].filter(Boolean).join(' ');
+let nutriBusy = false, nutriOff = false;
+async function estimateNutrition(list){
+  if (nutriOff || typeof S.sample?.json !== 'function' || !S.canWrite || !list.length) return 0;
+  const items = list.slice(0, 8).filter(r => (r.ingredients || []).length);
+  if (!items.length) return 0;
+  const prompt = `Schätze die Nährwerte PRO PORTION für diese Rezepte (realistische Durchschnittswerte, übliche Lebensmitteldaten). Antworte NUR mit JSON:
+{"results":[{"id":string,"kcal":number,"protein":number,"carbs":number,"fat":number}]}
+protein, carbs, fat in Gramm, alles gerundet. Rezepte:
+${JSON.stringify(items.map(r => ({ id: r.id, name: r.name, portionen: r.servings || 1, zutaten: r.ingredients.map(ingLine) })))}`;
+  try {
+    const j = await S.sample.json(prompt);
+    let n = 0;
+    for (const res of Array.isArray(j?.results) ? j.results : []) {
+      const cur = S.byId[res.id] || items.find(r => r.id === res.id); if (!cur) continue;
+      const nut = cleanNutri(res, cur); if (!nut) continue;
+      if (S.byId[res.id] && nutriKey(S.byId[res.id]) !== nut.v) continue; // inzwischen geändert
+      try { await S.db.collection('recipes').doc(res.id).update({ nutrition: nut }); n++; } catch {}
+    }
+    return n;
+  } catch (e) { if (['sampling_disabled', 'not_granted', 'capability_disabled'].includes(e?.code)) nutriOff = true; return 0; }
+}
+// Bestehende Rezepte im Hintergrund nachziehen (höchstens 5 Durchgänge à 8 Rezepte pro Sitzung)
+async function backfillNutrition(){
+  if (nutriBusy || nutriOff || !S.canWrite || typeof S.sample?.json !== 'function') return;
+  nutriBusy = true;
+  await new Promise(r => setTimeout(r, 4000 + Math.random() * 8000)); // zwei Geräte nicht gleichzeitig
+  try {
+    for (let round = 0; round < 5 && !nutriOff; round++) {
+      const todo = S.recipes.filter(r => !nutriOk(r) && (r.ingredients || []).length);
+      if (!todo.length) break;
+      const done = await estimateNutrition(todo.slice(0, 8));
+      if (!done) break;
+    }
+  } finally { nutriBusy = false; }
+}
+
 // ---------- Kategorien verwalten ----------
 let CM = null;
 function renderCats(){
   setTab('hide');
   if (!S.canWrite) { app.innerHTML = '<div class="wrap"><p class="note">Du hast hier nur Lesezugriff.</p></div>'; return; }
-  if (!CM) CM = { meal: MEAL.map(n => ({ orig: n, name: n })), diet: DIET.map(n => ({ orig: n, name: n })) };
+  if (!CM) CM = { meal: MEAL.map(n => ({ orig: n, name: n })), diet: DIET.map(n => ({ orig: n, name: n })), tags: allTags().map(n => ({ orig: n, name: n })) };
   const group = (key, label) => `<div class="field"><span>${label}</span>
     ${CM[key].map((c, i) => `<div class="cm-row"><input value="${esc(c.name)}" data-cm="${key}" data-i="${i}" maxlength="30" aria-label="${label}: Name"><button type="button" data-cmmove="${key}" data-i="${i}" data-d="-1" aria-label="Nach oben" ${i ? '' : 'disabled'}>↑</button><button type="button" data-cmmove="${key}" data-i="${i}" data-d="1" aria-label="Nach unten" ${i < CM[key].length - 1 ? '' : 'disabled'}>↓</button><button type="button" data-cmdel="${key}" data-i="${i}" aria-label="Löschen">×</button></div>`).join('')}
     <button type="button" class="btn" data-cmadd="${key}" style="width:max-content">+ Kategorie</button></div>`;
   app.innerHTML = `<form class="form wrap" id="cmform" novalidate><div class="page-h" style="margin-top:0"><a class="btn" href="#start" aria-label="Zurück">←</a><h2 style="margin:0">Kategorien</h2></div>
     <p class="by" style="margin:0 0 18px">Umbenennen, sortieren, löschen oder neue anlegen. Umbenennungen und Löschungen werden in allen Rezepten übernommen.</p>
     ${group('meal', 'Mahlzeit')}${group('diet', 'Ernährung')}
+    <div class="field"><span>Schlagworte</span>${CM.tags.length ? CM.tags.map((c, i) => `<div class="cm-row" style="grid-template-columns:minmax(0,1fr) 44px"><input value="${esc(c.name)}" data-cm="tags" data-i="${i}" maxlength="30" aria-label="Schlagwort: Name"><button type="button" data-cmdel="tags" data-i="${i}" aria-label="Löschen">×</button></div>`).join('') : '<p class="by" style="margin:0">Noch keine Schlagworte – die vergebt ihr direkt im Rezept.</p>'}</div>
     <div class="sticky-save"><a class="btn" href="#start">Abbrechen</a><button class="btn primary" type="submit" id="cmSave">Speichern</button></div></form>`;
 }
 async function saveCats(){
@@ -578,7 +1069,10 @@ async function saveCats(){
   const rename = Object.fromEntries(all.filter(c => c.orig && c.orig !== c.name).map(c => [c.orig, c.name]));
   const kept = new Set(all.map(c => c.orig).filter(Boolean));
   const removed = ALLCATS.filter(c => !kept.has(c));
-  const touched = S.recipes.filter(r => (r.cats || []).some(c => rename[c] || removed.includes(c)));
+  const tagList = CM.tags.map(c => ({ ...c, name: normTag(c.name) }));
+  const tagRename = Object.fromEntries(tagList.filter(c => c.name && c.name !== c.orig).map(c => [c.orig, c.name]));
+  const tagRemoved = tagList.filter(c => !c.name).map(c => c.orig).concat(allTags().filter(t => !tagList.some(c => c.orig === t)));
+  const touched = S.recipes.filter(r => (r.cats || []).some(c => rename[c] || removed.includes(c)) || (r.tags || []).some(t => tagRename[t] || tagRemoved.includes(t)));
   if (removed.length) {
     const n = S.recipes.filter(r => (r.cats || []).some(c => removed.includes(c))).length;
     if (!await confirmBox('Kategorien löschen?', `${removed.join(', ')} ${removed.length === 1 ? 'wird' : 'werden'} gelöscht${n ? ` und aus ${n} ${n === 1 ? 'Rezept' : 'Rezepten'} entfernt` : ''}. Die Rezepte selbst bleiben erhalten.`, 'Löschen', true)) return;
@@ -588,10 +1082,11 @@ async function saveCats(){
     await S.db.collection('recipes').doc(CFG_ID).set({ type: 'config', meal: meal.map(c => c.name), diet: diet.map(c => c.name), updatedAt: Date.now(), updatedBy: S.me || null });
     for (const r of touched) {
       const cats = [...new Set((r.cats || []).filter(c => !removed.includes(c)).map(c => rename[c] || c))];
-      await S.db.collection('recipes').doc(r.id).update({ cats });
+      const tags = [...new Set((r.tags || []).filter(t => !tagRemoved.includes(t)).map(t => tagRename[t] || t))];
+      await S.db.collection('recipes').doc(r.id).update({ cats, tags });
     }
     const ren = (arr) => arr.map(v => rename[v] || v).filter(v => !removed.includes(v));
-    S.meal = ren(S.meal); S.diet = ren(S.diet); saveFilter();
+    S.meal = ren(S.meal); S.diet = ren(S.diet); S.tags = S.tags.map(t => tagRename[t] || t).filter(t => !tagRemoved.includes(t)); saveFilter();
     setCats({ meal: meal.map(c => c.name), diet: diet.map(c => c.name) });
     CM = null; toast('Kategorien gespeichert'); location.hash = 'start';
   } catch { toast('Speichern hat nicht geklappt. Bitte nochmal versuchen.'); btn.disabled = false; btn.textContent = 'Speichern'; }
@@ -603,10 +1098,10 @@ function renderDetail(id){
   const base = r.servings || 1, p = S.portions[id] || base, f = p / base;
   resolveNames([r.createdBy, r.updatedBy]).then(() => { const b = $('#by'); if (b) b.textContent = byLine(r); });
   app.innerHTML = `
-  <div class="hero">${photoHTML(r)}<a class="btn back" href="#start">← Übersicht</a>${r.photoCredit && photoSrc(r) ? `<span class="credit">Foto: ${esc(r.photoCredit)} / Unsplash</span>` : ''}</div>
+  <div class="hero">${photoHTML(r)}<a class="btn back" href="#start">← Übersicht</a>${r.photoCredit && photoSrc(r) ? `<span class="credit">Foto: ${esc(creditText(r.photoCredit))}</span>` : ''}</div>
   <div class="wrap">
-    <div class="d-head"><h2>${esc(r.name)}</h2>${r.desc ? `<p>${esc(r.desc)}</p>` : ''}${factsHTML(r)}<div class="tags" style="margin-top:12px">${r.sample ? '<span class="tag sample">Beispiel</span>' : ''}${tagsHTML(r.cats)}</div><div class="by" id="by">${esc(byLine(r))}</div>
-    ${S.me && S.canWrite ? `<button type="button" class="btn fav" data-act="fav" data-id="${esc(id)}" aria-pressed="${isFav(r)}" style="margin-top:14px">${isFav(r) ? HEART_FULL + ' Favorit' : HEART + ' Als Favorit merken'}</button>` : ''}</div>
+    <div class="d-head"><h2>${esc(r.name)}</h2>${r.desc ? `<p>${esc(r.desc)}</p>` : ''}${factsHTML(r)}${nutriHTML(r)}<div class="tags" style="margin-top:12px">${r.sample ? '<span class="tag sample">Beispiel</span>' : ''}${tagsHTML(r.cats)}</div>${utagsHTML(r.tags, true)}<div class="by" id="by">${esc(byLine(r))}</div>
+    ${S.canWrite ? `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">${S.me ? `<button type="button" class="btn fav" data-act="fav" data-id="${esc(id)}" aria-pressed="${isFav(r)}">${isFav(r) ? HEART_FULL + ' Favorit' : HEART + ' Als Favorit merken'}</button>` : ''}<button type="button" class="btn" data-act="plan-recipe" data-id="${esc(id)}">${CAL} Einplanen</button></div>` : ''}</div>
     <div class="cols">
       <section class="panel"><h3>Zutaten</h3>
         <div class="stepper" role="group" aria-label="Portionen"><button type="button" data-por="-1" aria-label="Weniger Portionen">−</button><output aria-live="polite">${p} ${p === 1 ? 'Portion' : 'Portionen'}</output><button type="button" data-por="1" aria-label="Mehr Portionen">+</button></div>
@@ -628,6 +1123,16 @@ function byLine(r){
 let F = null; // aktuelles Formular: {id, base, photoBlob, photoRemoved, previewUrl}
 function ingRow(i = {}){ return `<div class="row ing"><input class="iq" inputmode="decimal" placeholder="Menge" aria-label="Menge" value="${esc(inputQty(i.qty))}"><input class="iu" list="units" placeholder="Einheit" aria-label="Einheit" value="${esc(i.unit||'')}"><input class="in" placeholder="Zutat" aria-label="Zutat" value="${esc(i.name||'')}"><button type="button" class="x" data-rm aria-label="Zutat entfernen">×</button></div>`; }
 function stepRow(s = ''){ return `<div class="row step"><span class="num"></span><textarea class="st" placeholder="Was ist zu tun?" aria-label="Schritt">${esc(s)}</textarea><button type="button" class="x" data-rm aria-label="Schritt entfernen">×</button></div>`; }
+function tagEditHTML(){
+  $('#alltags') && ($('#alltags').innerHTML = allTags().filter(t => !F?.tags.includes(t)).map(t => `<option value="${esc(t)}">`).join(''));
+  return (F?.tags || []).map((t, i) => `<span class="utag">${esc(t)}<button type="button" class="x" data-tagrm="${i}" aria-label="${esc(t)} entfernen" style="border:0;background:none;font-size:16px;color:var(--muted);min-width:24px">×</button></span>`).join('') + '<input id="tagIn" list="alltags" maxlength="30" placeholder="Schlagwort hinzufügen" aria-label="Schlagwort hinzufügen" autocomplete="off">';
+}
+function addTag(v){
+  const t = normTag(v); if (!t || !F) return;
+  const known = allTags().find(x => x.toLowerCase() === t.toLowerCase()) || t; // gleiche Schreibweise wie bisher
+  if (!F.tags.some(x => x.toLowerCase() === known.toLowerCase())) F.tags.push(known);
+  $('#tagEdit').innerHTML = tagEditHTML(); $('#tagIn').focus();
+}
 function renumber(){ $$('.row.step .num').forEach((n, k) => n.textContent = k + 1); }
 function renderForm(id){
   setTab('hide');
@@ -635,7 +1140,7 @@ function renderForm(id){
   let r;
   if (id) { r = S.byId[id]; if (!r) { renderDetail(id); return; } r = structuredClone(r); }
   else { r = S.draft || {}; S.draft = null; }
-  F = { id: id || null, base: id ? r.updatedAt : null, photoBlob: null, photoRemoved: false, previewUrl: null, oldPhotoId: r.photoId || null, r };
+  F = { id: id || null, base: id ? r.updatedAt : null, photoBlob: null, photoRemoved: false, previewUrl: null, oldPhotoId: r.photoId || null, oldOrigId: r.photoOrigId || null, srcFrom: null, crop: null, tags: [...(r.tags || [])], r };
   const ings = (r.ingredients && r.ingredients.length ? r.ingredients : [{},{},{}]);
   const steps = (r.steps && r.steps.length ? r.steps : ['']);
   const cats = r.cats || [];
@@ -660,13 +1165,14 @@ function renderForm(id){
     </div>
     <label class="field" style="max-width:260px"><span>Schwierigkeit</span><select id="fLevel"><option value="">– keine Angabe –</option>${LEVELS.map(l => `<option ${r.level === l ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
     <div class="field"><span>Kategorien</span><div class="catgrid">${chipRow('Mahlzeit', MEAL, cats, 'meal')}${chipRow('Ernährung', DIET, cats, 'diet')}</div></div>
+    <div class="field"><span>Schlagworte</span><div class="tag-edit" id="tagEdit">${tagEditHTML()}</div><small style="color:var(--muted)">Eigene Stichworte wie „Meal Prep“ oder „Für Gäste“ – mit Enter oder Komma hinzufügen.</small></div>
     <div class="field"><span>Zutaten</span><div id="ings">${ings.map(ingRow).join('')}</div><button type="button" class="btn" data-add="ing" style="width:max-content">+ Zutat</button><small style="color:var(--muted)">Menge leer lassen für „nach Geschmack“ – wird dann nicht umgerechnet. Brüche wie 1/2 gehen auch.</small></div>
     <div class="field"><span>Zubereitung</span><div id="steps">${steps.map(stepRow).join('')}</div><button type="button" class="btn" data-add="step" style="width:max-content">+ Schritt</button></div>
     <div class="sticky-save"><a class="btn" href="${id ? '#r-' + esc(id) : '#start'}">Abbrechen</a><button class="btn primary" type="submit" id="saveBtn">Speichern</button></div>
   </form>`;
   renumber();
   if (!id) $('#fName').focus();
-  if (r.photoFile) useAsPhoto(r.photoFile);
+  if (r.photoFile) useAsPhoto(r.photoFile, true);
 }
 async function onPhoto(input){
   const file = input.files?.[0]; input.value = '';
@@ -674,48 +1180,71 @@ async function onPhoto(input){
   let src;
   try { src = await loadSource(file); } catch { toast('Dieses Bild kann der Browser nicht lesen. Versuch ein JPG oder PNG.'); return; }
   F.keepCredit = false;
-  await cropAndSet(src);
+  await cropAndSet(src, 'new');
 }
-async function cropAndSet(src){
-  const blob = await openCrop(src);
-  if (!blob || !F) return;
-  F.src = src; F.photoBlob = blob; F.photoRemoved = false; if (F.keepCredit !== true) F.keepCredit = false;
+// srcFrom: 'new' = neu gewähltes Foto, 'orig' = gespeichertes Original, 'remote' = bisheriges Foto ohne Original
+async function cropAndSet(src, from, init){
+  const res = await openCrop(src, init);
+  if (!res || !F) return;
+  const blob = res.blob;
+  F.src = src; F.srcFrom = from; F.crop = res.crop; F.photoBlob = blob; F.photoRemoved = false; if (F.keepCredit !== true) F.keepCredit = false;
   if (F.previewUrl) URL.revokeObjectURL(F.previewUrl);
   F.previewUrl = URL.createObjectURL(blob);
   $('#pv').innerHTML = `<img src="${F.previewUrl}" alt="Vorschau">`;
   $('#rmPhoto').classList.remove('hidden'); $('#cropPhoto').classList.remove('hidden');
 }
 // Foto übernehmen und mittig auf 4:3 zuschneiden (Ausschnitt lässt sich danach ändern)
-async function useAsPhoto(file){
+async function useAsPhoto(file, askCrop){
   try {
     const src = await loadSource(file); if (!F) return;
+    if (askCrop) { F.keepCredit = false; await cropAndSet(src, 'new'); if (F && F.photoBlob) return; }
     const w = src.width, h = src.height, cw = Math.min(w, h * 4 / 3), ch = cw * 3 / 4;
     const ow = Math.round(Math.min(1600, cw)), out = document.createElement('canvas'); out.width = ow; out.height = Math.round(ow * 3 / 4);
     out.getContext('2d').drawImage(src, (w - cw) / 2, (h - ch) / 2, cw, ch, 0, 0, out.width, out.height);
     const blob = await new Promise(res => out.toBlob(res, 'image/jpeg', 0.85)); if (!F || !blob) return;
-    F.src = src; F.photoBlob = blob; F.photoRemoved = false; F.keepCredit = false;
+    F.src = src; F.srcFrom = 'new'; F.crop = { cx: .5, cy: .5, z: 1 }; F.photoBlob = blob; F.photoRemoved = false; F.keepCredit = false;
     if (F.previewUrl) URL.revokeObjectURL(F.previewUrl);
     F.previewUrl = URL.createObjectURL(blob);
     $('#pv').innerHTML = `<img src="${F.previewUrl}" alt="Vorschau">`;
     $('#rmPhoto').classList.remove('hidden'); $('#cropPhoto').classList.remove('hidden');
   } catch {}
 }
-async function recrop(){
-  let src = F.src;
-  if (!src) {
-    const url = photoSrc(F.r); if (!url) return;
-    try { const res = await fetch(url, { mode: 'cors' }); src = await loadSource(await res.blob()); F.keepCredit = true; }
-    catch { toast('Das gespeicherte Foto lässt sich nicht laden – wähle es bitte neu aus.'); return; }
+async function loadRemote(url){
+  const fresh = /^(blob|data):/.test(url) ? url : url + (url.includes('?') ? '&' : '?') + 'crop=' + Date.now(); // am Zwischenspeicher vorbei
+  try {
+    const res = await fetch(fresh, { mode: 'cors', cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return await loadSource(await res.blob());
+  } catch {
+    const img = await new Promise((res, rej) => { const i = new Image(); i.crossOrigin = 'anonymous'; i.onload = () => res(i); i.onerror = rej; i.src = fresh; });
+    const k = Math.min(1, 2400 / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    c.toDataURL(); // wirft, falls das Bild nicht verwendet werden darf
+    return c;
   }
-  await cropAndSet(src);
 }
+// Unsplash-Fotos ohne festen Zuschnitt laden, damit wieder das ganze Bild zur Wahl steht
+const fullUrl = u => /images\.unsplash\.com/.test(u) ? u.replace(/([?&])(h|fit|crop)=[^&]*/g, '$1').replace(/w=\d+/, 'w=2400').replace(/&{2,}/g, '&').replace(/\?&/, '?') : u;
+async function recrop(){
+  if (F.src) { await cropAndSet(F.src, F.srcFrom, F.crop); return; }
+  const orig = F.r.photoOrigUrl, url = orig || fullUrl(photoSrc(F.r)); if (!url) return;
+  const btn = $('#cropPhoto'); if (btn) { btn.disabled = true; btn.textContent = 'Lädt …'; }
+  let src;
+  try { src = await loadRemote(url); F.keepCredit = true; }
+  catch { toast('Das gespeicherte Foto lässt sich gerade nicht laden. Prüfe die Verbindung oder wähle das Foto neu aus.'); return; }
+  finally { if (btn) { btn.disabled = false; btn.textContent = 'Ausschnitt ändern'; } }
+  await cropAndSet(src, orig ? 'orig' : 'remote', orig ? F.r.photoCrop : null);
+}
+const canvasBlob = (c, q) => new Promise(res => c.toBlob(res, 'image/jpeg', q));
 function collectForm(){
   const ingredients = $$('#ings .ing').map(row => ({ qty: parseQty($('.iq', row).value), unit: $('.iu', row).value.trim(), name: $('.in', row).value.trim() })).filter(i => i.name);
   const steps = $$('#steps .st').map(t => t.value.trim()).filter(Boolean);
   const cats = $$('#form [data-chip][aria-pressed=true]').map(b => b.dataset.v);
   const time = parseInt($('#fTime').value, 10);
   return { name: $('#fName').value.trim(), desc: $('#fDesc').value.trim(), servings: Math.max(1, Math.min(99, parseInt($('#fServ').value, 10) || 2)),
-    time: time > 0 ? Math.min(time, 1440) : null, level: LEVELS.includes($('#fLevel').value) ? $('#fLevel').value : null, ingredients, steps, cats };
+    time: time > 0 ? Math.min(time, 1440) : null, level: LEVELS.includes($('#fLevel').value) ? $('#fLevel').value : null, ingredients, steps, cats,
+    tags: [...new Set([...(F?.tags || []), normTag($('#tagIn')?.value)].filter(Boolean))] };
 }
 let saving = false;
 async function save(){
@@ -731,20 +1260,30 @@ async function save(){
   saving = true; const btn = $('#saveBtn'); btn.disabled = true; btn.innerHTML = '<span class="spin"></span>&nbsp;Speichern …';
   try {
     let photoId = F.oldPhotoId, photoUrl = cur?.photoUrl || F.r.photoUrl || null;
-    if (F.photoRemoved) { photoId = null; photoUrl = null; }
+    let origId = F.oldOrigId, origUrl = cur?.photoOrigUrl || F.r.photoOrigUrl || null, crop = cur?.photoCrop || F.r.photoCrop || null;
+    if (F.photoRemoved) { photoId = null; photoUrl = null; origId = null; origUrl = null; crop = null; }
     if (F.photoBlob) {
       btn.innerHTML = '<span class="spin"></span>&nbsp;Foto wird hochgeladen …';
       const a = await S.assets.upload(F.photoBlob);
-      photoId = a.id; photoUrl = a.url || null;
+      photoId = a.id; photoUrl = a.url || null; crop = F.crop || null;
+      if (F.srcFrom !== 'orig' && F.src) { // Original aufheben, damit der Ausschnitt später wieder frei wählbar ist
+        origId = null; origUrl = null;
+        try { const ob = await canvasBlob(F.src, 0.85); if (ob) { const o = await S.assets.upload(ob); origId = o.id; origUrl = o.url || null; } } catch {}
+        if (!origId) crop = null;
+      }
     }
     const now = Date.now();
     const ref = F.id ? S.db.collection('recipes').doc(F.id) : S.db.collection('recipes').doc();
     const credit = F.photoRemoved || (F.photoBlob && !F.keepCredit) ? null : (cur?.photoCredit || F.r.photoCredit || null);
-    const body = { ...d, photoId, photoUrl, photoCredit: credit, favBy: cur?.favBy || [], sample: false, createdAt: cur?.createdAt || now, createdBy: cur?.createdBy || S.me || null, updatedAt: now, updatedBy: S.me || null };
+    const prevN = cur?.nutrition || F.r.nutrition || null;
+    const nutrition = prevN && prevN.v === nutriKey(d) ? prevN : null;
+    const body = { ...d, nutrition, photoId, photoUrl, photoOrigId: origId, photoOrigUrl: origUrl, photoCrop: crop, photoCredit: credit, favBy: cur?.favBy || [], sample: false, createdAt: cur?.createdAt || now, createdBy: cur?.createdBy || S.me || null, updatedAt: now, updatedBy: S.me || null };
     await ref.set(body);
     if (F.oldPhotoId && F.oldPhotoId !== photoId) { try { await S.assets.delete(F.oldPhotoId); } catch {} }
+    if (F.oldOrigId && F.oldOrigId !== origId) { try { await S.assets.delete(F.oldOrigId); } catch {} }
     toast('Gespeichert');
     F = null; location.hash = 'r-' + ref.id;
+    if (!nutrition) estimateNutrition([{ id: ref.id, ...body }]);
   } catch (e) {
     toast(e?.code === 'quota_exceeded' ? 'Speicher voll – bitte alte Rezepte oder Fotos löschen.' : e?.code === 'invalid_argument' ? 'Speichern nicht erlaubt – du hast nur Lesezugriff.' : 'Speichern hat nicht geklappt. Bitte nochmal versuchen.');
     btn.disabled = false; btn.textContent = 'Speichern';
@@ -756,6 +1295,7 @@ async function del(id){
   try {
     await S.db.collection('recipes').doc(id).delete();
     if (r.photoId && S.assets) { try { await S.assets.delete(r.photoId); } catch {} }
+    if (r.photoOrigId && S.assets) { try { await S.assets.delete(r.photoOrigId); } catch {} }
     toast('Gelöscht'); location.hash = 'start';
   } catch { toast('Löschen hat nicht geklappt.'); }
 }
@@ -797,24 +1337,32 @@ async function openImport(){
   let caps = null; try { caps = await S.sample.limits(); } catch {}
   const img = !!caps?.images;
   sheet(`<h2>Rezept importieren</h2><p>Füge den Rezepttext ein (z. B. von einer Webseite kopiert)${img ? ' oder wähle ein Foto – von einer Rezeptseite oder einfach vom fertigen Gericht' : ''}. Claude erkennt Zutaten und Schritte, du prüfst danach alles im Formular.</p>
-    <label class="field"><span>Rezepttext${typeof S.sample.importUrl === 'function' ? ' oder Link' : ''}</span><textarea id="impText" style="min-height:160px" placeholder="Zutaten, Mengen, Zubereitung …"></textarea></label>
+    <div class="field"><span id="impTextLbl">Rezepttext${typeof S.sample.importUrl === 'function' ? ' oder Link' : ''}</span><div class="insp-box" style="margin:0"><textarea id="impText" style="min-height:160px" placeholder="Zutaten, Mengen, Zubereitung …" aria-labelledby="impTextLbl"></textarea>${micHTML('micImp')}</div>${SpeechRec ? '<small style="color:var(--muted)">Tipp: Aufs Mikrofon tippen und einfach erzählen, wie ihr es kocht.</small>' : ''}</div>
     ${img ? `<div class="field"><span>Oder Foto: Rezeptseite, Screenshot oder fertiges Gericht</span><label class="btn" style="position:relative;width:max-content">Bild wählen<input id="impImg" type="file" accept="${esc(caps.images.mediaTypes.join(','))}" style="position:absolute;inset:0;opacity:0"></label><small id="impImgName" style="color:var(--muted)"></small></div>` : ''}
     <p id="impStatus" class="by" aria-live="polite"></p>
     <div class="btns"><button class="btn" data-a="cancel">Abbrechen</button><button class="btn primary" data-a="go">Rezept erkennen</button></div>`, ov => {
     let ctl = null;
-    $('#impImg', ov)?.addEventListener('change', e => { $('#impImgName', ov).textContent = e.target.files[0]?.name || ''; });
+    $('#impImg', ov)?.addEventListener('change', e => {
+      const has = !!e.target.files[0];
+      $('#impImgName', ov).textContent = e.target.files[0]?.name || '';
+      $('#impTextLbl', ov).textContent = has ? 'Optional: Erzähl oder schreib, wie ihr es zubereitet' : 'Rezepttext';
+      $('#impText', ov).placeholder = has ? 'z. B. „Wir braten zwei Zwiebeln an, dann 500 g Hack dazu …“ – dann wird euer Rezept daraus, nicht ein allgemeiner Vorschlag.' : 'Zutaten, Mengen, Zubereitung …';
+    });
+    $('#micImp', ov)?.addEventListener('click', e => { e.stopPropagation(); startMic(e.currentTarget, $('#impText', ov)); });
     ov.addEventListener('click', async e => {
       const a = e.target.closest('[data-a]')?.dataset.a; if (!a) return;
-      if (a === 'cancel') { ctl?.abort(); closeSheet(); return; }
+      if (a === 'cancel') { ctl?.abort(); stopMic(); closeSheet(); return; }
+      stopMic();
       const text = $('#impText', ov).value.trim().slice(0, 20000);
       const file = $('#impImg', ov)?.files?.[0];
       if (!text && !file) { $('#impStatus', ov).textContent = 'Bitte Text einfügen oder ein Bild wählen.'; return; }
       const isUrl = !file && /^https?:\/\/\S+$/i.test(text);
       if (isUrl && typeof S.sample.importUrl !== 'function') { $('#impStatus', ov).textContent = 'Import per Link geht nur in der eigenständigen Spoonful-App. Kopiere hier bitte den Rezepttext von der Seite.'; return; }
-      const go = e.target; go.disabled = true; $('#impStatus', ov).innerHTML = `<span class="spin"></span>&nbsp; Claude ${file ? 'schaut sich das Foto an' : 'liest das Rezept'} … das kann bis zu einer Minute dauern.`;
+      const go = e.target; go.disabled = true; $('#impStatus', ov).innerHTML = `<span class="spin"></span>&nbsp; Claude ${file && text ? 'macht aus Foto und Beschreibung ein Rezept' : file ? 'schaut sich das Foto an' : 'liest das Rezept'} … das kann bis zu einer Minute dauern.`;
       ctl = new AbortController();
-      const prompt = `Extrahiere ein Kochrezept aus dem Material unten${file ? ' (Text und/oder beigefügtes Bild)' : ''}.${file ? ' Zeigt das Bild KEINEN Rezepttext, sondern ein fertiges Gericht, dann erkenne das Gericht und schlage ein typisches, gut nachkochbares Rezept dafür vor (realistische Zutaten und Mengen) und setze "suggested": true. Liest du das Rezept dagegen aus Text oder Bildtext ab, setze "suggested": false.' : ''} Antworte NUR mit einem JSON-Objekt dieser Form:
-{"name": string, "suggested": boolean, "description": string (1–2 Sätze, Deutsch), "servings": number, "time": number|null (Gesamtzeit in Minuten), "level": "leicht"|"mittel"|"anspruchsvoll"|null,"ingredients": [{"qty": number|null, "unit": string, "name": string}], "steps": [string], "categories": [string]}
+      const told = !!file && !!text; // Foto + eigene Beschreibung (getippt oder gesprochen)
+      const prompt = `Extrahiere ein Kochrezept aus dem Material unten${file ? ' (Text und/oder beigefügtes Bild)' : ''}.${told ? ' Das Bild zeigt das Gericht oder ein Rezept; der Text ist die eigene Beschreibung der Person, wie sie es zubereitet (evtl. gesprochen und daher umgangssprachlich). Diese Beschreibung ist die Hauptquelle: übernimm ihre Zutaten, Mengen und Schritte, ergänze nur Fehlendes sinnvoll aus dem Bild und mach daraus saubere, kurze Arbeitsschritte. Setze "suggested": false. Setze "dishPhoto": true, wenn das Bild das fertige Gericht zeigt (keinen Rezepttext).' : file ? ' Zeigt das Bild KEINEN Rezepttext, sondern ein fertiges Gericht, dann erkenne das Gericht und schlage ein typisches, gut nachkochbares Rezept dafür vor (realistische Zutaten und Mengen) und setze "suggested": true und "dishPhoto": true. Liest du das Rezept dagegen aus Text oder Bildtext ab, setze "suggested": false und "dishPhoto": false.' : ''} Antworte NUR mit einem JSON-Objekt dieser Form:
+{"name": string, "suggested": boolean, "dishPhoto": boolean, "description": string (1–2 Sätze, Deutsch), "servings": number, "time": number|null (Gesamtzeit in Minuten), "level": "leicht"|"mittel"|"anspruchsvoll"|null,"ingredients": [{"qty": number|null, "unit": string, "name": string}], "steps": [string], "categories": [string]}
 Regeln: Alles auf Deutsch. qty als Zahl (z. B. 0.5 für ½), ohne Mengenangabe qty null und unit "". unit kurz: g, kg, ml, l, EL, TL, Stück, Prise, Zehe, Bund, Dose, Packung, Tasse. Einheiten wie "cup"/"oz" in metrische umrechnen. steps als einzelne Arbeitsschritte ohne Nummerierung. categories nur aus dieser Liste wählen: ${ALLCATS.join(', ')}. servings 2, falls nicht erkennbar. Ist weder ein Rezept noch ein Gericht erkennbar, antworte {"error": "kein Rezept"}.
 
 Material:
@@ -822,7 +1370,8 @@ ${text || '(siehe Bild)'}`;
       try {
         const j = isUrl ? await S.sample.importUrl(text, prompt) : await S.sample.json(prompt, { signal: ctl.signal, ...(file ? { images: [file] } : {}) });
         if (!j || j.error || !j.name) { $('#impStatus', ov).textContent = file ? 'Auf dem Foto war weder ein Rezept noch ein Gericht zu erkennen.' : 'Darin konnte kein Rezept erkannt werden.'; go.disabled = false; return; }
-        const suggested = !!file && j.suggested === true;
+        const suggested = !!file && !told && j.suggested === true;
+        const dishPhoto = !!file && (suggested || j.dishPhoto === true);
         S.draft = {
           name: String(j.name).slice(0,120), desc: String(j.description||'').slice(0,600),
           servings: Math.max(1, Math.min(99, Math.round(+j.servings) || 2)),
@@ -830,9 +1379,9 @@ ${text || '(siehe Bild)'}`;
           ingredients: (Array.isArray(j.ingredients) ? j.ingredients : []).map(i => ({ qty: i?.qty == null || i.qty === '' ? null : (typeof i.qty === 'number' ? i.qty : parseQty(i.qty)), unit: String(i?.unit||''), name: String(i?.name||'') })).filter(i => i.name),
           steps: (Array.isArray(j.steps) ? j.steps : []).map(String).filter(Boolean),
           cats: (Array.isArray(j.categories) ? j.categories : []).filter(c => ALLCATS.includes(c)),
-          suggested, photoFile: suggested ? file : null
+          suggested, photoFile: dishPhoto ? file : null
         };
-        closeSheet(); toast(suggested ? 'Rezeptvorschlag erstellt – bitte prüfen' : 'Erkannt – bitte prüfen und ein Foto ergänzen');
+        closeSheet(); toast(suggested ? 'Rezeptvorschlag erstellt – bitte prüfen' : dishPhoto ? 'Rezept erstellt – bitte prüfen' : 'Erkannt – bitte prüfen und ein Foto ergänzen');
         if (location.hash === '#neu') renderForm(null); else location.hash = 'neu';
       } catch (err) {
         const c = err?.code;
@@ -853,6 +1402,8 @@ function route(){
   else if (h === 'neu') renderForm(null);
   else if (h === 'suche') renderSearch();
   else if (h === 'favoriten') renderFavs();
+  else if (h === 'inspiration') renderInspo();
+  else if (h === 'plan') renderPlan();
   else if (h === 'kategorien') renderCats();
   else if (h.startsWith('k-')) renderCat(h.slice(2));
   else renderStart();
@@ -861,7 +1412,7 @@ function route(){
 }
 function rerenderLive(){
   const h = location.hash.slice(1);
-  if (h.startsWith('e-') || h === 'neu' || h === 'kategorien') return; // Formulare nicht überschreiben
+  if (h.startsWith('e-') || h === 'neu' || h === 'kategorien' || h === 'inspiration') return; // Formulare nicht überschreiben
   if (h.startsWith('r-')) {
     const id = h.slice(2);
     if (!S.byId[id] && S.loaded) { toast('Dieses Rezept wurde gelöscht.'); location.hash = 'start'; return; }
@@ -872,12 +1423,29 @@ function rerenderLive(){
 // ---------- Events ----------
 app.addEventListener('input', e => {
   if (e.target.id === 'q') { S.q = e.target.value; renderSearch(); }
+  if (e.target.id === 'wish') S.inspo.wish = e.target.value;
+  if (e.target.id === 'pantryText') { S.inspo.pantry.text = e.target.value; const d = $('[data-act="pantry-detect"]'); if (d) d.disabled = !e.target.value.trim() && !S.inspo.pantry.photos.length; }
   const cm = e.target.closest('[data-cm]'); if (cm && CM) CM[cm.dataset.cm][+cm.dataset.i].name = cm.value;
+  if (e.target.id === 'tagIn') { const v = e.target.value; if (v.includes(',')) addTag(v.replace(/,/g, '')); else if (e.inputType === 'insertReplacementText' || (!e.inputType && allTags().includes(v))) addTag(v); }
 });
-app.addEventListener('change', e => { if (e.target.matches('[data-photo]')) onPhoto(e.target); });
-app.addEventListener('submit', e => { e.preventDefault(); if (e.target.id === 'cmform') saveCats(); else save(); });
+app.addEventListener('change', e => {
+  if (e.target.matches('[data-photo]')) onPhoto(e.target);
+  if (e.target.id === 'pantryImg') {
+    const P = S.inspo.pantry, files = [...e.target.files].slice(0, MAX_PANTRY_PHOTOS - P.photos.length);
+    if (e.target.files.length > files.length) toast(`Höchstens ${MAX_PANTRY_PHOTOS} Fotos auf einmal.`);
+    for (const f of files) P.photos.push({ file: f, url: URL.createObjectURL(f) });
+    renderInspo();
+  }
+});
+app.addEventListener('submit', e => { e.preventDefault(); if (e.target.id === 'cmform') saveCats(); else if (e.target.id === 'inspoForm') getIdeas(false); else save(); });
 app.addEventListener('click', e => {
   const t = e.target;
+  const idea = t.closest('[data-idea]'); if (idea) { openIdea(+idea.dataset.idea, idea.dataset.src || 'lust'); return; }
+  const im = t.closest('[data-imode]'); if (im) { stopMic(); S.inspo.mode = im.dataset.imode; S.inspo.error = ''; renderInspo(); return; }
+  const mic = t.closest('[data-mic]'); if (mic) { const ta = mic.parentElement.querySelector('textarea'); startMic(mic, ta, v => { if (ta.id === 'wish') S.inspo.wish = v; if (ta.id === 'pantryText') { S.inspo.pantry.text = v; const d = $('[data-act="pantry-detect"]'); if (d) d.disabled = !v.trim() && !S.inspo.pantry.photos.length; } }); return; }
+  const hrm = t.closest('[data-hrm]'); if (hrm) { S.inspo.pantry.have.splice(+hrm.dataset.hrm, 1); renderInspo(); return; }
+  const prp = t.closest('[data-prm-photo]'); if (prp) { const [x] = S.inspo.pantry.photos.splice(+prp.dataset.prmPhoto, 1); URL.revokeObjectURL(x.url); renderInspo(); return; }
+  const wishChip = t.closest('[data-wish]'); if (wishChip) { S.inspo.wish = wishChip.dataset.wish; const w = $('#wish'); if (w) w.value = S.inspo.wish; return; }
   const rail = t.closest('[data-rail]');
   if (rail) { const r = rail.parentElement.querySelector('.rail'); r.scrollBy({ left: +rail.dataset.rail * r.clientWidth * 0.85, behavior: 'smooth' }); return; }
   const cmMove = t.closest('[data-cmmove]');
@@ -907,21 +1475,40 @@ app.addEventListener('click', e => {
     const y = window.scrollY; renderDetail(id); window.scrollTo(0, y); return;
   }
   const go = t.closest('[data-go]'); if (go) { location.hash = go.dataset.go; return; }
+  const pw = t.closest('[data-pweek]'); if (pw) { const d = +pw.dataset.pweek; S.planWeek = d === 0 ? 0 : S.planWeek + d; renderPlan(); return; }
+  const padd = t.closest('[data-padd]'); if (padd) { openPickRecipe(padd.dataset.padd); return; }
+  const pnote = t.closest('[data-pnote]'); if (pnote) { openPlanNote(pnote.dataset.pnote); return; }
+  const prm = t.closest('[data-prm]'); if (prm) { const [iso, k] = prm.dataset.prm.split('|'); setPlanDay(iso, planItems(iso).filter(i => i.k !== k)); return; }
+  const psv = t.closest('[data-pserv]'); if (psv) { const [iso, k, d] = psv.dataset.pserv.split('|'); setPlanDay(iso, planItems(iso).map(i => i.k === k ? { ...i, servings: Math.max(1, Math.min(99, (i.servings || S.byId[i.rid]?.servings || 2) + +d)) } : i)); return; }
+  const pop = t.closest('[data-plan-open]'); if (pop && +pop.dataset.planOpen) { const id = pop.getAttribute('href').slice(3); S.portions[id] = +pop.dataset.planOpen; }
+  const tq = t.closest('[data-tagq]'); if (tq) { S.tags = [tq.dataset.tagq]; S.meal = []; S.diet = []; S.quick = []; S.q = ''; saveFilter(); location.hash = 'suche'; return; }
   const act = t.closest('[data-act]')?.dataset.act;
-  if (act === 'reset') { S.q = ''; S.meal = []; S.diet = []; S.quick = []; saveFilter(); renderSearch(); return; }
+  if (act === 'reset') { S.q = ''; S.meal = []; S.diet = []; S.quick = []; S.tags = []; saveFilter(); renderSearch(); return; }
   if (act === 'filters') { openFilters(); return; }
   if (act === 'import') { openImport(); return; }
   if (act === 'delete') { del(t.closest('[data-act]').dataset.id); return; }
   if (act === 'fav') { toggleFav(t.closest('[data-act]').dataset.id); return; }
   if (act === 'export') { openExport(); return; }
+  if (act === 'inspo-more') { getIdeas(true); return; }
+  if (act === 'plan-recipe') { const id = t.closest('[data-act]').dataset.id; openPlanDay(id, S.portions[id]); return; }
+  if (act === 'plan-fill') { openPlanFill(); return; }
+  if (act === 'inspo-stop') { inspoCtl?.abort(); S.inspo.loading = false; renderInspo(); return; }
+  if (act === 'pantry-detect') { detectPantry(); return; }
+  if (act === 'pantry-find') { findPantry(); return; }
+  if (act === 'pantry-clear') { const P = S.inspo.pantry; P.photos.forEach(p => URL.revokeObjectURL(p.url)); Object.assign(P, { text: '', photos: [], have: [], matches: null, ideas: [], saved: {}, searched: false }); S.inspo.error = ''; renderInspo(); return; }
+  if (act === 'have-add') { const inp = $('#haveIn'); addHave([inp.value]); renderInspo(); $('#haveIn')?.focus(); return; }
   const add = t.closest('[data-add]')?.dataset.add;
   if (add === 'ing') { $('#ings').insertAdjacentHTML('beforeend', ingRow()); $('#ings .ing:last-child .iq').focus(); return; }
   if (add === 'step') { $('#steps').insertAdjacentHTML('beforeend', stepRow()); renumber(); $('#steps .step:last-child textarea').focus(); return; }
   if (t.closest('[data-rm]')) { const row = t.closest('.row'); const box = row.parentElement; if (box.children.length > 1) row.remove(); else $$('input,textarea', row).forEach(i => i.value = ''); renumber(); return; }
   if (t.id === 'rmPhoto') { F.photoBlob = null; F.src = null; F.photoRemoved = true; $('#pv').innerHTML = PLATE; t.classList.add('hidden'); $('#cropPhoto').classList.add('hidden'); }
   if (t.id === 'cropPhoto') { recrop(); }
+  const trm = t.closest('[data-tagrm]'); if (trm && F) { F.tags.splice(+trm.dataset.tagrm, 1); $('#tagEdit').innerHTML = tagEditHTML(); return; }
 });
 app.addEventListener('keydown', e => {
+  if (e.target.id === 'tagIn' && (e.key === 'Enter' || e.key === ',')) { e.preventDefault(); addTag(e.target.value); return; }
+  if (e.target.id === 'haveIn' && e.key === 'Enter') { e.preventDefault(); addHave([e.target.value]); renderInspo(); $('#haveIn')?.focus(); return; }
+  if (e.target.id === 'tagIn' && e.key === 'Backspace' && !e.target.value && F?.tags.length) { F.tags.pop(); $('#tagEdit').innerHTML = tagEditHTML(); $('#tagIn').focus(); return; }
   if (e.key === 'Enter' && e.target.matches('.ing input')) { e.preventDefault(); const row = e.target.closest('.ing'); if (!row.nextElementSibling) { $('#ings').insertAdjacentHTML('beforeend', ingRow()); } row.nextElementSibling.querySelector('.iq').focus(); }
 });
 $('#tabAdd').addEventListener('click', openAdd);
@@ -946,13 +1533,15 @@ route();
   const timer = setTimeout(() => { S.slow = true; rerenderLive(); }, 10000);
   db.collection('recipes').onSnapshot(snap => {
     const cfg = snap.docs.find(d => d.id === CFG_ID); setCats(cfg ? cfg.data() : null);
-    S.recipes = snap.docs.filter(d => d.id !== CFG_ID).map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.createdAt||0) - (a.createdAt||0));
+    const isPlan = d => d.id.startsWith(PLAN_PREFIX);
+    S.plan = Object.fromEntries(snap.docs.filter(isPlan).map(d => { const v = d.data() || {}; return [v.date || d.id.slice(PLAN_PREFIX.length), { date: v.date || d.id.slice(PLAN_PREFIX.length), items: Array.isArray(v.items) ? v.items : [] }]; }));
+    S.recipes = snap.docs.filter(d => d.id !== CFG_ID && !isPlan(d)).map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.createdAt||0) - (a.createdAt||0));
     S.byId = Object.fromEntries(S.recipes.map(r => [r.id, r]));
     S.loaded = true;
     if (!snap.metadata.fromCache) { clearTimeout(timer); S.slow = false; }
     resolveNames(S.recipes.flatMap(r => [r.createdBy, r.updatedBy]));
     rerenderLive();
-    if (!snap.metadata.fromCache) addSamplePhotos();
+    if (!snap.metadata.fromCache) { addSamplePhotos(); backfillNutrition(); cleanupPlan(); }
   }, err => { clearTimeout(timer); S.loaded = true; S.slow = true; rerenderLive(); toast(err?.code === 'revoked' ? 'Zugriff wurde beendet.' : 'Verbindung zu den Rezepten verloren – bitte Seite neu öffnen.'); });
 })();
 }
