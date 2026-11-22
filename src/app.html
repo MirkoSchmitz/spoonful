@@ -1358,8 +1358,9 @@ function openExport(){
 }
 
 // ---------- Import ----------
-async function openImport(){
+async function openImport(preset = {}){
   if (!S.sample) { toast('Import ist hier gerade nicht verfügbar.'); return; }
+  let sharedFile = preset.file || null;
   let caps = null; try { caps = await S.sample.limits(); } catch {}
   const img = !!caps?.images;
   sheet(`<h2>Rezept importieren</h2><p>Füge den Rezepttext ein (z. B. von einer Webseite kopiert)${img ? ' oder wähle ein Foto – von einer Rezeptseite oder einfach vom fertigen Gericht' : ''}. Claude erkennt Zutaten und Schritte, du prüfst danach alles im Formular.</p>
@@ -1378,6 +1379,7 @@ async function openImport(){
     };
     $('#impPrevRm', ov)?.addEventListener('click', e => { e.stopPropagation(); const inp = $('#impImg', ov); inp.value = ''; inp.dispatchEvent(new Event('change')); });
     $('#impImg', ov)?.addEventListener('change', e => {
+      sharedFile = null;
       const has = !!e.target.files[0];
       showPrev(e.target.files[0] || null);
       if (has) $('#impPrev', ov).scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1385,13 +1387,21 @@ async function openImport(){
       $('#impTextLbl', ov).textContent = has ? 'Optional: Erzähl oder schreib, wie ihr es zubereitet' : 'Rezepttext';
       $('#impText', ov).placeholder = has ? 'z. B. „Wir braten zwei Zwiebeln an, dann 500 g Hack dazu …“ – dann wird euer Rezept daraus, nicht ein allgemeiner Vorschlag.' : 'Zutaten, Mengen, Zubereitung …';
     });
+    if (preset.text) $('#impText', ov).value = preset.text;
+    if (sharedFile) {
+      if (!img) { toast('Fotos lassen sich hier nicht importieren.'); sharedFile = null; }
+      else {
+        let set = false; try { const dt = new DataTransfer(); dt.items.add(sharedFile); $('#impImg', ov).files = dt.files; set = true; } catch {}
+        const f = sharedFile; $('#impImg', ov).dispatchEvent(new Event('change')); if (!set) { sharedFile = f; showPrev(f); $('#impTextLbl', ov).textContent = 'Optional: Erzähl oder schreib, wie ihr es zubereitet'; }
+      }
+    }
     $('#micImp', ov)?.addEventListener('click', e => { e.stopPropagation(); startMic(e.currentTarget, $('#impText', ov)); });
     ov.addEventListener('click', async e => {
       const a = e.target.closest('[data-a]')?.dataset.a; if (!a) return;
       if (a === 'cancel') { ctl?.abort(); stopMic(); closeSheet(); return; }
       stopMic();
       const text = $('#impText', ov).value.trim().slice(0, 20000);
-      const file = $('#impImg', ov)?.files?.[0];
+      const file = $('#impImg', ov)?.files?.[0] || sharedFile;
       if (!text && !file) { $('#impStatus', ov).textContent = 'Bitte Text einfügen oder ein Bild wählen.'; return; }
       const isUrl = !file && /^https?:\/\/\S+$/i.test(text);
       if (isUrl && typeof S.sample.importUrl !== 'function') { $('#impStatus', ov).textContent = 'Import per Link geht nur in der eigenständigen Spoonful-App. Kopiere hier bitte den Rezepttext von der Seite.'; return; }
@@ -1427,6 +1437,26 @@ ${text || '(siehe Bild)'}`;
       }
     });
   });
+}
+
+// ---------- Aus dem Teilen-Menü (Galerie, Browser) ----------
+async function takeShared(){
+  if (!new URLSearchParams(location.search).has('shared')) return;
+  history.replaceState(null, '', location.pathname + location.hash);
+  if (!('caches' in window)) return;
+  try {
+    const c = await caches.open('spoonful-share');
+    const metaRes = await c.match('/shared-meta'); if (!metaRes) return;
+    const meta = await metaRes.json();
+    let file = null;
+    const imgRes = meta.file ? await c.match('/shared-image') : null;
+    if (imgRes) { const b = await imgRes.blob(); file = new File([b], decodeURIComponent(imgRes.headers.get('X-Name') || 'foto.jpg'), { type: b.type || 'image/jpeg' }); }
+    await c.delete('/shared-meta'); await c.delete('/shared-image');
+    if (Date.now() - (meta.ts || 0) > 30 * 60 * 1000) return; // alte Reste ignorieren
+    if (!S.canWrite) { toast('Du hast hier nur Lesezugriff.'); return; }
+    if (!file && !meta.text) return;
+    openImport({ file, text: meta.text || '' });
+  } catch {}
 }
 
 // ---------- Routing ----------
@@ -1567,6 +1597,7 @@ route();
   }
   if (!db) { S.canWrite = false; S.slow = true; app.innerHTML = '<div class="wrap"><p class="note">Die Rezeptdatenbank ist hier nicht erreichbar. Öffne Spoonful angemeldet über claude.ai.</p></div>'; return; }
   setTab(null); route();
+  takeShared();
   const timer = setTimeout(() => { S.slow = true; rerenderLive(); }, 10000);
   db.collection('recipes').onSnapshot(snap => {
     const cfg = snap.docs.find(d => d.id === CFG_ID); setCats(cfg ? cfg.data() : null);
