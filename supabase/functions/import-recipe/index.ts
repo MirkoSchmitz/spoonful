@@ -18,7 +18,7 @@ const CATS = ['Frühstück', 'Vorspeisen', 'Mittagessen', 'Abendessen', 'Snack',
 
 async function askClaude(prompt: string, images: { media_type: string; data: string }[] = [], maxTokens = 4000) {
   const content = [
-    ...images.slice(0, 1).map(i => ({ type: 'image', source: { type: 'base64', media_type: i.media_type, data: i.data } })),
+    ...images.slice(0, 4).map(i => ({ type: 'image', source: { type: 'base64', media_type: i.media_type, data: i.data } })),
     { type: 'text', text: prompt },
   ];
   const r = await fetch('https://api.anthropic.com/v1/messages', {

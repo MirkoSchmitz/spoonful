@@ -216,7 +216,7 @@
       return data;
     }
     const sample = async () => { throw fail('capability_disabled', 'Nur sample.json wird unterstützt'); };
-    sample.limits = async () => ({ maxPromptBytes: 200000, images: { maxCount: 1, maxInputBytes: 20e6, mediaTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] } });
+    sample.limits = async () => ({ maxPromptBytes: 200000, images: { maxCount: 4, maxInputBytes: 20e6, mediaTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] } });
     sample.json = async (prompt, opts = {}) => {
       const images = [];
       for (const f of [].concat(opts.images ? Array.from(opts.images.length !== undefined ? opts.images : [opts.images]) : [])) images.push({ media_type: 'image/jpeg', data: await toB64(await shrink(f)) });
