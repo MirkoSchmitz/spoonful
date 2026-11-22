@@ -224,6 +224,7 @@
       return parseJson(d.text ?? d);
     };
     sample.importUrl = async (url, prompt) => { const d = await callFn({ url, prompt }); return d.recipe || parseJson(d.text ?? d); };
+    sample.photo = async (name, desc) => { const d = await callFn({ action: 'photo', name, desc }); return d && 'photo' in d ? d.photo : null; };
     sample.inspire = async prompt => { const d = await callFn({ action: 'inspire', prompt }); if (!Array.isArray(d?.recipes)) throw Object.assign(new Error('inspire: Funktion veraltet'), { code: 'outdated' }); return d.recipes; };
     ns.sample = sample;
   }

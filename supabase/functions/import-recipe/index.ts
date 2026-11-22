@@ -1,7 +1,8 @@
 // Spoonful – Rezept-Import (Supabase Edge Function)
 // 1) Link: liest die Webseite und übernimmt das eingebettete Rezept (schema.org/Recipe) – ohne KI, kostenlos.
 // 2) Text/Foto oder Seiten ohne Rezeptdaten: fragt Claude, falls ANTHROPIC_API_KEY als Secret gesetzt ist.
-// 3) Inspiration: Claude schlägt Rezepte vor, dazu werden echte, frei nutzbare Fotos gesucht
+// 3) Foto-Suche für Rezepte ohne Bild (action 'photo').
+// 4) Inspiration: Claude schlägt Rezepte vor, dazu werden echte, frei nutzbare Fotos gesucht
 //    (Unsplash, falls UNSPLASH_ACCESS_KEY gesetzt ist, sonst Wikimedia Commons). Es werden keine Bilder generiert.
 // Nur angemeldete Nutzer können die Funktion aufrufen (JWT-Prüfung ist bei Supabase standardmäßig an).
 
@@ -142,7 +143,19 @@ function guessCats(text: string): string[] {
 Deno.serve(async req => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   try {
-    const { url, prompt, images, action } = await req.json();
+    const body = await req.json();
+    const { url, prompt, images, action } = body;
+
+    if (action === 'photo') {
+      // Passendes freies Foto für ein Rezept ohne Bild suchen
+      const name = String(body.name ?? '').slice(0, 120), desc = String(body.desc ?? '').slice(0, 300);
+      if (!name) return reply({ photo: null });
+      let query = '';
+      if (KEY) {
+        try { query = (await askClaude(`Gib 2–4 englische Wörter zurück, mit denen man ein Foto dieses fertigen Gerichts findet (nur die Wörter, nichts sonst). Gericht: "${name}"${desc ? ` – ${desc}` : ''}`, [], 30)).replace(/["\n.]/g, ' ').trim().slice(0, 60); } catch { /* ohne Übersetzung weiter */ }
+      }
+      return reply({ photo: await findPhoto(query || name, name) });
+    }
 
     if (action === 'inspire') {
       if (!KEY) return reply({ error: 'Für Inspiration fehlt der ANTHROPIC_API_KEY.', code: 'sampling_disabled' });

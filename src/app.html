@@ -1007,6 +1007,28 @@ async function cleanupPlan(){ // Tage älter als 8 Wochen entfernen
   for (const iso of Object.keys(S.plan).filter(d => d < cut)) { try { await S.db.collection('recipes').doc(PLAN_PREFIX + iso).delete(); } catch {} }
 }
 
+// ---------- Passendes Foto für Rezepte ohne Bild ----------
+// photoAuto: true = automatisch gesucht; noAutoPhoto: true = Foto bewusst entfernt, nicht wieder suchen
+const needsPhoto = r => !photoSrc(r) && !r.noAutoPhoto && !!r.name;
+let photoOff = false, photoBusy = false;
+async function autoPhoto(r){
+  if (photoOff || typeof S.sample?.photo !== 'function' || !S.canWrite) return false;
+  try {
+    const p = await S.sample.photo(r.name, r.desc || '');
+    const cur = S.byId[r.id];
+    if (!p?.url || (cur && !needsPhoto(cur))) return false; // inzwischen selbst ein Foto gewählt
+    await S.db.collection('recipes').doc(r.id).update({ photoUrl: p.url, photoCredit: p.credit || null, photoAuto: true });
+    return true;
+  } catch (e) { if (['sampling_disabled', 'not_granted', 'capability_disabled'].includes(e?.code) || /Kein Inhalt/.test(e?.message || '')) photoOff = true; return false; }
+}
+async function backfillPhotos(){ // bestehende Rezepte ohne Foto, höchstens 10 pro Sitzung
+  if (photoBusy || photoOff || !S.canWrite || typeof S.sample?.photo !== 'function') return;
+  photoBusy = true;
+  await new Promise(r => setTimeout(r, 6000 + Math.random() * 8000));
+  try { for (const r of S.recipes.filter(needsPhoto).slice(0, 10)) { if (photoOff) break; if (S.byId[r.id] && needsPhoto(S.byId[r.id])) await autoPhoto(r); } }
+  finally { photoBusy = false; }
+}
+
 // ---------- Nährwerte schätzen ----------
 const ingLine = i => [i.qty != null ? String(Math.round(i.qty * 100) / 100) : '', i.unit || '', i.name].filter(Boolean).join(' ');
 let nutriBusy = false, nutriOff = false;
@@ -1156,6 +1178,7 @@ function renderForm(id){
         <button type="button" class="btn ${photoSrc(r) ? '' : 'hidden'}" id="rmPhoto">Foto entfernen</button>
       </div>
       ${S.assets ? '' : '<p class="note" style="margin:12px">Fotos hochladen ist für dich gerade nicht freigeschaltet.</p>'}</div>
+      ${typeof S.sample?.photo === 'function' ? `<small style="color:var(--muted)">${r.photoAuto && photoSrc(r) ? 'Dieses Foto wurde automatisch ausgesucht – ersetzt es gern durch ein eigenes.' : 'Ohne eigenes Foto sucht Spoonful nach dem Speichern automatisch ein passendes heraus.'}</small>` : ''}
     </div>
     <label class="field"><span>Name</span><input id="fName" required maxlength="120" value="${esc(r.name||'')}" placeholder="z. B. Shakshuka"></label>
     <label class="field"><span>Kurzbeschreibung</span><textarea id="fDesc" maxlength="600" placeholder="Worum geht's, was macht es besonders?">${esc(r.desc||'')}</textarea></label>
@@ -1277,13 +1300,16 @@ async function save(){
     const credit = F.photoRemoved || (F.photoBlob && !F.keepCredit) ? null : (cur?.photoCredit || F.r.photoCredit || null);
     const prevN = cur?.nutrition || F.r.nutrition || null;
     const nutrition = prevN && prevN.v === nutriKey(d) ? prevN : null;
-    const body = { ...d, nutrition, photoId, photoUrl, photoOrigId: origId, photoOrigUrl: origUrl, photoCrop: crop, photoCredit: credit, favBy: cur?.favBy || [], sample: false, createdAt: cur?.createdAt || now, createdBy: cur?.createdBy || S.me || null, updatedAt: now, updatedBy: S.me || null };
+    const removedOnPurpose = F.photoRemoved && !F.photoBlob;
+    const photoAuto = F.photoBlob || removedOnPurpose ? false : !!(cur?.photoAuto ?? F.r.photoAuto);
+    const body = { ...d, nutrition, photoAuto, noAutoPhoto: removedOnPurpose, photoId, photoUrl, photoOrigId: origId, photoOrigUrl: origUrl, photoCrop: crop, photoCredit: credit, favBy: cur?.favBy || [], sample: false, createdAt: cur?.createdAt || now, createdBy: cur?.createdBy || S.me || null, updatedAt: now, updatedBy: S.me || null };
     await ref.set(body);
     if (F.oldPhotoId && F.oldPhotoId !== photoId) { try { await S.assets.delete(F.oldPhotoId); } catch {} }
     if (F.oldOrigId && F.oldOrigId !== origId) { try { await S.assets.delete(F.oldOrigId); } catch {} }
     toast('Gespeichert');
     F = null; location.hash = 'r-' + ref.id;
     if (!nutrition) estimateNutrition([{ id: ref.id, ...body }]);
+    if (needsPhoto(body)) autoPhoto({ id: ref.id, ...body }).then(ok => { if (ok && location.hash === '#r-' + ref.id) toast('Passendes Foto ergänzt – ihr könnt es jederzeit ersetzen'); });
   } catch (e) {
     toast(e?.code === 'quota_exceeded' ? 'Speicher voll – bitte alte Rezepte oder Fotos löschen.' : e?.code === 'invalid_argument' ? 'Speichern nicht erlaubt – du hast nur Lesezugriff.' : 'Speichern hat nicht geklappt. Bitte nochmal versuchen.');
     btn.disabled = false; btn.textContent = 'Speichern';
@@ -1541,7 +1567,7 @@ route();
     if (!snap.metadata.fromCache) { clearTimeout(timer); S.slow = false; }
     resolveNames(S.recipes.flatMap(r => [r.createdBy, r.updatedBy]));
     rerenderLive();
-    if (!snap.metadata.fromCache) { addSamplePhotos(); backfillNutrition(); cleanupPlan(); }
+    if (!snap.metadata.fromCache) { addSamplePhotos(); backfillNutrition(); backfillPhotos(); cleanupPlan(); }
   }, err => { clearTimeout(timer); S.loaded = true; S.slow = true; rerenderLive(); toast(err?.code === 'revoked' ? 'Zugriff wurde beendet.' : 'Verbindung zu den Rezepten verloren – bitte Seite neu öffnen.'); });
 })();
 }
