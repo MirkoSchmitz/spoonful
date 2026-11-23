@@ -1,5 +1,5 @@
 // Spoonful – Offline-Grundgerüst. App-Dateien kommen aus dem Cache, wenn kein Netz da ist.
-const CACHE = 'spoonful-v6';
+const CACHE = 'spoonful-v8';
 const SHARE = 'spoonful-share'; // vom Teilen-Menü übergebene Fotos/Texte, bis die App sie abholt
 const SHELL = ['./', './index.html', './config.js', './shim.js', './manifest.json', './icons/icon-192.png', './icons/icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
@@ -11,12 +11,12 @@ self.addEventListener('fetch', e => {
     e.respondWith((async () => {
       try {
         const fd = await e.request.formData();
-        const file = fd.getAll('image').find(f => f && typeof f === 'object' && f.size);
+        const files = fd.getAll('image').filter(f => f && typeof f === 'object' && f.size).slice(0, 4);
         const text = ['title', 'text', 'url'].map(k => fd.get(k)).filter(v => typeof v === 'string' && v.trim()).join('\n');
         const c = await caches.open(SHARE);
-        await c.delete('/shared-image');
-        if (file) await c.put('/shared-image', new Response(file, { headers: { 'Content-Type': file.type || 'image/jpeg', 'X-Name': encodeURIComponent(file.name || 'foto.jpg') } }));
-        await c.put('/shared-meta', new Response(JSON.stringify({ text, file: !!file, ts: Date.now() }), { headers: { 'Content-Type': 'application/json' } }));
+        for (const k of await c.keys()) await c.delete(k);
+        for (let i = 0; i < files.length; i++) await c.put(`/shared-image-${i}`, new Response(files[i], { headers: { 'Content-Type': files[i].type || 'image/jpeg', 'X-Name': encodeURIComponent(files[i].name || 'foto.jpg') } }));
+        await c.put('/shared-meta', new Response(JSON.stringify({ text, count: files.length, ts: Date.now() }), { headers: { 'Content-Type': 'application/json' } }));
       } catch {}
       return Response.redirect('/?shared=1', 303);
     })());

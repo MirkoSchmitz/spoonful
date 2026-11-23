@@ -28,7 +28,8 @@ button{cursor:pointer}
 .top-in{max-width:1180px;margin:auto;padding:0 max(5vw,16px);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;margin-right:auto}
 .brand h1{font-family:Outfit,Figtree,sans-serif;font-size:clamp(34px,6vw,46px);font-weight:700;letter-spacing:-.04em;display:flex;align-items:baseline;line-height:1}
-.brand h1 svg{height:.74em;width:.62em;flex:none;margin:0 .05em -.2em .02em}
+.brand h1{align-items:center}
+.brand h1 .pot{height:.95em;width:1.12em;flex:none;margin:0 .22em 0 0;overflow:visible}
 .quick .chip[aria-pressed=true]{background:var(--saffron);border-color:var(--saffron);color:#1f1915}
 .chip svg,.fav svg{width:16px;height:16px;vertical-align:-3px}
 .facts{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;font-size:13px;color:var(--muted)}
@@ -195,6 +196,7 @@ body.home .top{display:none}
 .daily h2{font-size:clamp(30px,8vw,46px);line-height:1.05;margin:0 0 8px;text-shadow:0 2px 14px rgba(0,0,0,.35);color:#fff}
 .daily .facts{color:#fff;opacity:.92}
 .daily .facts b{color:#fff}
+.daily .brandmini .pot{height:.95em;width:1.12em;margin-right:.25em;vertical-align:-.12em;overflow:visible}
 .daily .brandmini{position:absolute;left:max(5vw,16px);top:calc(16px + env(safe-area-inset-top));font-family:Outfit,Figtree,sans-serif;font-weight:700;font-size:22px;letter-spacing:-.03em;opacity:.95;text-shadow:0 1px 8px rgba(0,0,0,.35)}
 .cb-btn{position:absolute;right:max(4vw,12px);top:calc(12px + env(safe-area-inset-top));width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.94);color:#1f1915;display:grid;place-items:center;box-shadow:0 2px 10px rgba(0,0,0,.2);z-index:2}
 .cb-btn svg{width:22px;height:22px}
@@ -284,21 +286,36 @@ body.home .top{display:none}
  @keyframes chipIn{0%{opacity:0;transform:translateY(-26px) scale(.5)}100%{opacity:1;transform:none}}
 }
 @media(prefers-reduced-motion:reduce){.thumbs.scanning .t::after{animation:none;top:39%}}
+/* Rezept per Sprache ändern */
+.voice-edit{display:flex;align-items:center;gap:12px;width:100%;margin:-4px 0 20px;padding:12px 14px;border-radius:16px;border:1.5px dashed var(--basil,#2e6a39);background:var(--basil-soft);color:var(--ink);font:inherit;text-align:left}
+.voice-edit .mi{width:44px;height:44px;border-radius:50%;background:#2e6a39;color:#fff;display:grid;place-items:center;flex:none}
+.voice-edit .mi svg{width:22px;height:22px}
+.voice-edit b{display:block;font-size:15px}.voice-edit small{color:var(--muted);font-size:13px}
+.ve-done{margin:-8px 0 20px;padding:12px 14px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
+.ve-done ul{margin:6px 0 8px;padding-left:20px}.ve-done li{padding:2px 0}
+@media(prefers-reduced-motion:no-preference){.flash{animation:flash 1.6s ease}@keyframes flash{0%,30%{background:#fff2c4;box-shadow:0 0 0 3px #f2b33d}}}
+/* Quelle */
+.src-link{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:14px;font-weight:600;color:var(--basil,#2e6a39);text-decoration:none;border-bottom:1.5px solid currentColor;padding-bottom:1px;overflow-wrap:anywhere}
 /* Splash Screen */
-#splash{position:fixed;inset:0;z-index:100;background:#2e6a39;color:#fff;display:grid;place-items:center;transition:opacity .45s ease,visibility .45s}
+html.splashing,html.splashing body{background:#2e6a39 !important}
+#splash{position:fixed;top:0;left:0;right:0;height:calc(100lvh + env(safe-area-inset-bottom) + 80px);z-index:100;background:#2e6a39;color:#fff;display:grid;place-items:center;transition:opacity .45s ease,visibility .45s}
 #splash.out{opacity:0;visibility:hidden}
-#splash .sp-in{display:flex;flex-direction:column;align-items:center;gap:14px}
+@supports not (height:100lvh){#splash{height:calc(100vh + env(safe-area-inset-bottom) + 80px)}}
+#splash .sp-in{position:fixed;top:0;left:0;right:0;height:100%;max-height:100dvh;justify-content:center;display:flex;flex-direction:column;align-items:center;gap:14px}
 #splash h1{margin:0;font-family:Outfit,Figtree,sans-serif;font-size:clamp(54px,15vw,84px);font-weight:700;letter-spacing:-.04em;display:flex;align-items:baseline;line-height:1}
-#splash h1 svg{height:.74em;width:.62em;flex:none;margin:0 .05em -.2em .02em}
+#splash .sp-pot{width:118px;height:100px;overflow:visible;margin-bottom:4px}
 #splash p{margin:0;font-size:16px;opacity:.85;letter-spacing:.02em}
 @media(prefers-reduced-motion:no-preference){
- #splash .l{display:inline-block;opacity:0;transform:translateY(14px);animation:spUp .5s cubic-bezier(.2,.8,.2,1) forwards}
- #splash .l:nth-child(2){animation-delay:.06s}
- #splash .spoon{transform-origin:50% 30%;animation:spSpoon .9s cubic-bezier(.3,1.5,.5,1) .15s both}
- #splash .l:nth-child(4){animation-delay:.22s}#splash .l:nth-child(5){animation-delay:.28s}#splash .l:nth-child(6){animation-delay:.34s}#splash .l:nth-child(7){animation-delay:.4s}#splash .l:nth-child(8){animation-delay:.46s}
- #splash p{opacity:0;animation:spFade .6s ease .7s forwards}
+ #splash .l{display:inline-block;opacity:0;transform:translateY(14px);animation:spUp .5s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(.35s + var(--k) * .05s)}
+ #splash .po{transform-origin:50px 80px;animation:spPot .6s cubic-bezier(.3,1.5,.5,1) both}
+ #splash .sl{animation:spSpoon .7s cubic-bezier(.3,1.4,.5,1) .25s both}
+ #splash .st path{stroke-dasharray:30;animation:spSteam 1.6s ease-out .55s both}
+ #splash .st path:nth-child(2){animation-delay:.75s}
+ #splash p{opacity:0;animation:spFade .6s ease .85s forwards}
  @keyframes spUp{to{opacity:1;transform:none}}
- @keyframes spSpoon{0%{opacity:0;transform:translateY(-40px) rotate(-40deg) scale(.6)}60%{opacity:1}100%{opacity:1;transform:none}}
+ @keyframes spPot{0%{opacity:0;transform:scale(.4)}100%{opacity:1;transform:none}}
+ @keyframes spSpoon{0%{opacity:0;transform:translate(14px,-30px) rotate(12deg)}100%{opacity:1;transform:none}}
+ @keyframes spSteam{0%{opacity:0;stroke-dashoffset:30;transform:translateY(6px)}40%{opacity:.85}100%{opacity:.75;stroke-dashoffset:0;transform:none}}
  @keyframes spFade{to{opacity:.85}}
 }
 /* Rezeptseite ohne Kopfleiste */
@@ -401,12 +418,14 @@ body.detail .hero{width:100%;max-width:none;margin:0;border-radius:0;max-height:
 /* Bildausschnitt */
 .crop{position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;border-radius:14px;background:#111;touch-action:none;cursor:grab;user-select:none}
 .crop img{position:absolute;left:0;top:0;transform-origin:0 0;max-width:none;pointer-events:none}
+.crop .bgblur{inset:-20px;width:calc(100% + 40px)!important;height:calc(100% + 40px)!important;object-fit:cover;filter:blur(18px) saturate(1.1);opacity:.85;transform:none!important}
+.zoom .btn{min-height:38px;font-size:14px;padding:0 12px;white-space:nowrap}
 .crop .grid3{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to right,transparent 33.2%,rgba(255,255,255,.45) 33.3%,transparent 33.5%,transparent 66.5%,rgba(255,255,255,.45) 66.6%,transparent 66.8%),linear-gradient(to bottom,transparent 33.2%,rgba(255,255,255,.45) 33.3%,transparent 33.5%,transparent 66.5%,rgba(255,255,255,.45) 66.6%,transparent 66.8%)}
 .zoom{display:flex;align-items:center;gap:10px;margin-top:14px}
 .zoom input{flex:1;accent-color:var(--tomato);height:44px}
 @media(max-width:600px){.top .btn{min-height:40px;padding:0 12px;font-size:14px}.top-in{gap:8px}}
 </style>
-<meta name="app-version" content="20261122145652">
+<meta name="app-version" content="20261123181312">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#2E6A39">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -419,21 +438,22 @@ body.detail .hero{width:100%;max-width:none;margin:0;border-radius:0;max-height:
 <script src="shim.js"></script>
 </head>
 <body>
-<div id="splash" aria-hidden="true"><div class="sp-in"><h1><span class="l">s</span><span class="l">p</span><svg class="spoon" viewBox="0 30 60 70"><ellipse cx="29" cy="57" rx="22" ry="24" fill="#fff"/><ellipse cx="24" cy="50" rx="7" ry="9" fill="#2e6a39" fill-opacity=".18"/><path d="M40,76 L56,99" stroke="#fff" stroke-width="9" stroke-linecap="round"/></svg><span class="l">o</span><span class="l">n</span><span class="l">f</span><span class="l">u</span><span class="l">l</span></h1><p>Euer gemeinsames Kochbuch</p></div></div>
+<div id="splash" aria-hidden="true"><div class="sp-in"><svg class="sp-pot" viewBox="5 8 90 76" aria-hidden="true"><g class="st"><path d="M36 30 q-5 -6 0 -11" fill="none" stroke="#FFF8EE" stroke-width="3.6" stroke-linecap="round"/><path d="M50 27 q-5 -6 0 -11" fill="none" stroke="#FFF8EE" stroke-width="3.6" stroke-linecap="round"/></g><path class="sl" d="M60 50 L78 14" stroke="#F2B33D" stroke-width="6.5" stroke-linecap="round"/><g class="po"><path d="M20 48 h60 v18 a14 14 0 0 1 -14 14 h-32 a14 14 0 0 1 -14 -14 z" fill="#FFF8EE"/><rect x="15" y="44" width="70" height="8" rx="4" fill="#FFF8EE"/><path d="M15 56 h-5 M85 56 h5" stroke="#FFF8EE" stroke-width="5" stroke-linecap="round"/></g></svg><h1><span class="l" style="--k:0">s</span><span class="l" style="--k:1">p</span><span class="l" style="--k:2">o</span><span class="l" style="--k:3">o</span><span class="l" style="--k:4">n</span><span class="l" style="--k:5">f</span><span class="l" style="--k:6">u</span><span class="l" style="--k:7">l</span></h1><p>Euer gemeinsames Kochbuch</p></div></div>
 <script>
 // Splash nur beim Start der installierten bzw. mobilen App, einmal pro Sitzung
 (function(){
   var el = document.getElementById('splash'), show = false;
   try { show = (matchMedia('(display-mode: standalone)').matches || navigator.standalone || matchMedia('(max-width: 760px)').matches) && !sessionStorage.getItem('sf-splash'); sessionStorage.setItem('sf-splash', '1'); } catch (e) {}
   if (!show) { el.remove(); window.hideSplash = function(){}; return; }
+  document.documentElement.classList.add('splashing'); // iOS: auch der Bereich unter der Seite (Home-Leiste) grün
   var t0 = Date.now(), done = false;
-  window.hideSplash = function(){ if (done) return; done = true; setTimeout(function(){ el.classList.add('out'); setTimeout(function(){ el.remove(); }, 500); }, Math.max(0, 1300 - (Date.now() - t0))); };
+  window.hideSplash = function(){ if (done) return; done = true; setTimeout(function(){ el.classList.add('out'); setTimeout(function(){ el.remove(); document.documentElement.classList.remove('splashing'); }, 500); }, Math.max(0, 1300 - (Date.now() - t0))); };
   setTimeout(window.hideSplash, 2600); // spätestens dann weg, auch ohne Netz
 })();
 </script>
 <header class="top"><div class="top-in">
  <a class="brand" href="#start" aria-label="Spoonful – Startseite">
-  <h1>sp<svg viewBox="0 30 60 70" aria-hidden="true"><ellipse cx="29" cy="57" rx="22" ry="24" fill="#fff"/><ellipse cx="24" cy="50" rx="7" ry="9" fill="#2e6a39" fill-opacity=".18"/><path d="M40,76 L56,99" stroke="#fff" stroke-width="9" stroke-linecap="round"/></svg>onful</h1>
+  <h1><svg class="pot" viewBox="5 8 90 76" aria-hidden="true"><path d="M36 30 q-5 -6 0 -11 M50 27 q-5 -6 0 -11" fill="none" stroke="#FFF8EE" stroke-width="3.6" stroke-linecap="round" opacity=".75"/><path d="M60 50 L78 14" stroke="#F2B33D" stroke-width="6.5" stroke-linecap="round"/><path d="M20 48 h60 v18 a14 14 0 0 1 -14 14 h-32 a14 14 0 0 1 -14 -14 z" fill="#FFF8EE"/><rect x="15" y="44" width="70" height="8" rx="4" fill="#FFF8EE"/><path d="M15 56 h-5 M85 56 h5" stroke="#FFF8EE" stroke-width="5" stroke-linecap="round"/></svg>spoonful</h1>
  </a>
 </div></header>
 <main id="app" aria-live="polite"></main>
@@ -576,6 +596,14 @@ function cleanNutri(n, r){
   const k = v => Math.max(0, Math.round(+v || 0));
   return { kcal: Math.min(5000, k(n.kcal)), protein: k(n.protein), carbs: k(n.carbs), fat: k(n.fat), v: nutriKey(r) };
 }
+// Quelle (Link zum Originalrezept)
+const cleanUrl = u => { try { const x = new URL(String(u || '').trim()); return /^https?:$/.test(x.protocol) ? x.href.slice(0, 500) : ''; } catch { return ''; } };
+const firstUrl = t => cleanUrl((String(t || '').match(/https?:\/\/[^\s<>"']+/i) || [])[0]);
+const hostOf = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return ''; } };
+function sourceHTML(r){
+  const u = cleanUrl(r.sourceUrl); if (!u) return '';
+  return `<a class="src-link" href="${esc(u)}" target="_blank" rel="noopener noreferrer">↗ Originalrezept auf ${esc(hostOf(u))}</a>`;
+}
 function nutriHTML(r){
   if (!nutriOk(r)) return '';
   const n = r.nutrition;
@@ -651,24 +679,27 @@ function openCrop(canvas, init){
   return new Promise(resolve => {
     const url = canvas.toDataURL('image/jpeg', 0.9);
     sheet(`<h2>Bildausschnitt wählen</h2><p>Verschiebe das Foto mit dem Finger oder der Maus und zoome, bis das Essen gut im Rahmen sitzt. So erscheint es in der Übersicht und im Rezept.</p>
-      <div class="crop" id="cropBox"><img id="cropImg" src="${url}" alt="Foto zum Zuschneiden"><span class="grid3"></span></div>
-      <label class="zoom"><span>Zoom</span><input type="range" id="cropZoom" min="1" max="4" step="0.01" value="1" aria-label="Zoom"></label>
+      <div class="crop" id="cropBox"><img class="bgblur" src="${url}" alt=""><img id="cropImg" src="${url}" alt="Foto zum Zuschneiden"><span class="grid3"></span></div>
+      <div class="zoom"><span>Zoom</span><input type="range" id="cropZoom" min="1" max="4" step="0.01" value="1" aria-label="Zoom"><button type="button" class="btn" id="cropFit">Ganzes Bild</button></div>
+      <p class="by" style="margin:6px 0 0">Passt das Foto nicht ins Querformat, zeigt „Ganzes Bild“ alles – die Ränder werden dann mit einer weichgezeichneten Version aufgefüllt.</p>
       <div class="btns"><button class="btn" data-c="cancel">Abbrechen</button><button class="btn primary" data-c="ok">Übernehmen</button></div>`, ov => {
       const box = $('#cropBox', ov), img = $('#cropImg', ov), zoomEl = $('#cropZoom', ov);
       const iw = canvas.width, ih = canvas.height;
-      let W = 0, H = 0, s0 = 1, z = 1, x = 0, y = 0;
-      const clamp = () => { const s = s0 * z; x = Math.min(0, Math.max(W - iw * s, x)); y = Math.min(0, Math.max(H - ih * s, y)); };
+      let W = 0, H = 0, s0 = 1, z = 1, x = 0, y = 0, zMin = 1;
+      // Ist das Bild in einer Richtung kleiner als der Rahmen (herausgezoomt), wird es dort mittig gehalten
+      const clamp = () => { const s = s0 * z, w = iw * s, h = ih * s; x = w <= W ? (W - w) / 2 : Math.min(0, Math.max(W - w, x)); y = h <= H ? (H - h) / 2 : Math.min(0, Math.max(H - h, y)); };
+      const setMin = () => { zMin = Math.min(1, Math.min(W / iw, H / ih) / s0); zoomEl.min = zMin.toFixed(3); };
       const draw = () => { clamp(); img.style.transform = `translate(${x}px,${y}px) scale(${s0 * z})`; img.style.width = iw + 'px'; img.style.height = ih + 'px'; };
       const measure = () => {
         const oldS = s0 * z, cx = W ? (W / 2 - x) / oldS : iw / 2, cy = H ? (H / 2 - y) / oldS : ih / 2;
-        W = box.clientWidth; H = box.clientHeight; s0 = Math.max(W / iw, H / ih);
+        W = box.clientWidth; H = box.clientHeight; s0 = Math.max(W / iw, H / ih); setMin(); if (z < zMin) z = zMin;
         x = W / 2 - cx * s0 * z; y = H / 2 - cy * s0 * z; draw();
       };
-      if (init && init.z >= 1 && init.z <= 4) { z = init.z; zoomEl.value = z; }
+      if (init && init.z > 0.05 && init.z <= 4) { z = init.z; zoomEl.value = z; }
       const start = init && init.cx >= 0 && init.cx <= 1 && init.cy >= 0 && init.cy <= 1 ? init : null;
-      const zoomTo = (nz, px = W / 2, py = H / 2) => { nz = Math.min(4, Math.max(1, nz)); const s = s0 * z, ns = s0 * nz; x = px - (px - x) * ns / s; y = py - (py - y) * ns / s; z = nz; zoomEl.value = z; draw(); };
+      const zoomTo = (nz, px = W / 2, py = H / 2) => { nz = Math.min(4, Math.max(zMin, nz)); const s = s0 * z, ns = s0 * nz; x = px - (px - x) * ns / s; y = py - (py - y) * ns / s; z = nz; zoomEl.value = z; draw(); };
       const ro = new ResizeObserver(() => {
-        if (start && !W) { W = box.clientWidth; H = box.clientHeight; s0 = Math.max(W / iw, H / ih); x = W / 2 - start.cx * iw * s0 * z; y = H / 2 - start.cy * ih * s0 * z; draw(); return; }
+        if (start && !W) { W = box.clientWidth; H = box.clientHeight; s0 = Math.max(W / iw, H / ih); setMin(); if (z < zMin) z = zMin; zoomEl.value = z; x = W / 2 - start.cx * iw * s0 * z; y = H / 2 - start.cy * ih * s0 * z; draw(); return; }
         measure();
       }); ro.observe(box);
       const pts = new Map(); let pinch = null;
@@ -685,13 +716,26 @@ function openCrop(canvas, init){
       box.addEventListener('pointerup', up); box.addEventListener('pointercancel', up);
       box.addEventListener('wheel', e => { e.preventDefault(); const r = box.getBoundingClientRect(); zoomTo(z * (e.deltaY < 0 ? 1.08 : 1 / 1.08), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
       zoomEl.addEventListener('input', () => zoomTo(+zoomEl.value));
+      $('#cropFit', ov).addEventListener('click', () => zoomTo(z <= zMin + 0.001 ? 1 : zMin));
       const finish = async ok => {
         ro.disconnect();
         if (!ok) { closeSheet(); resolve(null); return; }
         const s = s0 * z, sx = -x / s, sy = -y / s, sw = W / s, sh = H / s;
-        const ow = Math.round(Math.min(1600, sw)), oh = Math.round(ow * 3 / 4);
+        const ow = Math.round(Math.max(800, Math.min(1600, sw))), oh = Math.round(ow * 3 / 4), k = ow / W;
         const out = document.createElement('canvas'); out.width = ow; out.height = oh;
-        out.getContext('2d').drawImage(canvas, sx, sy, sw, sh, 0, 0, ow, oh);
+        const ctx = out.getContext('2d');
+        if (iw * s < W - 1 || ih * s < H - 1) { // herausgezoomt: Ränder mit weichgezeichnetem Bild füllen
+          const cs = Math.max(ow / iw, oh / ih) * 1.15, bx = (ow - iw * cs) / 2, by = (oh - ih * cs) / 2;
+          if (typeof ctx.filter === 'string') { ctx.filter = 'blur(30px) saturate(1.1)'; ctx.drawImage(canvas, bx, by, iw * cs, ih * cs); ctx.filter = 'none'; }
+          else { // ältere Safari ohne ctx.filter: stufenweise verkleinern und weich wieder hochskalieren
+            let src = canvas, w = iw, h = ih;
+            for (const t of [96, 24]) { const c = document.createElement('canvas'); c.width = t; c.height = Math.max(4, Math.round(t * h / w)); c.getContext('2d').drawImage(src, 0, 0, c.width, c.height); src = c; }
+            for (const t of [96, 320]) { const c = document.createElement('canvas'); c.width = t; c.height = Math.max(4, Math.round(t * ih / iw)); const g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(src, 0, 0, c.width, c.height); src = c; }
+            ctx.imageSmoothingQuality = 'high'; ctx.drawImage(src, bx, by, iw * cs, ih * cs);
+          }
+          ctx.fillStyle = 'rgba(0,0,0,.08)'; ctx.fillRect(0, 0, ow, oh);
+        }
+        ctx.drawImage(canvas, 0, 0, iw, ih, x * k, y * k, iw * s * k, ih * s * k);
         const crop = { cx: +((sx + sw / 2) / iw).toFixed(4), cy: +((sy + sh / 2) / ih).toFixed(4), z: +z.toFixed(3) };
         out.toBlob(b => { closeSheet(); resolve(b ? { blob: b, crop } : null); }, 'image/jpeg', 0.85);
       };
@@ -807,10 +851,11 @@ function dailyPick(){
   let h = 2166136261; for (const c of todayIso()) h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0;
   return list[h % list.length];
 }
+const POT_SVG = '<svg class="pot" viewBox="5 8 90 76" aria-hidden="true"><path d="M36 30 q-5 -6 0 -11 M50 27 q-5 -6 0 -11" fill="none" stroke="#FFF8EE" stroke-width="3.6" stroke-linecap="round" opacity=".75"/><path d="M60 50 L78 14" stroke="#F2B33D" stroke-width="6.5" stroke-linecap="round"/><path d="M20 48 h60 v18 a14 14 0 0 1 -14 14 h-32 a14 14 0 0 1 -14 -14 z" fill="#FFF8EE"/><rect x="15" y="44" width="70" height="8" rx="4" fill="#FFF8EE"/><path d="M15 56 h-5 M85 56 h5" stroke="#FFF8EE" stroke-width="5" stroke-linecap="round"/></svg>';
 const BOOK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 7h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 function dailyHTML(r){
   return `<div class="home-wrap"><a class="daily" href="#r-${esc(r.id)}" aria-label="Rezept des Tages: ${esc(r.name)}">${photoSrc(r) ? `<img src="${esc(photoSrc(r))}" alt="">` : `<span class="plate">${PLATE}</span>`}<span class="scrim"></span>
-    <span class="brandmini" aria-hidden="true">spoonful</span>
+    <span class="brandmini" aria-hidden="true">${POT_SVG}spoonful</span>
     <span class="txt"><span class="kick">Rezept des Tages</span><h2>${esc(r.name)}</h2>${factsHTML(r)}</span></a>
     ${document.getElementById('sf-menu') ? `<button type="button" class="cb-btn" data-act="cookbook" aria-label="Kochbuch: Einladen, Name, Abmelden">${BOOK}</button>` : ''}</div>`;
 }
@@ -1410,7 +1455,7 @@ function renderDetail(id){
   app.innerHTML = `
   <div class="hero">${photoHTML(r)}<a class="back-btn" href="#start" data-back aria-label="Zurück"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>${r.photoCredit && photoSrc(r) ? `<span class="credit">Foto: ${esc(creditText(r.photoCredit))}</span>` : ''}</div>
   <div class="wrap">
-    <div class="d-head"><h2>${esc(r.name)}</h2>${r.desc ? `<p>${esc(r.desc)}</p>` : ''}${factsHTML(r)}${nutriHTML(r)}<div class="tags" style="margin-top:12px">${r.sample ? '<span class="tag sample">Beispiel</span>' : ''}${tagsHTML(r.cats)}</div>${utagsHTML(r.tags, true)}<div class="by" id="by">${esc(byLine(r))}</div>
+    <div class="d-head"><h2>${esc(r.name)}</h2>${r.desc ? `<p>${esc(r.desc)}</p>` : ''}${factsHTML(r)}${nutriHTML(r)}${sourceHTML(r)}<div class="tags" style="margin-top:12px">${r.sample ? '<span class="tag sample">Beispiel</span>' : ''}${tagsHTML(r.cats)}</div>${utagsHTML(r.tags, true)}<div class="by" id="by">${esc(byLine(r))}</div>
     ${S.canWrite ? `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">${S.me ? `<button type="button" class="btn fav ${S.popFav === id ? 'pop' : ''}" data-act="fav" data-id="${esc(id)}" aria-pressed="${isFav(r)}">${isFav(r) ? HEART_FULL + ' Favorit' : HEART + ' Als Favorit merken'}</button>` : ''}<button type="button" class="btn" data-act="plan-recipe" data-id="${esc(id)}">${CAL} Einplanen</button></div>` : ''}</div>
     <div class="cols">
       <section class="panel"><h3>Zutaten</h3>
@@ -1456,6 +1501,7 @@ function renderForm(id){
   const cats = r.cats || [];
   app.innerHTML = `<form class="form wrap" id="form" novalidate>
     <h2>${id ? 'Rezept bearbeiten' : 'Neues Rezept'}</h2>
+    ${typeof S.sample?.json === 'function' ? `<button type="button" class="voice-edit" id="voiceEdit"><span class="mi">${MIC}</span><span><b>${id ? 'Per Sprache ändern' : 'Per Sprache ausfüllen'}</b><small>${id ? 'Sag einfach, was anders sein soll – z. B. „für 4 Personen“ oder „Sahne durch Kokosmilch ersetzen“' : 'Erzähl, was du kochst – Claude füllt das Formular aus'}</small></span></button><div id="veDone"></div>` : ''}
     ${r.suggested ? '<p class="note" style="margin:-6px 0 18px;background:var(--basil-soft);color:var(--ink)"><b>Vorschlag von Claude</b> anhand eures Fotos – das ist eine typische Version des Gerichts, nicht euer Originalrezept. Zutaten, Mengen und Schritte bitte prüfen und anpassen.</p>' : ''}
     <div class="field"><span>Foto</span>
       <div class="photo-box"><div class="ph" id="pv">${photoHTML(r, 'Vorschau')}</div>
@@ -1469,6 +1515,7 @@ function renderForm(id){
       ${typeof S.sample?.photo === 'function' ? `<small style="color:var(--muted)">${r.photoAuto && photoSrc(r) ? 'Dieses Foto wurde automatisch ausgesucht – ersetzt es gern durch ein eigenes.' : 'Ohne eigenes Foto sucht Spoonful nach dem Speichern automatisch ein passendes heraus.'}</small>` : ''}
     </div>
     <label class="field"><span>Name</span><input id="fName" required maxlength="120" value="${esc(r.name||'')}" placeholder="z. B. Shakshuka"></label>
+    <label class="field"><span>Quelle (Link, optional)</span><input id="fSrc" type="url" inputmode="url" maxlength="500" value="${esc(r.sourceUrl||'')}" placeholder="https://… – z. B. Webseite oder Instagram-Post"></label>
     <label class="field"><span>Kurzbeschreibung</span><textarea id="fDesc" maxlength="600" placeholder="Worum geht's, was macht es besonders?">${esc(r.desc||'')}</textarea></label>
     <div class="two">
       <label class="field"><span>Portionen (Grundrezept)</span><input id="fServ" type="number" inputmode="numeric" min="1" max="99" value="${esc(r.servings||2)}"></label>
@@ -1548,6 +1595,81 @@ async function recrop(){
   await cropAndSet(src, orig ? 'orig' : 'remote', orig ? F.r.photoCrop : null);
 }
 const canvasBlob = (c, q) => new Promise(res => c.toBlob(res, 'image/jpeg', q));
+// ---------- Rezept per Sprache ändern ----------
+function fillForm(d){
+  $('#fName').value = d.name || ''; $('#fDesc').value = d.desc || ''; if (d.sourceUrl !== undefined && $('#fSrc')) $('#fSrc').value = d.sourceUrl || '';
+  $('#fServ').value = d.servings || 2; $('#fTime').value = d.time || ''; $('#fLevel').value = LEVELS.includes(d.level) ? d.level : '';
+  $$('#form [data-chip]').forEach(b => b.setAttribute('aria-pressed', String((d.cats || []).includes(b.dataset.v))));
+  F.tags = [...(d.tags || [])]; $('#tagEdit').innerHTML = tagEditHTML();
+  $('#ings').innerHTML = (d.ingredients?.length ? d.ingredients : [{}]).map(ingRow).join('');
+  $('#steps').innerHTML = (d.steps?.length ? d.steps : ['']).map(stepRow).join('');
+  renumber();
+}
+function flashChanges(a, b){
+  const mark = el => { if (!el) return; el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); };
+  if (a.name !== b.name) mark($('#fName')); if (a.desc !== b.desc) mark($('#fDesc'));
+  if (a.servings !== b.servings) mark($('#fServ')); if (a.time !== b.time) mark($('#fTime')); if (a.level !== b.level) mark($('#fLevel'));
+  $$('#ings .ing').forEach((row, k) => { const i = b.ingredients[k]; if (i && !a.ingredients.some(x => x.name === i.name && x.qty === i.qty && x.unit === i.unit)) mark(row); });
+  $$('#steps .step').forEach((row, k) => { if (b.steps[k] && !a.steps.includes(b.steps[k])) mark(row); });
+  if (JSON.stringify(a.cats.slice().sort()) !== JSON.stringify(b.cats.slice().sort())) mark($('.catgrid'));
+}
+function openVoiceEdit(){
+  if (!F) return;
+  const isNew = !F.id;
+  const EX = isNew ? ['Ein schnelles Curry mit Kichererbsen für 2', 'Omas Apfelkuchen'] : ['Für 4 Personen statt 2', 'Sahne durch Kokosmilch ersetzen', 'Mach es vegetarisch', 'Etwas schärfer', 'Schritte kürzer fassen'];
+  sheet(`<h2>${isNew ? 'Per Sprache ausfüllen' : 'Per Sprache ändern'}</h2><p>${isNew ? 'Erzähl, was du kochst – Zutaten, Mengen, wie es geht. Claude füllt das Formular aus.' : 'Sag oder schreib, was am Rezept anders sein soll. Claude passt das Formular an, gespeichert wird erst, wenn du auf „Speichern“ tippst.'}</p>
+    <div class="insp-box" style="margin:0"><textarea id="veText" maxlength="2000" style="min-height:120px" placeholder="${isNew ? 'z. B. „Wir machen Nudeln mit Brokkoli: 250 g Nudeln, ein Brokkoli …“' : 'z. B. „Mach das für 4 Personen und ersetz die Sahne durch Kokosmilch“'}" aria-label="Änderungswunsch"></textarea>${micHTML('micVe')}</div>
+    ${micHint()}
+    <div class="ideas-q">${EX.map(x => `<button type="button" class="chip" data-vex="${esc(x)}">${esc(x)}</button>`).join('')}</div>
+    <div id="veStatus" aria-live="polite"></div>
+    <div class="btns"><button class="btn" data-ve="close">Abbrechen</button><button class="btn primary" data-ve="go">${isNew ? 'Formular ausfüllen' : 'Änderungen übernehmen'}</button></div>`, ov => {
+    const ta = $('#veText', ov), mic = $('#micVe', ov);
+    let ctl = null;
+    mic?.addEventListener('click', e => { e.stopPropagation(); startMic(mic, ta); });
+    if (mic) startMic(mic, ta); // gleich zuhören
+    ov.addEventListener('click', async e => {
+      const ex = e.target.closest('[data-vex]'); if (ex) { ta.value = ex.dataset.vex; return; }
+      const a = e.target.closest('[data-ve]')?.dataset.ve; if (!a) return;
+      if (a === 'close') { ctl?.abort(); stopMic(); closeSheet(); return; }
+      stopMic();
+      const wish = ta.value.trim(); if (!wish) { $('#veStatus', ov).innerHTML = '<p class="by">Sag oder schreib kurz, was du möchtest.</p>'; return; }
+      const before = collectForm();
+      const btn = e.target; btn.disabled = true;
+      $('#veStatus', ov).innerHTML = cookHTML(isNew ? COOK_MSGS.importTold : ['Claude passt das Rezept an …', 'Rechnet Mengen um …', 'Schreibt die Schritte neu …'], '', true);
+      ctl = new AbortController();
+      const prompt = `${isNew ? 'Hier ist ein (evtl. noch leeres) Rezeptformular als JSON und eine gesprochene Beschreibung eines Rezepts. Fülle das Rezept daraus aus.' : 'Hier ist ein Rezept als JSON und ein Änderungswunsch (evtl. gesprochen, umgangssprachlich). Ändere das Rezept entsprechend.'}
+Ändere nur, was gewünscht ist und was logisch daraus folgt (z. B. bei anderer Portionenzahl alle Mengen umrechnen, bei ersetzten Zutaten die Schritte anpassen). Alles andere bleibt wortgleich.
+Antworte NUR mit JSON: {"recipe":{"name":string,"desc":string,"servings":number,"time":number|null,"level":"leicht"|"mittel"|"anspruchsvoll"|null,"ingredients":[{"qty":number|null,"unit":string,"name":string}],"steps":[string],"cats":[string],"tags":[string]},"changes":[string]}
+changes: kurze deutsche Stichpunkte, was geändert wurde (max. 6). Einheiten metrisch (g, kg, ml, l, EL, TL, Stück, Prise, Zehe, Bund, Dose, Packung). cats nur aus: ${ALLCATS.join(', ')}.
+Rezept: ${JSON.stringify(before)}
+Wunsch: "${wish.replace(/"/g, "'")}"`;
+      try {
+        const j = await S.sample.json(prompt, { signal: ctl.signal });
+        const r = j?.recipe; if (!r || !r.name) throw { code: 'invalid_json' };
+        const after = {
+          name: String(r.name).slice(0, 120), desc: String(r.desc || '').slice(0, 600),
+          servings: Math.max(1, Math.min(99, Math.round(+r.servings) || before.servings)),
+          time: +r.time > 0 ? Math.min(1440, Math.round(+r.time)) : null, level: LEVELS.includes(r.level) ? r.level : null,
+          ingredients: (Array.isArray(r.ingredients) ? r.ingredients : []).map(i => ({ qty: i?.qty == null || i.qty === '' ? null : (typeof i.qty === 'number' ? i.qty : parseQty(i.qty)), unit: String(i?.unit || ''), name: String(i?.name || '') })).filter(i => i.name),
+          steps: (Array.isArray(r.steps) ? r.steps : []).map(String).filter(Boolean),
+          cats: (Array.isArray(r.cats) ? r.cats : []).filter(c => ALLCATS.includes(c)),
+          tags: (Array.isArray(r.tags) ? r.tags : before.tags).map(normTag).filter(Boolean)
+        };
+        const changes = (Array.isArray(j.changes) ? j.changes : []).map(String).filter(Boolean).slice(0, 6);
+        closeSheet(); if (!F) return;
+        fillForm(after); flashChanges(before, after);
+        S.veUndo = before;
+        $('#veDone').innerHTML = `<div class="ve-done" role="status"><b>${isNew ? 'Formular ausgefüllt' : 'Geändert'} – bitte prüfen und speichern</b>${changes.length ? `<ul>${changes.map(c => `<li>${esc(c)}</li>`).join('')}</ul>` : ''}<button type="button" class="linkish" id="veUndo">Rückgängig</button> · <button type="button" class="linkish" id="voiceEdit2">Noch etwas ändern</button></div>`;
+        $('#veDone').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (err) {
+        if (err?.code === 'cancelled') return;
+        btn.disabled = false;
+        $('#veStatus', ov).innerHTML = `<p class="by" style="color:var(--danger)">${err?.code === 'sampling_disabled' ? 'Dafür fehlt der Claude-Schlüssel in Supabase.' : 'Das hat nicht geklappt – bitte nochmal versuchen.'}</p>`;
+      }
+    });
+  });
+}
+
 function collectForm(){
   const ingredients = $$('#ings .ing').map(row => ({ qty: parseQty($('.iq', row).value), unit: $('.iu', row).value.trim(), name: $('.in', row).value.trim() })).filter(i => i.name);
   const steps = $$('#steps .st').map(t => t.value.trim()).filter(Boolean);
@@ -1555,7 +1677,8 @@ function collectForm(){
   const time = parseInt($('#fTime').value, 10);
   return { name: $('#fName').value.trim(), desc: $('#fDesc').value.trim(), servings: Math.max(1, Math.min(99, parseInt($('#fServ').value, 10) || 2)),
     time: time > 0 ? Math.min(time, 1440) : null, level: LEVELS.includes($('#fLevel').value) ? $('#fLevel').value : null, ingredients, steps, cats,
-    tags: [...new Set([...(F?.tags || []), normTag($('#tagIn')?.value)].filter(Boolean))] };
+    tags: [...new Set([...(F?.tags || []), normTag($('#tagIn')?.value)].filter(Boolean))],
+    sourceUrl: cleanUrl($('#fSrc')?.value) || null };
 }
 let saving = false;
 async function save(){
@@ -1648,65 +1771,69 @@ function openExport(){
 // ---------- Import ----------
 async function openImport(preset = {}){
   if (!S.sample) { toast('Import ist hier gerade nicht verfügbar.'); return; }
-  let sharedFile = preset.file || null;
   let caps = null; try { caps = await S.sample.limits(); } catch {}
   const img = !!caps?.images;
-  sheet(`<h2>Rezept importieren</h2><p>Füge den Rezepttext ein (z. B. von einer Webseite kopiert)${img ? ' oder wähle ein Foto – von einer Rezeptseite oder einfach vom fertigen Gericht' : ''}. Claude erkennt Zutaten und Schritte, du prüfst danach alles im Formular.</p>
-    <div id="impPrev" class="hidden" style="margin:0 0 14px"><div style="position:relative"><img id="impPrevImg" alt="Gewähltes Foto" style="width:100%;max-height:260px;object-fit:cover;border-radius:14px;display:block;background:var(--soft)"><button type="button" id="impPrevRm" aria-label="Foto entfernen" style="position:absolute;top:8px;right:8px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:20px">×</button></div></div>
-    <div class="field"><span id="impTextLbl">Rezepttext${typeof S.sample.importUrl === 'function' ? ' oder Link' : ''}</span><div class="insp-box" style="margin:0"><textarea id="impText" style="min-height:160px" placeholder="Zutaten, Mengen, Zubereitung …" aria-labelledby="impTextLbl"></textarea>${micHTML('micImp')}</div>${SpeechRec ? '<small style="color:var(--muted)">Tipp: Aufs Mikrofon tippen und einfach erzählen, wie ihr es kocht.</small>' : ''}</div>
-    ${img ? `<div class="field"><span>Oder Foto: Rezeptseite, Screenshot oder fertiges Gericht</span><label class="btn" style="position:relative;width:max-content"><span id="impImgBtn">Bild wählen</span><input id="impImg" type="file" accept="${esc(caps.images.mediaTypes.join(','))}" style="position:absolute;inset:0;opacity:0"></label><small id="impImgName" style="color:var(--muted)"></small></div>` : ''}
+  const MAXF = Math.max(1, Math.min(4, caps?.images?.maxCount || 1));
+  let files = [];   // gewählte Bilder (Screenshots, Rezeptseiten, Gericht)
+  let urls = [];
+  sheet(`<h2>Rezept importieren</h2><p>Füge den Rezepttext ein (z. B. von einer Webseite oder aus Instagram kopiert)${img ? ` und/oder wähle ${MAXF > 1 ? `bis zu ${MAXF} Fotos` : 'ein Foto'} – Screenshots, Rezeptseiten oder das fertige Gericht` : ''}. Claude erkennt Zutaten und Schritte, du prüfst danach alles im Formular.</p>
+    ${img ? `<div id="impPics" class="thumbs" style="margin:0 0 12px"></div>` : ''}
+    <div class="field"><span id="impTextLbl">Rezepttext${typeof S.sample.importUrl === 'function' ? ' oder Link' : ''}</span><div class="insp-box" style="margin:0"><textarea id="impText" style="min-height:150px" placeholder="Zutaten, Mengen, Zubereitung …" aria-labelledby="impTextLbl"></textarea>${micHTML('micImp')}</div>${SpeechRec ? '<small style="color:var(--muted)">Tipp: Aufs Mikrofon tippen und einfach erzählen, wie ihr es kocht.</small>' : ''}</div>
+    ${img ? `<div class="field" id="impAddF"><label class="btn" style="position:relative;width:max-content"><span id="impImgBtn">📷 Foto wählen</span><input id="impImg" type="file" accept="${esc(caps.images.mediaTypes.join(','))}" ${MAXF > 1 ? 'multiple' : ''} style="position:absolute;inset:0;opacity:0" aria-label="Fotos wählen"></label><small id="impImgName" style="color:var(--muted)"></small></div>` : ''}
     <p id="impStatus" class="by" aria-live="polite"></p>
     <div class="btns"><button class="btn" data-a="cancel">Abbrechen</button><button class="btn primary" data-a="go">Rezept erkennen</button></div>`, ov => {
     let ctl = null;
-    let prevUrl = null;
-    const showPrev = file => {
-      if (prevUrl) { URL.revokeObjectURL(prevUrl); prevUrl = null; }
-      if (file) { prevUrl = URL.createObjectURL(file); $('#impPrevImg', ov).src = prevUrl; }
-      $('#impPrev', ov).classList.toggle('hidden', !file);
-      $('#impImgBtn', ov).textContent = file ? 'Anderes Bild wählen' : 'Bild wählen';
+    const draw = () => {
+      if (!img) return;
+      urls.forEach(u => URL.revokeObjectURL(u)); urls = files.map(f => URL.createObjectURL(f));
+      $('#impPics', ov).innerHTML = files.map((f, i) => `<div class="t" style="width:${files.length === 1 ? '100%' : 'calc(50% - 4px)'};height:${files.length === 1 ? '220px' : '130px'}"><img src="${urls[i]}" alt="Foto ${i + 1}"><button type="button" data-rmf="${i}" aria-label="Foto ${i + 1} entfernen">×</button></div>`).join('');
+      const has = files.length > 0;
+      $('#impAddF', ov).classList.toggle('hidden', files.length >= MAXF);
+      $('#impImgBtn', ov).textContent = has ? '📷 Weiteres Foto' : '📷 Foto wählen';
+      $('#impImgName', ov).textContent = has && MAXF > 1 ? `${files.length} von ${MAXF} Fotos` : '';
+      $('#impTextLbl', ov).textContent = has ? 'Optional: Rezepttext dazu (z. B. Instagram-Beschreibung) oder erzählen, wie ihr es kocht' : 'Rezepttext' + (typeof S.sample.importUrl === 'function' ? ' oder Link' : '');
+      $('#impText', ov).placeholder = has ? 'Text einfügen oder aufs Mikrofon tippen …' : 'Zutaten, Mengen, Zubereitung …';
     };
-    $('#impPrevRm', ov)?.addEventListener('click', e => { e.stopPropagation(); const inp = $('#impImg', ov); inp.value = ''; inp.dispatchEvent(new Event('change')); });
-    $('#impImg', ov)?.addEventListener('change', e => {
-      sharedFile = null;
-      const has = !!e.target.files[0];
-      showPrev(e.target.files[0] || null);
-      if (has) $('#impPrev', ov).scrollIntoView({ behavior: 'smooth', block: 'start' });
-      $('#impImgName', ov).textContent = '';
-      $('#impTextLbl', ov).textContent = has ? 'Optional: Erzähl oder schreib, wie ihr es zubereitet' : 'Rezepttext';
-      $('#impText', ov).placeholder = has ? 'z. B. „Wir braten zwei Zwiebeln an, dann 500 g Hack dazu …“ – dann wird euer Rezept daraus, nicht ein allgemeiner Vorschlag.' : 'Zutaten, Mengen, Zubereitung …';
-    });
+    const addFiles = list => {
+      const add = [...list].filter(f => f && f.size).slice(0, MAXF - files.length);
+      if (list.length > add.length) toast(`Höchstens ${MAXF} Fotos pro Rezept.`);
+      files.push(...add); draw();
+      if (add.length) $('#impPics', ov)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    $('#impImg', ov)?.addEventListener('change', e => { addFiles(e.target.files); e.target.value = ''; });
+    $('#impPics', ov)?.addEventListener('click', e => { const b = e.target.closest('[data-rmf]'); if (!b) return; e.stopPropagation(); files.splice(+b.dataset.rmf, 1); draw(); });
     if (preset.text) $('#impText', ov).value = preset.text;
-    if (sharedFile) {
-      if (!img) { toast('Fotos lassen sich hier nicht importieren.'); sharedFile = null; }
-      else {
-        let set = false; try { const dt = new DataTransfer(); dt.items.add(sharedFile); $('#impImg', ov).files = dt.files; set = true; } catch {}
-        const f = sharedFile; $('#impImg', ov).dispatchEvent(new Event('change')); if (!set) { sharedFile = f; showPrev(f); $('#impTextLbl', ov).textContent = 'Optional: Erzähl oder schreib, wie ihr es zubereitet'; }
-      }
-    }
+    const shared = preset.files || (preset.file ? [preset.file] : []);
+    if (shared.length) { if (!img) toast('Fotos lassen sich hier nicht importieren.'); else addFiles(shared); }
     $('#micImp', ov)?.addEventListener('click', e => { e.stopPropagation(); startMic(e.currentTarget, $('#impText', ov)); });
     ov.addEventListener('click', async e => {
       const a = e.target.closest('[data-a]')?.dataset.a; if (!a) return;
-      if (a === 'cancel') { ctl?.abort(); stopMic(); closeSheet(); return; }
+      if (a === 'cancel') { ctl?.abort(); stopMic(); urls.forEach(u => URL.revokeObjectURL(u)); closeSheet(); return; }
       stopMic();
       const text = $('#impText', ov).value.trim().slice(0, 20000);
-      const file = $('#impImg', ov)?.files?.[0] || sharedFile;
-      if (!text && !file) { $('#impStatus', ov).textContent = 'Bitte Text einfügen oder ein Bild wählen.'; return; }
-      const isUrl = !file && /^https?:\/\/\S+$/i.test(text);
+      const n = files.length;
+      if (!text && !n) { $('#impStatus', ov).textContent = 'Bitte Text einfügen oder ein Foto wählen.'; return; }
+      const isUrl = !n && /^https?:\/\/\S+$/i.test(text);
       if (isUrl && typeof S.sample.importUrl !== 'function') { $('#impStatus', ov).textContent = 'Import per Link geht nur in der eigenständigen Spoonful-App. Kopiere hier bitte den Rezepttext von der Seite.'; return; }
-      const go = e.target; go.disabled = true; $('#impStatus', ov).innerHTML = cookHTML(COOK_MSGS[file && text ? 'importTold' : file ? 'importPhoto' : 'importText'], 'Das kann bis zu einer Minute dauern.', true);
+      const go = e.target; go.disabled = true; $('#impStatus', ov).innerHTML = cookHTML(COOK_MSGS[n && text ? 'importTold' : n ? 'importPhoto' : 'importText'], 'Das kann bis zu einer Minute dauern.', true);
       ctl = new AbortController();
-      const told = !!file && !!text; // Foto + eigene Beschreibung (getippt oder gesprochen)
-      const prompt = `Extrahiere ein Kochrezept aus dem Material unten${file ? ' (Text und/oder beigefügtes Bild)' : ''}.${told ? ' Das Bild zeigt das Gericht oder ein Rezept; der Text ist die eigene Beschreibung der Person, wie sie es zubereitet (evtl. gesprochen und daher umgangssprachlich). Diese Beschreibung ist die Hauptquelle: übernimm ihre Zutaten, Mengen und Schritte, ergänze nur Fehlendes sinnvoll aus dem Bild und mach daraus saubere, kurze Arbeitsschritte. Setze "suggested": false. Setze "dishPhoto": true, wenn das Bild das fertige Gericht zeigt (keinen Rezepttext).' : file ? ' Zeigt das Bild KEINEN Rezepttext, sondern ein fertiges Gericht, dann erkenne das Gericht und schlage ein typisches, gut nachkochbares Rezept dafür vor (realistische Zutaten und Mengen) und setze "suggested": true und "dishPhoto": true. Liest du das Rezept dagegen aus Text oder Bildtext ab, setze "suggested": false und "dishPhoto": false.' : ''} Antworte NUR mit einem JSON-Objekt dieser Form:
-{"name": string, "suggested": boolean, "dishPhoto": boolean, "description": string (1–2 Sätze, Deutsch), "servings": number, "time": number|null (Gesamtzeit in Minuten), "level": "leicht"|"mittel"|"anspruchsvoll"|null,"ingredients": [{"qty": number|null, "unit": string, "name": string}], "steps": [string], "categories": [string]}
+      const prompt = `Extrahiere ein Kochrezept aus dem Material unten${n ? ` (Text und/oder ${n === 1 ? 'ein beigefügtes Bild' : `${n} beigefügte Bilder, in dieser Reihenfolge nummeriert ab 0`})` : ''}.${n ? `
+Die Bilder können Screenshots (z. B. von Instagram) mit Foto und/oder Rezepttext, Fotos von Rezeptseiten oder Fotos vom fertigen Gericht sein. Der Text kann ein kopierter Rezepttext (z. B. eine Instagram-Beschreibung) oder eine eigene, evtl. gesprochene und umgangssprachliche Beschreibung sein. Kombiniere alles zu einem Rezept: Angaben aus Text und Bildtext haben Vorrang, ergänze nur Fehlendes sinnvoll und mach saubere, kurze Arbeitsschritte daraus.
+Nur wenn nirgends Rezeptangaben stehen und nur ein Gericht zu sehen ist: erkenne das Gericht, schlage ein typisches, gut nachkochbares Rezept vor und setze "suggested": true – sonst false.
+"dishPhoto": Nummer des Bildes, das das fertige Gericht am besten zeigt (wird später zugeschnitten, ein Screenshot mit Gerichtfoto ist also ok); null, wenn kein Bild ein Gericht zeigt.` : ''}
+Antworte NUR mit einem JSON-Objekt dieser Form:
+{"name": string, "suggested": boolean, "dishPhoto": number|null, "description": string (1–2 Sätze, Deutsch), "servings": number, "time": number|null (Gesamtzeit in Minuten), "level": "leicht"|"mittel"|"anspruchsvoll"|null,"ingredients": [{"qty": number|null, "unit": string, "name": string}], "steps": [string], "categories": [string]}
 Regeln: Alles auf Deutsch. qty als Zahl (z. B. 0.5 für ½), ohne Mengenangabe qty null und unit "". unit kurz: g, kg, ml, l, EL, TL, Stück, Prise, Zehe, Bund, Dose, Packung, Tasse. Einheiten wie "cup"/"oz" in metrische umrechnen. steps als einzelne Arbeitsschritte ohne Nummerierung. categories nur aus dieser Liste wählen: ${ALLCATS.join(', ')}. servings 2, falls nicht erkennbar. Ist weder ein Rezept noch ein Gericht erkennbar, antworte {"error": "kein Rezept"}.
 
 Material:
-${text || '(siehe Bild)'}`;
+${text || '(siehe Bild' + (n > 1 ? 'er' : '') + ')'}`;
       try {
-        const j = isUrl ? await S.sample.importUrl(text, prompt) : await S.sample.json(prompt, { signal: ctl.signal, ...(file ? { images: [file] } : {}) });
-        if (!j || j.error || !j.name) { $('#impStatus', ov).textContent = file ? 'Auf dem Foto war weder ein Rezept noch ein Gericht zu erkennen.' : 'Darin konnte kein Rezept erkannt werden.'; go.disabled = false; return; }
-        const suggested = !!file && !told && j.suggested === true;
-        const dishPhoto = !!file && (suggested || j.dishPhoto === true);
+        const j = isUrl ? await S.sample.importUrl(text, prompt) : await S.sample.json(prompt, { signal: ctl.signal, ...(n ? { images: files } : {}) });
+        if (!j || j.error || !j.name) { $('#impStatus', ov).textContent = n ? 'Darin war weder ein Rezept noch ein Gericht zu erkennen.' : 'Darin konnte kein Rezept erkannt werden.'; go.disabled = false; return; }
+        const suggested = n > 0 && !text && j.suggested === true;
+        let di = j.dishPhoto === true ? 0 : Number.isInteger(+j.dishPhoto) && j.dishPhoto !== null && j.dishPhoto !== false ? +j.dishPhoto : null;
+        if (di != null && (di < 0 || di >= n)) di = null;
+        if (suggested && di == null) di = 0;
         S.draft = {
           name: String(j.name).slice(0,120), desc: String(j.description||'').slice(0,600),
           servings: Math.max(1, Math.min(99, Math.round(+j.servings) || 2)),
@@ -1714,13 +1841,15 @@ ${text || '(siehe Bild)'}`;
           ingredients: (Array.isArray(j.ingredients) ? j.ingredients : []).map(i => ({ qty: i?.qty == null || i.qty === '' ? null : (typeof i.qty === 'number' ? i.qty : parseQty(i.qty)), unit: String(i?.unit||''), name: String(i?.name||'') })).filter(i => i.name),
           steps: (Array.isArray(j.steps) ? j.steps : []).map(String).filter(Boolean),
           cats: (Array.isArray(j.categories) ? j.categories : []).filter(c => ALLCATS.includes(c)),
-          suggested, photoFile: dishPhoto ? file : null
+          suggested, photoFile: di != null ? files[di] : null,
+          sourceUrl: isUrl ? cleanUrl(text) : firstUrl(text) || null
         };
-        closeSheet(); toast(suggested ? 'Rezeptvorschlag erstellt – bitte prüfen' : dishPhoto ? 'Rezept erstellt – bitte prüfen' : 'Erkannt – bitte prüfen und ein Foto ergänzen');
+        urls.forEach(u => URL.revokeObjectURL(u));
+        closeSheet(); if (di == null) toast('Erkannt – bitte prüfen'); else if (suggested) setTimeout(() => toast('Rezeptvorschlag von Claude – bitte prüfen'), 1200);
         if (location.hash === '#neu') renderForm(null); else location.hash = 'neu';
       } catch (err) {
         const c = err?.code;
-        const msg = c === 'cancelled' ? '' : c === 'not_granted' || c === 'sampling_disabled' ? 'Import ist hier nicht freigeschaltet.' : c === 'rate_limited' ? 'Gerade zu viele Anfragen – bitte gleich nochmal.' : c === 'image_rejected' ? 'Dieses Bild geht nicht – versuch ein anderes.' : c === 'invalid_json' ? 'Das Ergebnis war unvollständig – bitte nochmal versuchen.' : 'Das hat nicht geklappt – bitte nochmal versuchen.';
+        const msg = c === 'cancelled' ? '' : c === 'not_granted' || c === 'sampling_disabled' ? 'Import ist hier nicht freigeschaltet.' : c === 'rate_limited' ? 'Gerade zu viele Anfragen – bitte gleich nochmal.' : c === 'image_rejected' ? 'Eins der Bilder geht nicht – versuch ein anderes.' : c === 'invalid_json' ? 'Das Ergebnis war unvollständig – bitte nochmal versuchen.' : c === 'too_large' ? 'Die Fotos sind zusammen zu groß – bitte eins weniger nehmen.' : 'Das hat nicht geklappt – bitte nochmal versuchen.';
         $('#impStatus', ov) && ($('#impStatus', ov).textContent = msg); go.disabled = false;
       }
     });
@@ -1736,14 +1865,19 @@ async function takeShared(){
     const c = await caches.open('spoonful-share');
     const metaRes = await c.match('/shared-meta'); if (!metaRes) return;
     const meta = await metaRes.json();
-    let file = null;
-    const imgRes = meta.file ? await c.match('/shared-image') : null;
-    if (imgRes) { const b = await imgRes.blob(); file = new File([b], decodeURIComponent(imgRes.headers.get('X-Name') || 'foto.jpg'), { type: b.type || 'image/jpeg' }); }
+    const files = [];
+    const n = meta.count != null ? meta.count : (meta.file ? 1 : 0);
+    for (let i = 0; i < Math.min(n, 4); i++) {
+      const key = meta.count != null ? `/shared-image-${i}` : '/shared-image';
+      const res = await c.match(key); if (!res) continue;
+      const b = await res.blob(); files.push(new File([b], decodeURIComponent(res.headers.get('X-Name') || 'foto.jpg'), { type: b.type || 'image/jpeg' }));
+      await c.delete(key);
+    }
     await c.delete('/shared-meta'); await c.delete('/shared-image');
     if (Date.now() - (meta.ts || 0) > 30 * 60 * 1000) return; // alte Reste ignorieren
     if (!S.canWrite) { toast('Du hast hier nur Lesezugriff.'); return; }
-    if (!file && !meta.text) return;
-    openImport({ file, text: meta.text || '' });
+    if (!files.length && !meta.text) return;
+    openImport({ files, text: meta.text || '' });
   } catch {}
 }
 
@@ -1900,6 +2034,8 @@ app.addEventListener('click', e => {
   if (t.closest('[data-rm]')) { const row = t.closest('.row'); const box = row.parentElement; if (box.children.length > 1) row.remove(); else $$('input,textarea', row).forEach(i => i.value = ''); renumber(); return; }
   if (t.id === 'rmPhoto') { F.photoBlob = null; F.src = null; F.photoRemoved = true; $('#pv').innerHTML = PLATE; t.classList.add('hidden'); $('#cropPhoto').classList.add('hidden'); }
   if (t.id === 'cropPhoto') { recrop(); }
+  if (t.closest('#voiceEdit') || t.id === 'voiceEdit2') { openVoiceEdit(); return; }
+  if (t.id === 'veUndo' && S.veUndo) { fillForm(S.veUndo); S.veUndo = null; $('#veDone').innerHTML = ''; toast('Änderungen zurückgenommen'); return; }
   const trm = t.closest('[data-tagrm]'); if (trm && F) { F.tags.splice(+trm.dataset.tagrm, 1); $('#tagEdit').innerHTML = tagEditHTML(); return; }
 });
 app.addEventListener('keydown', e => {
