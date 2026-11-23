@@ -1491,6 +1491,7 @@ function renderForm(id){
   app.innerHTML = `<form class="form wrap" id="form" novalidate>
     <h2>${id ? 'Rezept bearbeiten' : 'Neues Rezept'}</h2>
     ${typeof S.sample?.json === 'function' ? `<button type="button" class="voice-edit" id="voiceEdit"><span class="mi">${MIC}</span><span><b>${id ? 'Per Sprache ändern' : 'Per Sprache ausfüllen'}</b><small>${id ? 'Sag einfach, was anders sein soll – z. B. „für 4 Personen“ oder „Sahne durch Kokosmilch ersetzen“' : 'Erzähl, was du kochst – Claude füllt das Formular aus'}</small></span></button><div id="veDone"></div>` : ''}
+    ${r.hint ? `<p class="note" style="margin:-6px 0 18px">${esc(r.hint)}</p>` : ''}
     ${r.suggested ? '<p class="note" style="margin:-6px 0 18px;background:var(--basil-soft);color:var(--ink)"><b>Vorschlag von Claude</b> anhand eures Fotos – das ist eine typische Version des Gerichts, nicht euer Originalrezept. Zutaten, Mengen und Schritte bitte prüfen und anpassen.</p>' : ''}
     <div class="field"><span>Foto</span>
       <div class="photo-box"><div class="ph" id="pv">${photoHTML(r, 'Vorschau')}</div>
@@ -1811,15 +1812,24 @@ Die Bilder können Screenshots (z. B. von Instagram) mit Foto und/oder Rezepttex
 Nur wenn nirgends Rezeptangaben stehen und nur ein Gericht zu sehen ist: erkenne das Gericht, schlage ein typisches, gut nachkochbares Rezept vor und setze "suggested": true – sonst false.
 "dishPhoto": Nummer des Bildes, das das fertige Gericht am besten zeigt (wird später zugeschnitten, ein Screenshot mit Gerichtfoto ist also ok); null, wenn kein Bild ein Gericht zeigt.` : ''}
 Antworte NUR mit einem JSON-Objekt dieser Form:
-{"name": string, "suggested": boolean, "dishPhoto": number|null, "description": string (1–2 Sätze, Deutsch), "servings": number, "time": number|null (Gesamtzeit in Minuten), "level": "leicht"|"mittel"|"anspruchsvoll"|null,"ingredients": [{"qty": number|null, "unit": string, "name": string}], "steps": [string], "categories": [string]}
+{"name": string, "suggested": boolean, "dishPhoto": number|null, "description": string (1–2 Sätze, Deutsch, nur über das Gericht – keine Hinweise zur Herkunft oder Erkennung), "hint": string|null (Hinweis an die Nutzer, falls Angaben geschätzt oder unsicher sind, sonst null), "servings": number, "time": number|null (Gesamtzeit in Minuten), "level": "leicht"|"mittel"|"anspruchsvoll"|null,"ingredients": [{"qty": number|null, "unit": string, "name": string}], "steps": [string], "categories": [string]}
 Regeln: Alles auf Deutsch. qty als Zahl (z. B. 0.5 für ½), ohne Mengenangabe qty null und unit "". unit kurz: g, kg, ml, l, EL, TL, Stück, Prise, Zehe, Bund, Dose, Packung, Tasse. Einheiten wie "cup"/"oz" in metrische umrechnen. steps als einzelne Arbeitsschritte ohne Nummerierung. categories nur aus dieser Liste wählen: ${ALLCATS.join(', ')}. servings 2, falls nicht erkennbar. Ist weder ein Rezept noch ein Gericht erkennbar, antworte {"error": "kein Rezept"}.
 
 Material:
 ${text || '(siehe Bild' + (n > 1 ? 'er' : '') + ')'}`;
       try {
-        const j = isUrl ? await S.sample.importUrl(text, prompt) : await S.sample.json(prompt, { signal: ctl.signal, ...(n ? { images: files } : {}) });
+        // Steht ein Link im Text, wird die Seite immer zuerst abgerufen – auch wenn Fotos dabei sind
+        const link = firstUrl(text);
+        let j = null, pageFail = false, fromPage = false;
+        if (link && typeof S.sample.importUrl === 'function') {
+          try { j = await S.sample.importUrl(link, prompt.replace(/\nMaterial:[\s\S]*$/, '\nMaterial: siehe Webseite')); fromPage = !!(j && j.name && !j.error); } catch { pageFail = true; }
+          if (!fromPage) { j = null; pageFail = true; }
+        }
+        if (!j && isUrl) { $('#impStatus', ov).textContent = 'Die Seite ließ sich nicht abrufen oder enthält kein erkennbares Rezept. Kopiere bitte den Rezepttext von der Seite hier hinein.'; go.disabled = false; return; }
+        if (!j) j = await S.sample.json(prompt + (pageFail ? `\n\nHinweis: Die verlinkte Seite ${link} konnte nicht abgerufen werden. Erfinde keinen Inhalt der Seite; nutze nur Text und Bilder. Gib das im Feld "hint" an.` : ''), { signal: ctl.signal, ...(n ? { images: files } : {}) });
+        if (fromPage && n) j.dishPhoto = j.dishPhoto ?? 0; // eigenes Foto als Rezeptfoto
         if (!j || j.error || !j.name) { $('#impStatus', ov).textContent = n ? 'Darin war weder ein Rezept noch ein Gericht zu erkennen.' : 'Darin konnte kein Rezept erkannt werden.'; go.disabled = false; return; }
-        const suggested = n > 0 && !text && j.suggested === true;
+        const suggested = n > 0 && !text && !fromPage && j.suggested === true;
         let di = j.dishPhoto === true ? 0 : Number.isInteger(+j.dishPhoto) && j.dishPhoto !== null && j.dishPhoto !== false ? +j.dishPhoto : null;
         if (di != null && (di < 0 || di >= n)) di = null;
         if (suggested && di == null) di = 0;
@@ -1831,7 +1841,8 @@ ${text || '(siehe Bild' + (n > 1 ? 'er' : '') + ')'}`;
           steps: (Array.isArray(j.steps) ? j.steps : []).map(String).filter(Boolean),
           cats: (Array.isArray(j.categories) ? j.categories : []).filter(c => ALLCATS.includes(c)),
           suggested, photoFile: di != null ? files[di] : null,
-          sourceUrl: isUrl ? cleanUrl(text) : firstUrl(text) || null
+          sourceUrl: firstUrl(text) || null,
+          hint: typeof j.hint === 'string' && j.hint.trim() ? j.hint.trim().slice(0, 300) : (pageFail ? 'Die verlinkte Seite ließ sich nicht abrufen – das Rezept stammt nur aus Text und Fotos. Bitte prüfen.' : null)
         };
         urls.forEach(u => URL.revokeObjectURL(u));
         closeSheet(); if (di == null) toast('Erkannt – bitte prüfen'); else if (suggested) setTimeout(() => toast('Rezeptvorschlag von Claude – bitte prüfen'), 1200);
