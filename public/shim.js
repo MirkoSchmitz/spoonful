@@ -206,7 +206,7 @@
       }
     });
     // Mindestversion der Edge Function „import-recipe“, die diese App-Version braucht
-    const FN_VERSION_NEEDED = 5; let fnWarned = false;
+    const FN_VERSION_NEEDED = 6; let fnWarned = false;
     function checkFnVersion(d) {
       const v = +(d?.version || 0);
       if (v >= FN_VERSION_NEEDED || fnWarned) return; fnWarned = true;

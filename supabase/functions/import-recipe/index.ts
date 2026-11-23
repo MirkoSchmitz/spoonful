@@ -1,7 +1,8 @@
 // Spoonful – Rezept-Import (Supabase Edge Function „import-recipe“)
 //
-// VERSION 5 · 22.11.2026
+// VERSION 6 · 23.11.2026
 // Versionsverlauf:
+//   v6 (23.11.2026)  Link-Import: Seiten werden wie ein normaler Browser abgerufen (weniger Blockaden)
 //   v5 (22.11.2026)  Foto-Suche für Rezepte ohne Bild (action 'photo'), Versionsnummer in jeder Antwort
 //   v4 (22.11.2026)  bis zu 4 Bilder pro Anfrage („Was ist da?“ mit Vorratsfotos)
 //   v3 (21.11.2026)  Inspiration: Rezeptvorschläge mit freien Fotos (action 'inspire')
@@ -16,7 +17,7 @@
 //    (Unsplash, falls UNSPLASH_ACCESS_KEY gesetzt ist, sonst Wikimedia Commons). Es werden keine Bilder generiert.
 // Nur angemeldete Nutzer können die Funktion aufrufen (JWT-Prüfung ist bei Supabase standardmäßig an).
 
-const VERSION = 5;
+const VERSION = 6;
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -181,8 +182,13 @@ Deno.serve(async req => {
 
     if (url) {
       if (!/^https?:\/\//i.test(url)) return reply({ error: 'Ungültiger Link.', code: 'upstream_error' });
-      const page = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Spoonful Rezept-Import)', 'Accept-Language': 'de,en;q=0.8' } });
-      if (!page.ok) return reply({ error: `Die Seite antwortet nicht (${page.status}).`, code: 'upstream_error' });
+      // Wie ein normaler Handy-Browser anfragen – manche Seiten blockieren unbekannte Abrufer
+      const page = await fetch(url, { redirect: 'follow', headers: {
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'de-DE,de;q=0.9,en;q=0.8',
+      } });
+      if (!page.ok) return reply({ error: `Die Seite antwortet nicht (${page.status}).`, code: 'page_unreachable' });
       const html = await page.text();
       for (const m of html.matchAll(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
         let data: unknown; try { data = JSON.parse(m[1].trim()); } catch { continue; }
